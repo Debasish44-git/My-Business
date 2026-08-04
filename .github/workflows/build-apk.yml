@@ -43,6 +43,20 @@ jobs:
       - name: Sync web assets into Android project
         run: npx cap sync android
 
+      - name: Fix Kotlin duplicate class conflict
+        run: |
+          cat >> android/app/build.gradle << 'EOF'
+
+          configurations.all {
+              resolutionStrategy {
+                  force 'org.jetbrains.kotlin:kotlin-stdlib-jdk8:1.8.22'
+                  force 'org.jetbrains.kotlin:kotlin-stdlib-jdk7:1.8.22'
+                  force 'org.jetbrains.kotlin:kotlin-stdlib:1.8.22'
+                  force 'org.jetbrains.kotlin:kotlin-stdlib-common:1.8.22'
+              }
+          }
+          EOF
+
       - name: Build debug APK
         run: |
           cd android
