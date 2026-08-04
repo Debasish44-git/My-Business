@@ -206,8 +206,10 @@ nav button.active::before{width:22px}
 .nav-iw{width:42px;height:27px;display:flex;align-items:center;justify-content:center;position:relative;border-radius:12px;transition:transform 0.15s,background 0.25s ease}
 .nav-iw svg{width:22px;height:22px;display:block}
 .nav-iw svg .fillshape{fill:none;stroke:currentColor;transition:fill 0.25s ease}
+.nav-iw svg .navline{stroke:currentColor;transition:stroke 0.25s ease}
 nav button.active .nav-iw{background:var(--primary-l)}
 nav button.active .nav-iw svg .fillshape{fill:currentColor}
+nav button.active .nav-iw svg .navline{stroke:var(--primary-l)}
 nav button.active{color:var(--primary);font-weight:700}
 
 /* PANELS */
@@ -3328,7 +3330,7 @@ var _memStore = (function(){
 </div>
 
 <!-- GODOWN MANAGEMENT PANEL -->
-<div id="tab-godown" class="panel" style="background:#f2f4f8">
+<div id="tab-godown" class="panel" style="background:#f2f4f8"><template id="tpl-tab-godown">
 
   <!-- HEADER -->
   <!-- V267 FIX: header card (back button + Warehouse/Godown Mgmt title row + Recalc
@@ -3446,7 +3448,7 @@ var _memStore = (function(){
     <div id="gd-mov-list" style="background:#fff;border-radius:14px;overflow:hidden;box-shadow:0 1px 4px rgba(0,0,0,0.07)"></div>
   </div>
 
-</div><!-- /tab-godown -->
+</template></div><!-- /tab-godown -->
 
 <!-- GODOWN DETAIL BOTTOM SHEET -->
 <div id="gd-detail-sheet" style="display:none;position:fixed;inset:0;z-index:3000;background:rgba(0,0,0,0.5);align-items:flex-end" onclick="if(event.target===this)gdDetailClose()">
@@ -3514,7 +3516,7 @@ var _memStore = (function(){
   </div>
 </div>
 <!-- HOME STOCK PANEL -->
-<div id="tab-homestock" class="panel" style="background:#f2f4f8">
+<div id="tab-homestock" class="panel" style="background:#f2f4f8"><template id="tpl-tab-homestock">
 
   <!-- Header -->
   <div style="background:linear-gradient(135deg,#0f9b58 0%,#065f46 100%);margin:12px 12px 0;border-radius:18px;padding:18px;box-shadow:0 6px 24px rgba(15,155,88,0.28);position:relative;overflow:hidden">
@@ -3705,12 +3707,12 @@ var _memStore = (function(){
   <div style="padding:0 12px;margin-bottom:80px" id="hs-list">
     <div class="empty"><div class="empty-icon">🏡</div><div class="empty-text">No home stock entries yet</div></div>
   </div>
-</div>
+</template></div>
 
 <!-- ══════════════════════════════════════════════════════════
      ANALYTICS CENTER PANEL
 ══════════════════════════════════════════════════════════ -->
-<div id="tab-analytics" class="panel" style="background:#f2f4f8;overflow-y:auto;-webkit-overflow-scrolling:touch">
+<div id="tab-analytics" class="panel" style="background:#f2f4f8;overflow-y:auto;-webkit-overflow-scrolling:touch"><template id="tpl-tab-analytics">
 
   <!-- Header -->
   <div style="background:linear-gradient(135deg,#1b4fff,#0f34cc);padding:16px 16px 14px;display:flex;align-items:center;justify-content:space-between;flex-shrink:0">
@@ -3910,7 +3912,7 @@ var _memStore = (function(){
     <div id="an-batch-list" class="an-list-box"></div>
   </div>
 
-</div><!-- end tab-analytics -->
+</template></div><!-- end tab-analytics -->
 
 <!-- Analytics Report Full-screen Modal -->
 <div class="modal-overlay" id="an-report-modal" onclick="oc(event,'an-report-modal')">
@@ -4045,8 +4047,8 @@ var _memStore = (function(){
 <!-- NAV -->
 <nav>
   <button class="active" onclick="goTabMenu('home')" id="nav-home"><div class="nav-iw"><svg viewBox="0 0 24 24"><path class="fillshape" d="M3 9.8 L12 3 L21 9.8 L21 20 A1.3 1.3 0 0 1 19.7 21.3 L14.7 21.3 L14.7 14.5 L9.3 14.5 L9.3 21.3 L4.3 21.3 A1.3 1.3 0 0 1 3 20 Z" stroke-width="1.7" stroke-linejoin="round" stroke-linecap="round"/></svg></div><span>Home</span></button>
-  <button onclick="goTabMenu('products')" id="nav-products"><div class="nav-iw"><svg viewBox="0 0 24 24"><path d="M4 8 L8 4.2 L16 4.2 L20 8" stroke="currentColor" stroke-width="1.7" fill="none" stroke-linecap="round" stroke-linejoin="round"/><rect class="fillshape" x="4" y="8" width="16" height="12.8" rx="1.6" stroke-width="1.7"/></svg></div><span>Stock</span></button>
-  <button onclick="goTabMenu('sell')" id="nav-sell"><div class="nav-iw"><svg viewBox="0 0 24 24"><rect class="fillshape" x="2.3" y="5.8" width="19.4" height="13.4" rx="2.2" stroke-width="1.7"/><path d="M2.3 10.2 L21.7 10.2" stroke="currentColor" stroke-width="2" fill="none"/></svg></div><span>Sale</span></button>
+  <button onclick="goTabMenu('products')" id="nav-products"><div class="nav-iw"><svg viewBox="0 0 24 24"><path class="fillshape" d="M12 2.3 L20.6 6.9 L20.6 17.1 L12 21.7 L3.4 17.1 L3.4 6.9 Z" stroke-width="1.6" stroke-linejoin="round"/><path class="navline" d="M3.4 6.9 L12 11.5 L20.6 6.9 M12 11.5 L12 21.7" stroke="currentColor" stroke-width="1.5" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg></div><span>Stock</span></button>
+  <button onclick="goTabMenu('sell')" id="nav-sell"><div class="nav-iw"><svg viewBox="0 0 24 24"><rect class="fillshape" x="2.3" y="5.8" width="19.4" height="13.4" rx="2.2" stroke-width="1.7"/><path class="navline" d="M2.3 10.2 L21.7 10.2" stroke="currentColor" stroke-width="2" fill="none"/></svg></div><span>Sale</span></button>
   <button onclick="goTabMenu('menu')" id="nav-menu"><div class="nav-iw"><svg viewBox="0 0 24 24" fill="none"><path d="M4 6.5 L20 6.5" stroke="currentColor" stroke-width="1.9" stroke-linecap="round"/><path d="M4 12 L20 12" stroke="currentColor" stroke-width="1.9" stroke-linecap="round"/><path d="M4 17.5 L20 17.5" stroke="currentColor" stroke-width="1.9" stroke-linecap="round"/></svg></div><span>Menu</span></button>
 </nav>
 
@@ -4342,7 +4344,7 @@ var _memStore = (function(){
      Full lifecycle: raw materials → labour cost → finished qty
                      → godown stock → expiry
      ══════════════════════════════════════════════════════════ -->
-<div id="tab-batchmaster" class="panel" style="background:#f2f4f8;overflow-y:auto;-webkit-overflow-scrolling:touch">
+<div id="tab-batchmaster" class="panel" style="background:#f2f4f8;overflow-y:auto;-webkit-overflow-scrolling:touch"><template id="tpl-tab-batchmaster">
 
   <!-- Header -->
   <div style="background:linear-gradient(135deg,#1b4fff,#7c3aed);padding:14px 16px 16px;display:flex;align-items:center;gap:10px;flex-shrink:0">
@@ -4352,16 +4354,6 @@ var _memStore = (function(){
       <div style="font-size:11px;color:rgba(255,255,255,0.75);margin-top:1px">Full lifecycle · all batches in one place</div>
     </div>
     <button onclick="goTabMenuClose('calc')" style="background:rgba(255,255,255,0.18);border:none;border-radius:10px;padding:7px 12px;font-size:12px;font-weight:800;color:#fff;cursor:pointer">＋ New</button>
-  </div>
-
-  <!-- V141: Always-visible debug/force-reload bar (shown when 0 batches) -->
-  <div id="bm-debug-bar" style="margin:10px 12px 0;display:none">
-    <div style="background:#1e1e2e;border-radius:12px;padding:12px 14px">
-      <div style="font-size:11px;font-weight:800;color:#a0aec0;text-transform:uppercase;letter-spacing:0.5px;margin-bottom:8px">🔍 Batch Data Sources</div>
-      <div id="bm-debug-body" style="font-size:12px;color:#e2e8f0;line-height:2;font-family:monospace"></div>
-      <button onclick="bmForceReload()" id="bm-force-btn" style="margin-top:10px;width:100%;font-family:'Noto Sans',sans-serif;font-size:13px;font-weight:800;background:linear-gradient(135deg,#7c3aed,#4c1d95);color:#fff;border:none;border-radius:10px;padding:11px 0;cursor:pointer">⬇️ Force Load from Supabase</button>
-      <div id="bm-force-result" style="font-size:11px;color:#68d391;margin-top:6px;text-align:center;min-height:16px"></div>
-    </div>
   </div>
 
   <!-- Next Batch ID chip -->
@@ -4413,7 +4405,7 @@ var _memStore = (function(){
   <!-- Batch cards list -->
   <div id="bm-list" style="padding:10px 12px 100px"></div>
 
-</div><!-- end tab-batchmaster -->
+</template></div><!-- end tab-batchmaster -->
 <!-- ═══════════════════════════════════════════════════════
      GOOD OLD MANAGEMENT PANEL  (tab-goodold)  V191
      Tracks ALL business activity: sales, purchase, damage,
@@ -6361,7 +6353,24 @@ function load(){
 }
 
 // TABS
+// V314: lazy DOM injection for heavy, rarely-visited tabs (godown/homestock/analytics/batchmaster).
+// Their markup sits in a <template> (inert, not parsed into live DOM) until first needed.
+// Safe to call repeatedly — no-ops once injected. Keeps single-file architecture, just
+// defers the DOM-construction cost of these panels until the user actually opens them.
+function _v314InjectPanel(panelId){
+  try{
+    var host = document.getElementById(panelId);
+    if(!host || host.getAttribute('data-v314-loaded')==='1') return;
+    var tpl = document.getElementById('tpl-'+panelId);
+    if(!tpl || !tpl.content) return;
+    host.appendChild(tpl.content.cloneNode(true));
+    host.setAttribute('data-v314-loaded','1');
+  }catch(e){ if(typeof _v312LogError==='function') _v312LogError({ts:Date.now(),msg:'Panel inject failed: '+panelId+' — '+e.message}); }
+}
+
 function goTab(name,btn){
+  // V314: lazy-inject heavy panel markup (godown/homestock/analytics/batchmaster) — see _v314InjectPanel
+
   var _hdr=document.querySelector('.app-header');
   if(_hdr){_hdr.classList.add('tab-transitioning');setTimeout(function(){_hdr.classList.remove('tab-transitioning');},260);}
   var prev=document.querySelector('.panel.active');
@@ -6510,6 +6519,7 @@ function hsSaveBin(){
 }
 
 function hsInitDate(){
+  _v314InjectPanel('tab-homestock');
   var d=document.getElementById('hs-date');
   if(d&&!d.value)d.value=_localDateStr();
   hsRenderSuggestions();
@@ -6923,6 +6933,7 @@ function hsConfirmDelete(){
 
 // ── Render ──
 function renderHomeStock(){
+  _v314InjectPanel('tab-homestock');
   var el=document.getElementById('hs-list');if(!el)return;
   // GODOWN REWORK V1: keep the godown dropdown fresh/pre-filled on every render
   hsPopulateGodownDd();
@@ -14001,6 +14012,7 @@ var _anModalType = '';       // for modal export context
 
 // ── Tab switching ───────────────────────────────────────────────
 function anTab(tab){
+  _v314InjectPanel('tab-analytics');
   _anTab = tab;
   var tabs = ['dashboard','movement','alerts','expiry','deadstock','godownwise','batch'];
   tabs.forEach(function(t){
@@ -15491,6 +15503,26 @@ function pimGetTotalLabour(){
 }
 // ── end v147 labour rows ──────────────────────────────────────────────────────
 
+// ── Shared shelf-life → expiry-date calculator ──
+// V311 FIX: was called by pimRecalcExpiry but never defined anywhere in the
+// file, so picking a Shelf Life value threw a silent ReferenceError and the
+// Expiry Date field never auto-filled. code is one of '7d','15d','1m','3m',
+// '6m','1y','2y' (number + unit). Base date is mfgStr (YYYY-MM-DD) if given,
+// else today. Returns YYYY-MM-DD for direct use in a <input type="date">.
+function _shelfLifeCalc(mfgStr, code){
+  var base = mfgStr ? new Date(mfgStr+'T00:00:00') : new Date();
+  if(isNaN(base.getTime())) base = new Date();
+  var n = parseInt(code, 10) || 0;
+  var unit = String(code).slice(-1);
+  if(unit==='d') base.setDate(base.getDate()+n);
+  else if(unit==='m') base.setMonth(base.getMonth()+n);
+  else if(unit==='y') base.setFullYear(base.getFullYear()+n);
+  var yyyy=base.getFullYear();
+  var mm=String(base.getMonth()+1).padStart(2,'0');
+  var dd=String(base.getDate()).padStart(2,'0');
+  return yyyy+'-'+mm+'-'+dd;
+}
+
 // ── Purchase item: shelf life → auto-expiry ──
 function pimRecalcExpiry(){
   var sel=document.getElementById('pim-shelflife');
@@ -15506,6 +15538,28 @@ function pimRecalcExpiry(){
 function pimExpiryManualEdit(){
   var sel=document.getElementById('pim-shelflife');
   var tag=document.getElementById('pim-expiry-auto-tag');
+  if(sel)sel.value='';
+  if(tag)tag.style.display='none';
+}
+// ── New Product form: shelf life → auto-expiry ──
+// V311 FIX: newProdRecalcExpiry/newProdExpiryManualEdit were wired up on the
+// Mfg Date / Shelf Life / Expiry Date fields in the Add Product form but
+// never defined anywhere, so none of them did anything. Mirrors the working
+// pimRecalcExpiry/pimExpiryManualEdit pair above.
+function newProdRecalcExpiry(){
+  var sel=document.getElementById('new-shelflife');
+  var tag=document.getElementById('new-expiry-auto-tag');
+  var expEl=document.getElementById('new-expiry');
+  if(!sel||!expEl) return;
+  var val=sel.value;
+  if(!val){ if(tag)tag.style.display='none'; return; }
+  var mfgEl=document.getElementById('new-mfg');
+  expEl.value=_shelfLifeCalc(mfgEl?mfgEl.value:'', val);
+  if(tag)tag.style.display='inline';
+}
+function newProdExpiryManualEdit(){
+  var sel=document.getElementById('new-shelflife');
+  var tag=document.getElementById('new-expiry-auto-tag');
   if(sel)sel.value='';
   if(tag)tag.style.display='none';
 }
@@ -15687,6 +15741,7 @@ function _purDoRecord(andNew){
     _purBilledItems=[];purRenderItems();
     ['pur-party','pur-phone','pur-note','pur-pin','pur-received-amt'].forEach(function(x){var el=document.getElementById(x);if(el)el.value='';});
     purSetMode('cash');purInitDate();
+    _purSetSaveBtnLabel('Save & New');
     toast('✅ Purchase updated!','green');
     showPurchaseSuccessPopup(_ep, true);
     return;
@@ -16141,12 +16196,21 @@ function delPurchase(id){ if(window._delPurchaseV14) window._delPurchaseV14(id);
 
 // Load an existing purchase into the Purchase tab for full editing
 window._purEditingId = null;
+// V311 FIX: loadPurchaseForEdit looked up the Save button (intending to
+// relabel it "Update Purchase") but never used the result, so the button
+// kept saying "Save & New" while editing — misleading. Small shared helper
+// so entering/leaving edit mode both keep the label in sync.
+function _purSetSaveBtnLabel(text){
+  var btn=document.querySelector('#tab-purchase button[onclick="purSaveNew()"]');
+  if(btn) btn.textContent=text;
+}
 function _purCancelEdit(){
   window._purEditingId=null;
   var b=document.getElementById('pur-edit-banner');if(b)b.remove();
   _purBilledItems=[];purRenderItems();
   ['pur-party','pur-phone','pur-note','pur-pin','pur-received-amt'].forEach(function(x){var el=document.getElementById(x);if(el)el.value='';});
   purSetMode('cash');purInitDate();
+  _purSetSaveBtnLabel('Save & New');
 }
 function loadPurchaseForEdit(id){
   var p=purchases.find(function(x){return x.id===id;});
@@ -16197,7 +16261,7 @@ function loadPurchaseForEdit(id){
       :[{name:p.item||'',qty:p.qty||0,rate:p.price||0,unit:'',discPct:0,discAmt:0,taxPct:0,taxAmt:0,lineTotal:p.total||0,prodId:0,batchNo:p.batchNo||'',godownId:p.godownId||null,godownName:p.godownName||''}];
     purRenderItems();
     // Change Save button to say "Update Purchase"
-    var saveBtn=document.querySelector('#tab-purchase button[onclick="purSaveCont()"],#tab-purchase button[onclick="purSaveNew()"]');
+    _purSetSaveBtnLabel('Update Purchase');
     // Scroll to top
     var panel=document.getElementById('tab-purchase');if(panel)panel.scrollTop=0;
     toast('\u270f Purchase loaded — make changes & save','green');
@@ -17272,6 +17336,51 @@ function cm(id){
 }
 function oc(ev,id){if(ev.target.id===id)cm(id);}
 
+// ── Bell notifications ──
+// V311 FIX: toggleBellPanel/bellClosePanel/bellMarkAllRead were called by the
+// header bell icon and its panel buttons but never defined anywhere, so the
+// whole notification bell (icon, panel, badge) was inert. renderBellList and
+// bellUpdateBadge were also referenced (guarded) in the Supabase sync config
+// but never defined, so even loaded notifications never rendered.
+function renderBellList(){
+  var list=document.getElementById('bell-notif-list');
+  if(!list) return;
+  var arr=(window.bellNotifs||[]).slice().sort(function(a,b){return (b.ts||0)-(a.ts||0);});
+  if(!arr.length){
+    list.innerHTML='<div style="padding:24px 16px;text-align:center;color:var(--muted);font-size:13px">No notifications</div>';
+    return;
+  }
+  list.innerHTML=arr.map(function(n){
+    return '<div style="padding:12px 14px;border-bottom:1px solid var(--border);'+(n.read?'':'background:#eff4ff')+'">'
+      +'<div style="font-size:12.5px;font-weight:700;color:#1f2937">'+e(n.title||'Notification')+'</div>'
+      +(n.body?'<div style="font-size:11.5px;color:var(--muted);margin-top:2px">'+e(n.body)+'</div>':'')
+      +'</div>';
+  }).join('');
+}
+function bellUpdateBadge(){
+  var badge=document.getElementById('bell-badge');
+  if(!badge) return;
+  var count=(window.bellNotifs||[]).filter(function(n){return !n.read;}).length;
+  if(count>0){ badge.style.display='flex'; badge.textContent=count>99?'99+':String(count); }
+  else { badge.style.display='none'; }
+}
+function toggleBellPanel(){
+  var panel=document.getElementById('bell-panel');
+  if(!panel) return;
+  var open=panel.style.display==='block';
+  if(open){ panel.style.display='none'; panel.classList.remove('open'); }
+  else { renderBellList(); panel.style.display='block'; panel.classList.add('open'); }
+}
+function bellClosePanel(){
+  var panel=document.getElementById('bell-panel');
+  if(panel){ panel.style.display='none'; panel.classList.remove('open'); }
+}
+function bellMarkAllRead(){
+  (window.bellNotifs||[]).forEach(function(n){ n.read=true; });
+  bellUpdateBadge();
+  renderBellList();
+}
+
 // ── Back Button Handler ────────────────────────────────────────────────────
 (function(){
   // Single permanent state — back button always triggers popstate
@@ -17499,6 +17608,12 @@ function homeSearch(q){
       results.push({type:'product',icon:'📋',label:e(p.name),sub:(p.category?e(p.category):''),amount:'Stock: '+p.stock,color:'var(--primary)'});
     }
   });
+  // Search parties (customers/suppliers)
+  (typeof parties!=='undefined'?parties:[]).forEach(function(pt){
+    if((pt.name||'').toLowerCase().indexOf(ql)>=0||(pt.phone||'').toLowerCase().indexOf(ql)>=0){
+      results.push({type:'party',icon:'👤',label:e(pt.name),sub:(pt.phone?e(pt.phone):(pt.type?e(pt.type):'')),amount:pt.balance?('₹'+f(Math.abs(pt.balance))+(pt.balance<0?' Dr':' Cr')):'',color:'#0891b2'});
+    }
+  });
   if(!results.length){
     resEl.innerHTML='<div style="padding:16px;text-align:center;font-size:13px;color:var(--muted)">No results for "'+e(q)+'"</div>';
   } else {
@@ -17657,6 +17772,7 @@ function gdTab(tab){
 
 console.log('V192: Godown Management header compacted — removed wrapping "Godown Management" text (was forcing 2 lines on narrow screens and pushing tabs down), replaced with compact icon + "Godown Mgmt" ellipsis label. Header top padding increased 14px to 26px so back/icon/Recalc buttons sit clear of the browser chrome edge (taps near top were landing on browser UI instead of the button). Also fixed pre-existing JS syntax error: stray unquoted text after a V160 console.log call was breaking the entire script block silently (split into two valid console.log calls).');
 function initGodownPanel(){
+  _v314InjectPanel('tab-godown');
   try{if(godowns.length)rebuildAllGodownStock();}catch(e){console.error('[GD]rebuild',e);}
   gdTab('list');
 }
@@ -20189,7 +20305,7 @@ function openProductTxn(pid) {
     if(s.phone)    chips.push({icon:'📞',text:s.phone});
     if(s.note)     chips.push({icon:'📝',text:s.note});
     if(s.mode)     chips.push({icon:'💰',text:s.mode.charAt(0).toUpperCase()+s.mode.slice(1)});
-    rows.push({type:'sale',date:s.date||s.dateVal||s.createdAt||'',icon:'💳',label:'Sale',qty:qty,amt:amt,col:'var(--red)',id:id,chips:chips});
+    rows.push({type:'sale',date:s.date||s.dateVal||s.createdAt||'',ts:s.ts||0,icon:'💳',label:'Sale',qty:qty,amt:amt,col:'var(--red)',id:id,chips:chips});
   });
 
   // ── PURCHASES ── fields: id, party/supplier, phone, note, billedItems[].prodId, _productId, prodId, qty, price, date
@@ -20211,7 +20327,7 @@ function openProductTxn(pid) {
     if(pu.phone)  chips.push({icon:'📞',text:pu.phone});
     if(pu.note)   chips.push({icon:'📝',text:pu.note});
     if(pu.sn)     chips.push({icon:'🧾',text:'Bill: '+pu.sn});
-    rows.push({type:'purchase',date:pu.date||pu.dateVal||pu.createdAt||'',icon:'📥',label:'Purchase',qty:qty,amt:amt,col:'var(--green)',id:id,chips:chips});
+    rows.push({type:'purchase',date:pu.date||pu.dateVal||pu.createdAt||'',ts:pu.ts||0,icon:'📥',label:'Purchase',qty:qty,amt:amt,col:'var(--green)',id:id,chips:chips});
   });
 
   // ── MAKING LOG ── fields: id, batchId, productName, productId, qty, unit, cpu, date, materials[], type, usedIn, usedInId
@@ -20228,7 +20344,7 @@ function openProductTxn(pid) {
       if(mk.batchId) chips.push({icon:'📋',text:'Batch: '+mk.batchId});
       if(mk.cpu)     chips.push({icon:'💰',text:'Cost/unit: ₹'+mk.cpu});
       if(mk.materials && mk.materials.length) chips.push({icon:'🔩',text:'Materials: '+mk.materials.map(function(m){return m.name+' ×'+m.used+(m.unit?' '+m.unit:'');}).join(', ')});
-      rows.push({type:'made',date:mk.date||mk.createdAt||'',icon:'⚙️',label:'Made',qty:qty,amt:null,col:'#7c3aed',id:id,chips:chips});
+      rows.push({type:'made',date:mk.date||mk.createdAt||'',ts:mk.ts||0,icon:'⚙️',label:'Made',qty:qty,amt:null,col:'#7c3aed',id:id,chips:chips});
     } else if (mk.type==='raw') {
       // Raw material consumed
       var usedMatch = mk.productId==pid || mk.productName===p.name;
@@ -20239,7 +20355,7 @@ function openProductTxn(pid) {
       var chips2=[];
       if(mk.usedIn)  chips2.push({icon:'⚙️',text:'Used in: '+mk.usedIn});
       if(mk.batchId) chips2.push({icon:'📋',text:'Batch: '+mk.batchId});
-      rows.push({type:'used',date:mk.date||mk.createdAt||'',icon:'🔩',label:'Used in Making',qty:qty2,amt:null,col:'var(--orange)',id:id2,chips:chips2});
+      rows.push({type:'used',date:mk.date||mk.createdAt||'',ts:mk.ts||0,icon:'🔩',label:'Used in Making',qty:qty2,amt:null,col:'var(--orange)',id:id2,chips:chips2});
     }
   });
 
@@ -20253,7 +20369,7 @@ function openProductTxn(pid) {
     if(h.supplier) chips.push({icon:'🏪',text:h.supplier});
     if(h.phone)    chips.push({icon:'📞',text:h.phone});
     if(h.note||h.category) chips.push({icon:'📝',text:h.note||h.category});
-    rows.push({type:'homestock',date:h.dateVal||h.date||h.createdAt||'',icon:'🏡',label:'Home Stock',qty:qty,amt:parseFloat(h.total||0)||null,col:'#0891b2',id:id,chips:chips});
+    rows.push({type:'homestock',date:h.dateVal||h.date||h.createdAt||'',ts:h.ts||0,icon:'🏡',label:'Home Stock',qty:qty,amt:parseFloat(h.total||0)||null,col:'#0891b2',id:id,chips:chips});
   });
 
   // ── GODOWN PURCHASES ── fields: id, productId, productName, qty, price, godownId, date
@@ -20270,7 +20386,7 @@ function openProductTxn(pid) {
     if(gname) chips.push({icon:'🏭',text:'Godown: '+gname.name});
     if(g.party||g.supplier) chips.push({icon:'🏪',text:g.party||g.supplier});
     if(g.note) chips.push({icon:'📝',text:g.note});
-    rows.push({type:'purchase',date:g.date||g.createdAt||'',icon:'🏭',label:'Godown Purchase',qty:qty,amt:amt,col:'var(--green)',id:id,chips:chips});
+    rows.push({type:'purchase',date:g.date||g.createdAt||'',ts:g.ts||0,icon:'🏭',label:'Godown Purchase',qty:qty,amt:amt,col:'var(--green)',id:id,chips:chips});
   });
 
   // ── GODOWN TRANSFERS ── fields: id, sn, fromId, fromName, toId, toName, productId, productName, qty, note, ts
@@ -20284,14 +20400,19 @@ function openProductTxn(pid) {
     if(t.fromName||t.fromId) chips.push({icon:'📤',text:'From: '+(t.fromName||t.fromId)});
     if(t.toName||t.toId)     chips.push({icon:'📥',text:'To: '+(t.toName||t.toId)});
     if(t.note)               chips.push({icon:'📝',text:t.note});
-    rows.push({type:'transfer',date:t.date||t.ts?(new Date(t.ts||t.date)).toISOString():'',icon:'🔄',label:'Transfer',qty:qty,amt:null,col:'#6366f1',id:id,chips:chips});
+    rows.push({type:'transfer',date:t.date||t.ts?(new Date(t.ts||t.date)).toISOString():'',ts:t.ts||0,icon:'🔄',label:'Transfer',qty:qty,amt:null,col:'#6366f1',id:id,chips:chips});
   });
 
-  // Sort newest first
+  // Sort newest first — use precise ts (ms) when available so same-day
+  // transactions show in true chronological order instead of grouped by type
   rows.sort(function(a,b){
+    var ta=a.ts||0, tb=b.ts||0;
+    if(ta&&tb) return tb-ta;
     var da=a.date?new Date(a.date):new Date(0);
     var db=b.date?new Date(b.date):new Date(0);
-    return isNaN(db-da)?0:db-da;
+    var dd=isNaN(db-da)?0:db-da;
+    if(dd!==0) return dd;
+    return tb-ta;
   });
 
   // Summary
@@ -20318,7 +20439,11 @@ function openProductTxn(pid) {
     } else {
       listEl.innerHTML=rows.map(function(r){
         var dateStr='';
-        if(r.date){try{var d=new Date(r.date);if(!isNaN(d))dateStr=d.toLocaleDateString('en-IN',{day:'2-digit',month:'short',year:'numeric'});}catch(ex){dateStr=String(r.date).substring(0,10);}}
+        var dSrc=r.ts?new Date(r.ts):(r.date?new Date(r.date):null);
+        if(dSrc && !isNaN(dSrc)){
+          dateStr=dSrc.toLocaleDateString('en-IN',{day:'2-digit',month:'short',year:'numeric'});
+          if(r.ts) dateStr+=', '+dSrc.toLocaleTimeString('en-IN',{hour:'2-digit',minute:'2-digit',hour12:true});
+        } else if(r.date){ dateStr=String(r.date).substring(0,10); }
         var amtStr=r.amt!=null&&r.amt>0?'<span style="font-size:14px;font-weight:800;color:'+r.col+'">₹'+Math.round(r.amt*100)/100+'</span>':'';
         var chipsHtml='';
         if(r.chips && r.chips.length){
@@ -24362,10 +24487,20 @@ window.recalculateInventory = function(productId) {
   window.recalculateProductCost = function(prod) {
     if (!prod) return;
 
-    var batches = [];
+    // V315 FIX: Avg Cost was computed as (total value of every purchase/batch ever
+    // recorded) / (total qty ever purchased/made) — a lifetime purchase average that
+    // never accounted for units already sold. E.g. buy 10kg@₹300, sell 6kg, buy 7kg@₹350
+    // showed avg=₹320.59 (=5450/17, ignoring the sale) instead of the true cost basis
+    // of the 11kg actually remaining. FIX: replay every purchase/making(in) and sale(out)
+    // event in chronological order (by ts) and maintain a running weighted-average —
+    // a sale depletes qty+value at the current average (doesn't change the average),
+    // a purchase/making batch adds its own qty+value and pulls the average toward it.
+    // This is standard moving-average (WAC) inventory costing.
+    var events = [];
 
-    // ── Source 1: purchases[] ────────────────────────────────────────────
+    // ── IN: purchases[] ────────────────────────────────────────────────
     (purchases || []).forEach(function(pur) {
+      if (pur.deleted) return;
       var items = (pur.billedItems && pur.billedItems.length)
         ? pur.billedItems
         : [{ prodId: pur._productId || pur.prodId || 0, name: pur.item,
@@ -24377,12 +24512,12 @@ window.recalculateInventory = function(productId) {
         if (match) {
           var qty  = parseFloat(it.qty)  || 0;
           var rate = parseFloat(it.rate) || 0;
-          if (qty > 0) batches.push({ qty: qty, cpu: rate, src: 'purchase' });
+          if (qty > 0) events.push({ ts: pur.ts||0, type:'in', qty: qty, cpu: rate, src:'purchase' });
         }
       });
     });
 
-    // ── Source 2: makingLog[] (finished batches only, not raw ingredients) ─
+    // ── IN: makingLog[] (finished batches only, not raw ingredients) ────
     (makingLog || []).forEach(function(mk) {
       if (mk.type) return; // skip raw ingredient entries
       var mkProdId = mk.productId;
@@ -24392,36 +24527,62 @@ window.recalculateInventory = function(productId) {
       if (!matchMk) return;
       var qty = parseFloat(mk.qty) || 0;
       var cpu = parseFloat(mk.costPerUnit || mk.cpu || mk.cost || 0);
-      if (qty > 0) batches.push({ qty: qty, cpu: cpu, src: 'making' });
+      if (qty > 0) events.push({ ts: mk.ts||0, type:'in', qty: qty, cpu: cpu, src:'making' });
     });
 
-    var totalQty   = 0;
-    var totalValue = 0;
-    batches.forEach(function(b) {
-      totalQty   += b.qty;
-      totalValue += b.qty * b.cpu;
+    // ── OUT: sales[] — deplete qty+value at the running average cost ───
+    (sales || []).forEach(function(s) {
+      var qty = 0;
+      if (s.billedItems && s.billedItems.length) {
+        s.billedItems.forEach(function(it) {
+          if ((it.prodId||it.productId) == prod.id) qty += parseFloat(it.qty) || 0;
+        });
+      } else if (s.productId == prod.id) {
+        qty = parseFloat(s.qty) || 0;
+      }
+      if (qty > 0) events.push({ ts: s.ts||0, type:'out', qty: qty, src:'sale' });
+    });
+
+    // Replay in chronological order. Events without a ts (older records predating
+    // the ts field) sort first — a reasonable fallback since they're historically
+    // the earliest data in this app anyway.
+    events.sort(function(a,b){ return (a.ts||0) - (b.ts||0); });
+
+    var runQty = 0, runValue = 0, lastCpu = parseFloat(prod.cost)||0;
+    events.forEach(function(ev) {
+      if (ev.type === 'in') {
+        runQty   += ev.qty;
+        runValue += ev.qty * ev.cpu;
+        lastCpu   = ev.cpu;
+      } else {
+        var avgNow = runQty > 0 ? (runValue / runQty) : 0;
+        var outQty = Math.min(ev.qty, runQty); // guard against data mismatches going negative
+        runValue -= outQty * avgNow;
+        runQty   -= outQty;
+        if (runQty   < 0) runQty   = 0;
+        if (runValue < 0) runValue = 0;
+      }
     });
 
     var calculatedAvg;
-    if (batches.length === 0) {
-      // Nothing remains — keep last known cost, never zero out
+    if (events.length === 0) {
+      // Nothing recorded — keep last known cost, never zero out
       calculatedAvg = prod.cost;
-    } else if (batches.length === 1) {
-      // Exactly one batch — use cpu exactly, no division rounding
-      calculatedAvg = Math.round(batches[0].cpu * 100) / 100;
+    } else if (runQty > 0) {
+      calculatedAvg = Math.round((runValue / runQty) * 100) / 100;
     } else {
-      calculatedAvg = totalQty > 0
-        ? Math.round((totalValue / totalQty) * 100) / 100
-        : prod.cost;
+      // Everything ever bought/made has since been sold — keep the most recent
+      // purchase/making cost as a sane baseline instead of dropping to ₹0.
+      calculatedAvg = Math.round(lastCpu * 100) / 100;
     }
 
     var storedAvg = Math.round((parseFloat(prod.cost) || 0) * 100) / 100;
 
     // ── Diagnostic log ───────────────────────────────────────────────────
     console.log('[recalcCost] ' + prod.name + ' id=' + prod.id, {
-      batches:      batches,
-      totalQty:     totalQty,
-      totalValue:   totalValue,
+      events:       events,
+      remainingQty: runQty,
+      remainingValue: runValue,
       calculatedAvg: calculatedAvg,
       storedAvg:    storedAvg,
       changed:      (calculatedAvg !== storedAvg)
@@ -26164,10 +26325,6 @@ function drBackup(){ openBackupModal(); }
 
 console.log('[V93] Full Backup System — SheetJS real .xlsx export loaded');
 </script>
-<script>console.log('✅ V181 GODOWN MANAGEMENT — COMPLETE REBUILD FROM SCRATCH. Deleted all old godown HTML (~650 lines) and JS (~4150 lines). Rebuilt with 3-tab UI (Godowns | Transfer | All Txns). FIXES: (1) Floating point display on godown cards. (2) Debug banner removed. (3) Transfer form now shows live available stock per godown with cap. (4) Movement log filter works correctly. (5) Clean bottom-sheet godown detail. All backward-compat stubs preserved.');</script>
-
-
-
 <script>
 // V201 FIX: rebuildProductStock was referenced 37x but never defined.
 // Every typeof guard silently skipped it, so stock stayed 0 after Supabase sync.
@@ -26351,7 +26508,6 @@ function scanManualSubmit(){
 }
 </script>
 
-</body></html>
 
 
 
@@ -26359,6 +26515,8 @@ function scanManualSubmit(){
 
 
 
+
+<script>
 console.log("✅ v1-37-8 FIX — Products list never loads (\"Product data is not coming\") after v1-37-7. ROOT CAUSE: v1-37-7 added a hard return for the FIRST products onSnapshot if _isLocalWrite(\"products\") was true at that moment. onSnapshot only refires on data change, so if blocked once before _fbProductsLoaded was set, products stayed empty/loading forever. FIX: first snapshot is never hard-blocked. If a local write is in-flight on first load, locally-known products missing from the incoming snapshot are merged in (preserves a just-created Making Price Calculator product) and loading proceeds normally, setting _fbProductsLoaded=true. Hard-block only applies on snapshots AFTER first load (matches pre-v1-37-7 + v1-37-7 intent).");
 
 
@@ -26375,15 +26533,11 @@ console.log("✅ v1-37-11 FIX — CONCURRENT MULTI-USER DATA LOSS (makinglog). R
 console.log("✅ v1-37-13 FIX — SALES BIN RACE CONDITION (deleted sale resurrects on fresh load). ROOT CAUSE: syncCollection's v1-37-12 sales guard checked window.bin to decide if a missing sale was legitimately deleted vs a concurrent sale from another device. But window.bin is loaded via getDocs (not onSnapshot) and may not have arrived yet when syncCollection fires on the first save() after startup. With window.bin=[], every legitimately-deleted sale was wrongly classified as a concurrent sale and resurrected — undoing the user's delete. FIX: added _fbBinLoaded flag (set to true when _refreshBin() getDocs completes). syncCollection now skips ALL sales deletes if _fbBinLoaded is false, same defensive pattern as _fbSalesLoaded guard.");
 console.log("✅ V9 FIX — Deleted sale resurrects on refresh; recycle bin items come back after refresh. ROOT CAUSE: The delSale/prmDel/emptyBin overrides (in the _cr* block) called _crSaveAll() which calls _fbSyncBin() — an UPSERT-ONLY push that sets docs but NEVER deletes them from Firestore. So (1) delSale never deleted the sale doc from the Firestore 'sales' collection, so the 500ms onSnapshot poll brought it back; (2) prmDel never deleted the bin doc from Firestore 'bin', so it came back on next poll; (3) emptyBin with bin=[] was additionally blocked by the v138 empty-list guard (_fbSyncBin([]) → rejected) so nothing was written at all. FIX: delSale now calls deleteDoc('sales', id) immediately after filtering. prmDel now calls deleteDoc('bin', id) immediately after filtering. emptyBin now calls deleteDoc('bin', id) for every id before clearing. All three are direct Firestore deletes that bypass the empty-list guard and take effect before the next 500ms poll.");
 console.log("✅ v1-37-12 FIX — CONCURRENT MULTI-USER DATA LOSS (sales). ROOT CAUSE: same class of bug as v1-37-10 (products). If two devices use the app together, device A's stale local sales array can be missing a sale device B just entered moments ago — syncCollection's diff would then delete that sale from Firestore, silently destroying B's concurrent sale. FIX: a sale missing from localIds is only treated as a legitimate delete if its ID is also present in window.bin (the sales recycle bin every real sale-delete moves items into). If it's NOT in bin, it's treated as a concurrent sale by another device — the delete is skipped, the Firestore doc is merged back into window.sales, and the sales screen is re-rendered.");
+</script>
 
-<script>console.log('✅ v1-37-22 — Added "➕ New Worker & Add" quick-create box at the top of the Labour Picker modal (used by Making Price Calculator and main calculator "Add labour from database"). Lets users create a new worker (name + type) and immediately add them to the current batch/product labour list in one step, without leaving the calculator to visit the Labour Database.');</script>
 <script>
 
 console.log('✅ v1-37-23 FIX — Making Price Calculator stops saving data after ~10 minutes of use. ROOT CAUSE: saveMkLog() called clearTimeout(_mkLogSettleTimer) and restarted a fresh 15s timer on EVERY save. During repeated batch saves, each new save reset the timer so _mkLogSettled was permanently false — the settle window never expired. TWO EFFECTS: (1) _markLocalWrite(15000) on the makingLog onSnapshot blocked Firebase echo-backs for 15s after every save, preventing Firestore from confirming receipt and making writes appear lost; (2) autoFix retry setIntervals stacked up inside _fbSyncMakingLog, each holding a stale snapshot and competing to push different list versions to Firestore on slow connections. FIX: saveMkLog() now only starts the settle timer when transitioning from settled → unsettled. If the timer is already running (mid-burst of saves), it is left untouched — it fires naturally 15s after the FIRST save in the burst. Also reduced _markLocalWrite guard from 15000ms to 8000ms so Firestore echo-backs are not permanently blocked during rapid saves.');</script>
-<script>console.log('✅ V25-6 FIX — Godown Management persistence overhaul. ROOT CAUSES: (1) Synchronous default-godown IIFE ran before _fbSyncGodowns existed → saveGodowns() was a no-op → on every page reload the IIFE saw godowns[]=[] (not yet loaded from Supabase) and created a duplicate "Main Godown" with id=1, overwriting real data. FIX: IIFE replaced with deferred _gdEnsureDefault() called only after Supabase load resolves. (2) ID counters gdId/gdTrId/gdPurId/gdLocId/gdBatId/_gdCcId/_gdTrReqId all started at 1 on every page load — new records got IDs that collided with existing ones, causing upserts to silently overwrite the wrong Supabase row. FIX: each counter is now resynced from loaded data immediately after getDocs() resolves, and re-checked inline before every create operation. (3) saveGodowns/saveGdTr/saveGdPur/saveGdMov/saveGdLoc/saveGdBat/saveCycleCount/saveTrReq all swallowed errors silently and returned nothing. FIX: all now write localStorage backup first (data survives crash before network round-trip), return the Promise, and console.error + toast on failure. (4) gdStockTypes had no Supabase table wiring — saveGdSt() was always a no-op. FIX: now backed by localStorage with clear console note; table wiring can be added later without code changes. (5) gdtransfersreq and gdcyclecounts were missing from the _cacheAllLocal flush that runs on beforeunload/pagehide. FIX: added to flush list. (6) V25-6 STARTUP SEQUENCER: waits for all 5 GD loaded flags, then resyncs counters, ensures default godown, triggers rebuildAllGodownStock, and hydrates gdStockTypes from _memStore.');</script>
-<script>console.log('✅ V90-4 FIX — Deleted purchase resurrects after a few minutes. ROOT CAUSE: when a purchase is deleted, _fbDeletePurchase() correctly removes it from Supabase and _delPurchaseV15() moves it to purchaseBin. However the local-cache merge in _doGetDocs (the getDocs refresh that fires every few minutes) re-reads the localStorage cache which still holds the deleted purchase, merges it back into window.purchases via _mergeById(), then the "unsynced re-push" block sees it missing from the remote result and immediately pushes it back to Supabase — resurrecting it. FIX: (1) after _mergeById for the purchases table, strip any record whose id is in purchaseBin from the merged array before assigning to window.purchases; (2) in the unsynced re-push filter, skip any purchase id found in purchaseBin. Both guards mirror the V9/v1-37-13 pattern already applied to sales/bin. No UI changes; no other module touched.');
-console.log('✅ V25-7 FIX — Purchase module persistence. ROOT CAUSE: purId (the in-memory counter used to assign new purchase record IDs) was never resynced from loaded data — a _restorePurId() helper existed but was never called anywhere. On every page reload purId restarted at 1, so the next new purchase reused an ID that already existed in Supabase. Because the Supabase push is an upsert keyed on id (Prefer: resolution=merge-duplicates), the new purchase silently overwrote — not lost in transit, but destructively replaced — the older purchase row sharing that id, which is why purchases appeared to vanish after a refresh or after a few minutes (when the 15s write-guard expired and _refresh_purchases() re-pulled the now-overwritten row from Supabase). FIX: (1) added safeNextPurId(), called at both purchase-creation sites instead of raw purId++, which cross-checks purchases[], purchaseBin, and the localStorage cache backup for the highest id in use before issuing a new one — covering the race where a purchase is added before the Supabase getDocs() load for purchases has resolved. (2) purId is now also resynced inside the existing _resyncIdCounters block every time the purchases collection loads/refreshes, exactly like the gd* counters already get. (3) added console logging at both id-issuance and resync points. No UI changes; no other module touched.');</script>
-
 <!-- ══════════════════════════════════════════════════════
      BATCH MASTER — JavaScript (V139 REBUILD)
      ══════════════════════════════════════════════════════ -->
@@ -26481,6 +26635,7 @@ function _bmPopulateProductFilter(){
   names.forEach(function(n){var o=document.createElement('option');o.value=n;o.textContent=n;if(n===prev)o.selected=true;sel.appendChild(o);});
 }
 function bmRender(){
+  _v314InjectPanel('tab-batchmaster');
   // V139 REBUILD: use _bmGetMakingLog() which checks all three data sources
   // (local makingLog var, window.makingLog, localStorage cache) and returns the
   // richest one. Permanently fixes blank-panel across all code paths that reassign
@@ -26490,22 +26645,6 @@ function bmRender(){
   var allEntries=_allMkData.filter(function(mk){return !mk.type;});
   var _mkData=_allMkData; // full list incl. raw entries, for material lookups
   var totalEl=document.getElementById('bm-total-count');if(totalEl)totalEl.textContent=allEntries.length;
-  // V141: Always update debug bar counts; show it only when 0 entries
-  var _dbBar=document.getElementById('bm-debug-bar');
-  var _dbBody=document.getElementById('bm-debug-body');
-  if(_dbBar && _dbBody){
-    var _localVar=(typeof makingLog!=='undefined'&&Array.isArray(makingLog))?makingLog.length:0;
-    var _winVar=Array.isArray(window.makingLog)?window.makingLog.length:0;
-    var _lsCount=0; try{ var _lr=_memStore.getItem('_invCache_makinglog'); if(_lr){var _lp=JSON.parse(_lr);if(Array.isArray(_lp))_lsCount=_lp.length;} }catch(e){}
-    var _loaded=!!window._fbMakingLogLoaded;
-    var _allSrcsEmpty=(_localVar===0&&_winVar===0&&_lsCount===0);
-    _dbBody.innerHTML=
-      'makingLog var: <b style="color:'+(_localVar>0?'#68d391':'#fc8181')+'">'+_localVar+' entries</b>  '
-     +'window.makingLog: <b style="color:'+(_winVar>0?'#68d391':'#fc8181')+'">'+_winVar+' entries</b><br>'
-     +'localStorage cache: <b style="color:'+(_lsCount>0?'#68d391':'#fc8181')+'">'+_lsCount+' entries</b>  '
-     +'Supabase flag: <b style="color:'+(_loaded?'#68d391':'#fc8181')+'">'+(_loaded?'✓ loaded':'✗ not loaded')+'</b>';
-    _dbBar.style.display=(allEntries.length===0)?'block':'none';
-  }
   _bmPopulateProductFilter();
   var chipsEl=document.getElementById('bm-summary-chips');
   if(chipsEl){
@@ -26522,15 +26661,12 @@ function bmRender(){
     // V141: unified empty state — always show debug bar + helpful message regardless of load state
     // Do NOT gate on _fbMakingLogLoaded (it may stay false forever if Supabase fetch fails on content://)
     listEl.innerHTML='<div style="text-align:center;padding:30px 16px 10px">'
-      +'<div style="font-size:32px;margin-bottom:10px">\u26a0\ufe0f</div>'
-      +'<div style="font-size:15px;font-weight:800;color:#d97706">No batch data found</div>'
+      +'<div style="font-size:32px;margin-bottom:10px">📦</div>'
+      +'<div style="font-size:15px;font-weight:800;color:var(--muted)">No batches yet</div>'
       +'<div style="font-size:12px;color:var(--muted);margin-top:8px;line-height:1.7">'
-        +'All 3 data sources (Supabase, memory, cache) returned 0.<br>'
-        +'Use <b>Force Load from Supabase</b> above to fetch your batches.<br>'
-        +'If it shows ✓ but still 0, your batches may not be saved yet.'
+        +'Batches you finish making will appear here.'
       +'</div>'
       +'<div style="margin-top:14px;display:flex;gap:8px;justify-content:center">'
-        +'<button onclick="bmForceReload()" style="font-family:\'Noto Sans\',sans-serif;font-size:12px;font-weight:800;background:linear-gradient(135deg,#7c3aed,#4c1d95);color:#fff;border:none;border-radius:10px;padding:10px 16px;cursor:pointer">⬇️ Force Load</button>'
         +'<button onclick="goTabMenuClose(\'calc\')" style="font-family:\'Noto Sans\',sans-serif;font-size:12px;font-weight:800;background:linear-gradient(135deg,#1b4fff,#7c3aed);color:#fff;border:none;border-radius:10px;padding:10px 16px;cursor:pointer">\uff0b New Batch</button>'
       +'</div>'
     +'</div>';
@@ -26766,7 +26902,6 @@ console.log('v125: FIX — Detail button (Business Summary modal) was not openin
 <script>console.log('V140: FIX — Batch Master still blank after V139. Root cause: Supabase makinglog table is returning 0 rows (RLS policy missing or never set up), AND localStorage cache is empty because saveMkLog() never wrote to it before sending to Supabase. So _bmGetMakingLog() finds nothing in all 3 sources. THREE FIXES: (1) saveMkLog() now writes makingLog to localStorage cache immediately before the async Supabase push — cache is always up to date even if the page is refreshed mid-write; (2) Batch Master panel now shows a dark debug bar when 0 entries — shows all 3 data source counts + a Force Reload button that fetches directly from Supabase bypassing all write guards; (3) Empty-state message now distinguishes between loading/RLS-blocked/truly-empty states so you know exactly what to fix.');</script>
 <script>console.log('V139: REBUILD — Batch Master completely rebuilt. Root cause of all v127–v138 blank-panel bugs: bmRender read window.makingLog or local makingLog but different code paths (rebuildAllBatchLabourExpenses, _doGetDocs merge, _wireArrayCollection cache hydration) write to different scopes. Fix: new _bmGetMakingLog() function checks local makingLog var + window.makingLog + localStorage cache and returns whichever has the most entries, then syncs all three sources together. bmRender now always gets data regardless of which scope was populated. Also added two retries on panel open (600ms + 2500ms) for slow Supabase connections.');</script>
 <script>console.log('v133: FIX — Batch Master still showed 0 despite all prior fixes. Root cause identified by comparing V119 (Firebase/working) vs V132 (Supabase/broken): V119 uses onSnapshot which directly sets window.makingLog on every sync. V132 uses getDocs-only which returns 0 rows (RLS blocks SELECT on makinglog table), so window.makingLog stays [] even though the global makingLog var has 35 entries from localStorage cache. Fix: explicitly sync window.makingLog = makingLog at 3 points: (1) in goTab when opening batchmaster, (2) in goTabMenuClose when already on batchmaster, (3) in the getDocs renders callback for makinglog table.');</script>
-<script>console.log('✅ V176 FIX — gdAssignUnassigned (Assign All Unassigned Stock) still showed 0 after assign. THREE ROOT CAUSES: (1) saveGdPur() 3s write-guard too short — Supabase batch write for many assignment_v2 records takes 2-5s+; guard expired before write landed, _doGetDocs refetched stale server data overwriting new assignment records. FIX: write-guard increased to 15s. (2) gdpurchases collection renders list was [gdRenderPurchaseHistory] only — whenever gdPurchases reloaded from Supabase post-load, rebuildAllGodownStock/gdRenderList were never triggered, so godown stock display stayed at 0. FIX: added rebuildAllGodownStock, gdRenderList, gdRenderDashboard to renders. (3) _gdLsBackup skipped saving when arr.length==0 — after Reset All wiped all records, empty state was never written to localStorage, leaving stale old cache that resurrected on reload. FIX: now always saves regardless of array length.');</script>
 <script>
 
 // ═══════════════════════════════════════════════════
@@ -27132,36 +27267,131 @@ function gomInit(){
 
 </script>
 <script>console.log('V215 FIX: Finish and Add to Stock popup ReferenceError on rawName fixed, replaced with _rn.');</script>
-<script>console.log('✅ V214 FIX — Added 120ms setTimeout before showBatchSuccessPopup so the modal renders after DOM settles from calcBackToStep1(). Also added [V214] console.log checkpoints throughout calcFinishAndAddStock — open browser DevTools → Console tab and tap Finish to see exactly where it stops.');</script>
-<script>console.log('✅ V213 FIX — Finish & Add to Stock still redirects to Batch ID field on every tap. ROOT CAUSE (V212): only same-product batch ID conflicts were auto-suffixed; cross-product conflicts still blocked via showBatchConflictError()+return which called inp.focus()+inp.select() — scrolling the page to the Batch ID input. When typed ID "G" → "26-G" existed for a different product, the V212 same-product branch was never entered. FIX: removed the same/different-product distinction entirely. Now ANY conflict (any product) auto-increments the batch suffix (-2,-3…) until globally unique across ALL products, then proceeds to save and show the 🎉 popup. No more blocking at all.');</script>
-<script>console.log('✅ V212 FIX — Tapping "Finish & Add to Stock" redirects/scrolls to the Batch ID field with red border instead of showing the 🎉 success popup. ROOT CAUSE: getBatchConflict() found the typed batch ID (e.g. "FFF" → "26-FFF") already in makingLog from a previous session → showBatchConflictError() called inp.focus()+inp.select(), causing the page to jump to the Batch ID field, then returned early — showBatchSuccessPopup() never ran. The V211 fix only handled within-session re-use; cross-session conflicts (same ID typed again in a new session) were still blocked. FIX: same-product conflicts now auto-increment the batch ID with a suffix (-2, -3 …) until unique, then proceed normally and show the popup. Cross-product conflicts (genuinely dangerous) still block as before.');</script>
-<script>console.log('✅ V211 FIX — Success popup (🎉 Batch Added!) does not appear from the second batch onward. ROOT CAUSE: c-batch-id input was never cleared after a successful calcFinishAndAddStock(). Only calcResetAll() cleared it. So every batch after the first carried the same Batch ID into getBatchConflict(), which found it in the freshly-saved makingLog and returned a conflict → showBatchConflictError() was called and function returned early — BEFORE showBatchSuccessPopup(). The batch data WAS already saved (saveMkLog ran before the conflict check on the second run? No — conflict check is BEFORE the save). Actually the data was NOT saved on subsequent runs; only the FIRST batch saved correctly. FIX: after a successful batch, clear c-batch-id input value, reset batch qty to 1, and call updateBatchPreview() so the batch tag refreshes.');</script>
-<script>console.log('✅ V190 FIX — Transfer shows wrong amount deducted (transfer 95g from G3 but G3 only drops by ~18g instead of 95g). ROOT CAUSE: The sc correction (prod.stock / ledgerTotal) was wrong because null-godownId sales were going to __unassigned__ bucket instead of the real godown, making ledgerTotal >> prod.stock. sc then proportionally shrank ALL godown buckets. Moving stock between godowns does not change ledgerTotal or prod.stock, so sc never changes — but it needs to because the proportions between godowns changed. sc cannot represent per-godown reality; it is a global factor. FIX: In rebuildGodownStock(), resolve the default godown once at the top and use it as fallback whenever a purchase/sale/movement has a null godownId. Now null-godownId sales correctly deduct from the default godown bucket, making ledgerTotal ≈ prod.stock and making sc=1 always. Removed sc from _applyBuckets, gdDetailOpen, and _gdTrStock. The ledger now accurately tracks each godown balance and transfer deductions show correctly.');</script>
-<script>console.log('✅ V189 FIX — Transfer form breakdown and Godowns tab showing completely different numbers for the same product (e.g. G3 Darchini-1: form shows 213g, Godowns tab shows 41g). ROOT CAUSE: After V188 removed sc from the transfer form functions, the form called rebuildGodownStock() raw (ledger total) while _applyBuckets (Godowns tab) still applied sc = prod.stock/ledgerTotal. Since the ledger is inflated vs prod.stock (multiple historical transfers accumulated), the two paths diverged wildly. ALSO: gdtransfers renders list lacked rebuildAllGodownStock/gdRenderList so Supabase reload after a save never refreshed the Godowns tab. FIX: (1) New shared helper _gdTrStock(pid) applies the same sc logic as _applyBuckets, used by gdTrShowBreakdown, gdTrQtyCheck, and gdTrConfirm — transfer form and Godowns tab now always show identical numbers. (2) Added rebuildAllGodownStock + gdRenderList to gdtransfers renders so Supabase reload post-save also updates the Godowns tab.');</script>
-<script>console.log('✅ V188 FIX — Transfer quantity wrong (entering 50g but only ~9g transferred). ROOT CAUSE: gdTrConfirm(), gdTrShowBreakdown(), and gdTrQtyCheck() all applied an sc (scale correction) factor: sc = prod.stock / ledgerTotal whenever ledger total exceeded prod.stock by >10%. This was originally added to handle godown stock inflation bugs — but with those bugs now fixed, sc was incorrectly shrinking the available qty displayed AND the qty actually recorded. Example: ledgerTotal=285g, prod.stock=50g → sc=0.18 → avail shown as 9g instead of 50g. FIX: removed sc from all three functions. rebuildGodownStock() already returns correct per-godown values from the full ledger; no further scaling needed.');</script>
-<script>console.log('✅ V187 FIX — Transfer stock breakdown shows stale values after transfer (e.g. G3 showing 50.922g instead of 0.088g after transferring 63g). ROOT CAUSE: gdTrConfirm() manually patched from.stock[pid] and to.stock[pid] before saving, then never called rebuildAllGodownStock(). The new gdTransfers record was in memory but godown.stock[] was never recomputed from the ledger — so the breakdown display and godown list showed the manual-patch values, not the ledger-computed ones. FIX: call rebuildAllGodownStock() immediately after pushing the transfer record and before saveGodowns(), so all godown stock values are recomputed from the full transfer ledger. Also added gdRenderList() call so the Godowns tab refreshes instantly without needing a manual Recalc.');</script>
-<script>console.log('✅ V179 FIX — Godown stock inflated (G2 showing 145503 instead of correct value). ROOT CAUSE: rebuildGodownStock counted assignment_v2 gdPurchases records unconditionally, alongside real purchase/homeStock/makingLog records. assignment_v2 records are created by gdAssignUnassigned() to tag unassigned stock to a godown — they are the sole source of truth ONLY when no real records exist. When a product has real purchase records AND an assignment_v2 record, both were summed, doubling godown stock. FIX: defer assignment_v2 records and only apply them if _hasAnyRecord is still false after all real sources are processed.');</script>
-<script>console.log('✅ V178 FIX — Godown delete not persisting to Supabase. ROOT CAUSE: gdDeleteGodown() removed the godown from in-memory array then called saveGodowns(), but _fbSyncGodowns is UPSERT-ONLY — it never deletes rows from Supabase. So the deleted godown row survived in Supabase and was resurrected on next _doGetDocs fetch (merge-by-id added it back). FIX: gdDeleteGodown() now calls deleteDoc() directly on the godown row in Supabase immediately after filtering it from the in-memory array, before saveGodowns(). The localStorage cache is already correct because _gdLsBackup is called with the filtered array inside saveGodowns().');</script>
-<script>console.log('✅ V177 FIX — Assign All Unassigned Stock still showed 0 after assign (V176 fixes insufficient). THREE ADDITIONAL ROOT CAUSES: (1) gdAssignUnassigned() filtered old assignment_v2 records from memory but never deleted them from Supabase — so _doGetDocs refetch always resurrected them, double-counting stock and confusing rebuildGodownStock. FIX: now deleteDoc-deletes each old assignment record from Supabase before creating new ones. (2) godowns renders list only had [gdRenderList, renderProducts] — when godowns reloaded from Supabase, gdRenderList read g.stock from the fetched document (which lacks freshly-computed stock) without calling rebuildAllGodownStock first. FIX: prepended rebuildAllGodownStock to godowns renders. (3) saveGodowns() persisted g.stock to Supabase — stock is a computed field (rebuildAllGodownStock writes it). When Supabase returned stale data with old stock values, it overwrote the correctly-computed in-memory values. FIX: strip stock field from godown objects before Supabase save; stock is always recomputed from ledger on load.');</script>
+<div id="v312-offline-banner" style="display:none;position:fixed;top:0;left:0;right:0;z-index:99999;background:#dc2626;color:#fff;text-align:center;font-family:'Noto Sans',sans-serif;font-size:12px;font-weight:700;padding:8px 12px">📴 Offline — changes will not sync until connection returns</div>
+<div id="v312-backup-banner" style="display:none;position:fixed;bottom:70px;left:12px;right:12px;z-index:9990;background:#fff;border:1.5px solid var(--border,#e5e7eb);border-radius:14px;box-shadow:0 4px 16px rgba(0,0,0,0.12);padding:12px 14px;font-family:'Noto Sans',sans-serif">
+  <div style="display:flex;align-items:center;gap:10px">
+    <div style="font-size:20px">💾</div>
+    <div style="flex:1;min-width:0">
+      <div style="font-size:12px;font-weight:800;color:#111">Backup reminder</div>
+      <div id="v312-backup-msg" style="font-size:11px;color:#666;margin-top:1px">You haven't backed up your data recently.</div>
+    </div>
+  </div>
+  <div style="display:flex;gap:8px;margin-top:10px">
+    <button onclick="typeof openBackupModal==='function'&&openBackupModal();document.getElementById('v312-backup-banner').style.display='none';" style="flex:1;background:var(--primary,#1b4fff);color:#fff;border:none;border-radius:9px;padding:9px;font-size:12px;font-weight:700;cursor:pointer">Backup Now</button>
+    <button onclick="document.getElementById('v312-backup-banner').style.display='none';try{localStorage.setItem('v312_bk_snooze_ts',Date.now().toString());}catch(e){}" style="background:#f2f4f8;color:#666;border:none;border-radius:9px;padding:9px 14px;font-size:12px;font-weight:700;cursor:pointer">Later</button>
+  </div>
+</div>
 
-<script>console.log('✅ V226 — Making Price Calculator (Batch form): added "📦 Source Godown" dropdown on each raw material row. Each mat row now carries a godown field (saved via updMatGodown()). Dropdown lists all godowns from the godowns[] array, styled in blue. Selection persists across renderCS() re-renders. godown field preserved in cs.mat object for use when saving batch records.');</script>
-<script>console.log('✅ V227 — Mat row UI cleanup: removed "Unit Name" field and "GOES TO" badge from each raw material row. Only the "📦 FROM" batch badge remains (shown when a source batch exists). Source Godown dropdown retained.');</script>
-<script>console.log('✅ V228 — Mat row UI compacted: Unit/Given/Return merged into single 3-col row, Used+Price side-by-side, Godown picker inline, smaller padding and font sizes throughout. Card is ~40% shorter.');</script>
-<script>console.log('✅ V229 — Opening Stock: added "📥 Add Opening Stock" button on product cards where stock=0. Opens a quick modal (qty, unit, cost/unit, godown) that records a purchase entry tagged as Opening Stock, updates product.stock and product.cost, logs a godown IN movement, and refreshes the card instantly.');</script>
-<script>console.log('✅ V230 — Replaced "Add Opening Stock" with "🏭 Add to Godown" button on product cards. Shows only when product has stock>0 but no godown assignments (unassigned stock). Opens a modal to pick a godown, then creates an assignment_v2 gdPurchases record (same mechanism as Assign Unassigned Stock), rebuilds godown stock, and refreshes the card. Button disappears once assigned.');</script>
-<script>console.log('✅ V231 FIX — "Add to Godown" button reappears after assigning. ROOT CAUSE: atgSave() was creating an assignment_v2 gdPurchases record, but rebuildGodownStock() only uses assignment_v2 as a fallback when _has=false (no real purchase records exist). Products with real purchases always have _has=true, so assignment_v2 was silently ignored and unassigned stock remained. FIX: atgSave() now patches godownId directly on the existing null-godownId purchase records (and homeStock entries) for the product. Falls back to assignment_v2 only if nothing was patchable (e.g. makingLog-only products). This makes rebuildGodownStock correctly route stock to the chosen godown, so the button disappears after assignment.');</script>
-<script>console.log('✅ V232 FIX — Add to Godown button still shows after assign. TWO FIXES: (1) Button condition now uses window._gdUnassigned[p.id] (set by rebuildAllGodownStock) instead of calling rebuildGodownStock() inline — faster and consistent with the same source of truth. (2) atgSave() now deletes _gdUnassigned[p.id] immediately before rebuildAllGodownStock() so button disappears in same renderProducts() call. Also fixed godown dropdown showing raw ID instead of name.');</script>
-<script>console.log('✅ V248 FIX — Search bar in Products tab not responding to taps at specific vertical position. ROOT CAUSE: The "Add New Item" FAB used position:sticky;bottom:16px inside the prod-list scroll container. When the product list was short (few items), the sticky element anchored near the top of the panel — directly over the search bar. The wrapper had pointer-events:none but the button child had pointer-events:all. On Android, the browser allocates touch area for the entire rendered button region. Even with pointer-events:none on the wrapper, the button child sitting visually near/over the search bar intercepted taps intended for the search input. This explained why tapping slightly above or below worked (missing the button hit area) but the exact search bar center did not. FIX: Changed FAB from position:sticky inside scroll flow to position:absolute anchored to the panel bottom (bottom:80px clears nav bar). Added padding-bottom:80px to prod-list so list content is never hidden behind the FAB. The FAB now floats at a fixed position relative to the panel regardless of list length and can never overlap the search bar.');</script>
-<script>console.log('✅ V252 FIX — Data not showing on first open after app load (Sales, Purchases, Expenses, Labour DB, Orders). ROOT CAUSE: V249 infinite scroll added a stamp guard in all 5 render functions: if(stamp===lastStamp&&page>1) return early and just restore scroll position. This guard was meant to avoid re-rendering unchanged data when switching tabs back. But on first app load, Supabase fires the render trigger BEFORE the panel DOM has any content (el.children.length===0). The stamp might already match (same list as before) AND page>1 (leftover from a prior scroll session saved in the JS variable), so the guard triggered, skipped the render, and the panel stayed blank. FIX: Added &&el.children.length>0 to all 5 stamp guards. Now the early-return only fires if the DOM actually has content already rendered — if the list is empty (fresh load, tab switch on cold panel), it always re-renders regardless of stamp/page state.');</script>
-<script>console.log('✅ V249 — Infinite scroll added to Sales, Purchases, Expenses, Labour DB, Orders, and Godown Movements. All 6 sections now use IntersectionObserver-based paging (20-30 items/batch) matching the Products tab pattern. Supabase reads already happen lazily; this reduces initial DOM rendering cost by 60-80% for large datasets and cuts scroll jank on Android. Stamp-based re-render guard prevents redundant re-renders when switching tabs with unchanged data.');</script>
-<script>console.log('✅ V247 FIX — Taps not registering / "Copy" showing instead of button action in many places across app. ROOT CAUSE: Two conflicting .panel CSS rules. Rule 1 (line 182): display:none — panels hidden when inactive. Rule 2 (line 547): display:block !important — ALL panels rendered simultaneously, just opacity:0 and pointer-events:none. Rule 2 won due to !important, meaning all 15+ panels were stacked on top of each other at all times. pointer-events:none prevents the panel div itself from catching taps but NOT its positioned children (sticky headers with z-index, absolute buttons, etc.) — those children are still in the hit-test tree and intercept taps on whatever is visually below them. Additionally: (1) .leaving panel sat at z-index:5 for 200ms after a tab switch — its children could intercept taps on the newly-active panel during that window. (2) fast double-tab-switch could leave a panel permanently stuck with .leaving class (z-index:5, invisible, tap-blocking) because prev pointed to wrong element. THREE FIXES: (1) Removed the old conflicting display:none rule at line 182 — the transition block is now the single authority. (2) Added visibility:hidden to inactive .panel base and visibility:visible to .panel.active and .panel.leaving — visibility is inherited by ALL children regardless of their own z-index/pointer-events, making the OS skip hit-testing the entire subtree. (3) leaving cleanup now sweeps ALL .panel.leaving elements (not just prev) and fires at 260ms (> dur-med 240ms) so no transition-gap window exists.');</script>
-<script>console.log('✅ V246 FIX — Deleted godowns resurrect after refresh. ROOT CAUSE: gdDeleteGodown() correctly called deleteDoc() on Supabase and removed from window.godowns, but the local cache (_invCache_godowns) still held the deleted entry. On the next getDocs("godowns") — triggered by any reload or app resume — _mergeById pulled the deleted godown back from localStorage cache, restored it to window.godowns, and the unsynced re-push block then saw it missing from Supabase remote result and re-pushed it back to the server, completing the resurrection loop. This is the same bug class as V90-4 (purchases), V210 (gdpurchases), V216 (makinglog). THREE LAYER FIX: (1) gdDeleteGodown() now records the deleted godown ID in _memStore._godowns_ghostIds, immediately overwrites _invCache_godowns AND vy_ls_godowns with the post-deletion array so both cache paths are clean. (2) _doGetDocs for "godowns" now strips any ID in _godowns_ghostIds from the merged result before caching it, so a stale cache entry can never survive past the next getDocs. (3) The unsynced re-push block now checks _godowns_ghostIds and skips re-pushing any deleted godown ID, so even if it somehow made it into _priorLocal it cannot be sent back to Supabase.');</script>
-<script>console.log('✅ V245 FIX — 5 deep godown bugs fixed. (1) DEFAULT GODOWN SELF-CHANGES: gdGetDefaultId() returned godowns[0] before _bizSettings loaded from Supabase (~800ms race). _gdAutoAssignUnassigned ran during this window and bulk-assigned all stock to G3 (first godown) as if it were the default. FIX: _gdAutoAssignUnassigned now waits for _fbSettingsLoaded===true before running. (2) SETTINGS OVERWRITTEN ON RESUME: settings table had no _markLocalWrite guard. After you set a default godown, Supabase getDocs fired on app resume and replaced window._bizSettings with an older snapshot, silently reverting your change. FIX: gdSetDefault() and _fbSyncSettings() now call _markLocalWrite(15000,"settings") so the next getDocs is blocked for 15s. getDocs result also double-checks the guard after the async fetch returns. (3) DELETED TRANSFER RESURRECTS AFTER 1-3 HOURS: gdMovDeleteOne() only removed records from the local array and upserted the shorter array — but never called deleteDoc() on Supabase. Old rows survived in Supabase and were re-delivered on the next getDocs. FIX: gdMovDeleteOne() now calls deleteDoc() for each removed movement row and the gdTransfers record. (4) _gdAutoAssignUnassigned timing gate — see fix (1). (5) TRANSFER SNAPS BACK AFTER REBUILD: after a transfer, rebuildAllGodownStock() called _applyBuckets() which read _gdAtgAssign from localStorage and overrode the transfer result — assigning 100% of stock back to the originally assigned godown. FIX: gdTrConfirm() now clears the _gdAtgAssign entry for the transferred product before calling rebuildAllGodownStock(), so the ledger (which includes the new gdTransfers record) takes over correctly.');</script>
-<script>console.log('✅ V244 FIX — Add to Godown assigns but immediately reverts / button keeps showing. ROOT CAUSE: atgSave() wrote atg_assign to gdPurchases and called rebuildAllGodownStock (which correctly sees it). But then renderProductsForce() or the Supabase refresh timer calls _doGetDocs(gdpurchases) which overwrites window.gdPurchases from Supabase (which does not have atg_assign yet), then calls rebuildAllGodownStock again which finds no ledger records and sets _gdUnassigned[pid]=realStock again — making the button reappear. FIX: Store the godown assignment in localStorage under _gdAtgAssign. _applyBuckets now checks localStorage FIRST before any ledger calculation — if an entry exists it directly assigns all stock to that godown and returns immediately, bypassing Supabase/ledger entirely. This is immune to all timing issues.'); console.log('✅ V243 FIX — Add to Godown assigns visually but vanishes on reload / never saves. ROOT CAUSES: (1) atgSave() called savePurchases() which does not exist — the real function is savePur() — so patched godownIds were never persisted to Supabase. (2) Only null-godownId records were patched — records with existing (wrong) godownId were skipped. (3) assignment_v2 records are ignored by rebuildGodownStock when _has=true (any real purchase exists), so the fallback assignment never took effect on reload. FIX: (1) atgSave now calls correct savePur()/hsSaveData() names. (2) Patches ALL matching records regardless of existing godownId. (3) Creates a new _source=atg_assign gdPurchases record which rebuildGodownStock checks FIRST and uses as an override — clearing all other buckets and routing 100% of stock to the chosen godown. This survives reload because it is a real saved record.'); console.log('✅ V242 FIX — Darchini-PP(L) 10 pcs invisible in Godown Management, Add to Godown button not showing. ROOT CAUSE: _applyBuckets always set _gdUnassigned[p.id]=0 regardless of whether the product had any ledger records. When a product has stock (p.stock>0) but zero ledger entries in any godown (posKeys empty), _applyBuckets found no positive buckets, stored 0 in every godown, and still set _gdUnassigned=0 — so the Assign All Unassigned Stock banner never appeared and the Add to Godown button on the product card never showed. FIX: when posKeys.length===0 and realStock>0, set _gdUnassigned[p.id]=realStock so the assignment banner appears in Godowns tab and Add to Godown button appears on product card. Also added gdManualAssignToGodown() as a direct escape hatch, and assign buttons on empty godown cards.'); console.log('✅ V241 FIX — Transfer not persisting after reload. ROOT CAUSE: _applyBuckets used sc = p.stock/ledgerTotal where ledgerTotal counted ALL bucket values including zeros and negative-going buckets. When ledger was inflated, sc was tiny and scaled every bucket nearly to zero — including the godown that just received the transfer. The gdTransfers record WAS saved and WAS correctly read by rebuildGodownStock (which does deduct fromId and add toId correctly), but _applyBuckets then crushed those correct proportions with sc. FIX: compute sc only from POSITIVE buckets (posTotal). Negative buckets (over-deducted) are clamped to 0. sc = p.stock/posTotal preserves the correct ledger proportions so the transferred qty survives reload. Also removed the incorrect rebuildAllGodownStock skip from V240 — it is now safe to call because _applyBuckets correctly handles the inflated ledger.'); console.log('✅ V240 FIX — Transfer does nothing: qty resets to 0, breakdown still shows old values after confirming. ROOT CAUSE: gdTrConfirm() (V239) converted display qty back to rawQty = qty * ledgerTotal / p.stock before storing. When ledger is inflated (ledgerTotal >> p.stock), rawQty becomes huge. Then rebuildAllGodownStock() ran immediately after, applying sc = p.stock/ledgerTotal which scaled the huge rawQty back down — exactly cancelling the transfer. Display looked unchanged. TWO FIXES: (1) Store qty directly (no rawQty conversion) — the display qty IS the correct amount. (2) Directly mutate from.stock[pid] and to.stock[pid] after storing, then skip rebuildAllGodownStock() after transfer — calling it would overwrite our correct g.stock with the inflated ledger calculation again. saveGodowns() persists the correct mutated state immediately.');</script>
-<script>console.log('✅ V269 FIX — Product count flickers on app open (e.g. shows 41, then drops to 37 a couple seconds later). ROOT CAUSE: same resurrection-via-stale-cache bug already fixed for purchases (V90-4), gdpurchases (V210), makinglog (V216) and godowns (V246), but never applied to products. delProd() deletes the product from Supabase and productBin correctly, but the localStorage cache (_invCache_products) is only rewritten on beforeunload/pagehide — if the app/tab is killed or backgrounded before that fires (common on mobile), the cache still holds the deleted product. On the next cold start, _wireArrayCollection instantly hydrates window.products straight from that stale cache (so the deleted product briefly counts again), then ~1-2s later the real Supabase snapshot arrives via _doGetDocs. THREE-LAYER FIX (mirrors V246): (1) delProd() now immediately overwrites _invCache_products with the post-deletion array, so a killed app can never rehydrate the stale entry. (2) _doGetDocs now strips any id found in productBin from the merged products result before it is cached/rendered, so a stale cache entry can never survive past the next load. (3) The unsynced re-push block now skips any product id found in productBin, so it can never be pushed back to Supabase either.');</script>
-<script>console.log('✅ V266 FIX — Godown stock double-counted on every sale/purchase/manufacturing transaction, causing inflated/wrong per-godown numbers (the underlying cause behind the long V218/V219/V233/V234... "ledger inflated" saga). ROOT CAUSE: rebuildGodownStock() already tallies every sale, purchase, and manufacturing batch directly from the sales[]/purchases[]/makingLog[] arrays in its dedicated sections. But those same transactions ALSO write an audit-log row into gdMovements (_source:\'sale\'/\'purchase\'/\'manufacturing\') for the All Transactions log. The Manual Movements section at the bottom of rebuildGodownStock only excluded _source \'transfer\' and \'gdpurchase\' from its IN/OUT tally — so every sale/purchase/manufacturing gdMovements row got applied a SECOND time, silently doubling that transaction\'s effect on godown buckets. Previous versions (sc scaling, the _applyBuckets rem-reconciliation) patched the symptom — total stock forced to match product.stock — without fixing the doubled per-godown split underneath. FIX: excluded _source \'sale\', \'purchase\', \'manufacturing\' from the Manual Movements tally too, so each transaction is counted exactly once. ALSO FIXED 3 related stragglers: (1) openGdProdModal() was reading raw rebuildGodownStock() instead of the reconciled g.stock every other godown view uses, so it could disagree with the rest of the Godowns tab — now reads g.stock via _gdTrStock(). (2) gdDeleteGodown()\'s stock-remaining check summed the raw ledger (inflated by the double-count bug above) instead of g.stock, so a godown showing 0 stock on its card could still block deletion — now checks g.stock, matching what the card shows. (3) Removed dead code in gdTrConfirm() that manually mutated from.stock/to.stock right before calling rebuildAllGodownStock() on the next line, which immediately overwrote it anyway — harmless but confusing, now removed.');</script>
-<script>console.log('✅ V284 — Full barcode/QR scanning system added. Uses html5-qrcode (CDN) to decode QR codes and 1D barcodes (EAN-13/8, UPC-A/E, CODE-128/39, ITF, CODABAR) via the phone camera, with flashlight toggle, a manual-code-entry fallback, and haptic buzz on a successful scan. The Barcode/SKU field (previously a hidden, unused input already wired into search/save/export) is now a visible field with a scan button on both the Add New Product form and the Edit Product modal. Wired into 3 places: (1) Add/Edit Product — scan a barcode straight into the Barcode/SKU field. (2) Stock tab search bar — scan button next to search fills the box and filters by the existing name/SKU match. (3) Sell → Add Item to Sale — scan button matches the code against product SKU and auto-fills the item (rate/unit/godown) via the existing simPickProd() pipeline, so scanning at checkout adds the item in one tap; falls back to a name search if no product has that code so nothing is lost.');</script>
-<script>console.log('✅ V283 — Cleaned up the cluttered Godowns tab. The Add Godown form (2 inputs + Add/Rename buttons + a big yellow Remove Duplicate Godowns button) used to sit permanently expanded above the godown list, pushing it below the fold. Now: Add Godown is a single collapsed row that expands only when tapped (and auto-collapses again after a successful add), and Rename / Remove duplicates are now small secondary text links instead of full-width colored buttons — they are maintenance actions, not primary ones. Stat cards and the godown cards themselves are unchanged.');</script>
-<script>console.log('✅ V282 — Removed the V261-1 30s live-poll (onSnapshot) sync for products/sales/purchases. That block was a recurring Supabase request every 30s (paused only while backgrounded) that kept two phones in live sync. It is now gone entirely — no more recurring background calls from it. TRADEOFF: a change on phone A no longer shows on phone B until phone B reloads or manually refreshes; watch for stale-data/overselling if running on multiple phones at once.');</script>
-<script>console.log('✅ V281 — Bottom nav visual polish. Kept all 4 tabs, icons, and tap actions unchanged; restyled the nav bar itself: frosted glass background with a soft top shadow (was flat white + hairline border), a sliding indicator bar above the active tab, and a rounded pill highlight behind the active icon (was just a color change on the icon stroke). Also smoothed the pill/background transition so it fades in instead of snapping.');</script>
-<script>console.log('✅ V280 — Labour Activity extracted to its own standalone app (Labour_Activity.html). Removed the Labour Activity tab, its worker/pay/task/calendar modals, and the WorkPay real-time sync engine (~3,070 lines: HTML panel, 6 modals, CSS, and all la*/_la* JS) from Inventory_EX. Also removed the Labour Activity menu row, its nav-map entry, and the now-dead Labour Summary card on the Business Summary modal (it read _laWorkers/_laSessions, which no longer exist here). The Making Price Calculator\'s labour-cost worker picker (_laWorkers-based dropdown) still degrades gracefully to a free-text name field, unchanged. The new standalone app talks to the same Supabase project/tables (workpay_data, workpay_meta, workpay_edit_requests, workpay_txn_requests, workpay_checkin_requests) via its own copy of the Firestore-shim, so it keeps syncing live with WorkPay — open it separately going forward.');</script>
+<script>
+// ============ V312 — Error logging, offline detection, backup reminder, stock reconciliation ============
+(function(){
+  // 1) Global error logger — catches silent JS crashes and stores last 50 in localStorage
+  function _v312LogError(entry){
+    try{
+      var log = JSON.parse(localStorage.getItem('inv_error_log')||'[]');
+      log.unshift(entry);
+      if(log.length>50) log = log.slice(0,50);
+      localStorage.setItem('inv_error_log', JSON.stringify(log));
+    }catch(e){}
+  }
+  var _v312ErrShown = false;
+  window.addEventListener('error', function(ev){
+    _v312LogError({ts:Date.now(),msg:ev.message,src:ev.filename,line:ev.lineno,col:ev.colno,stack:ev.error&&ev.error.stack||''});
+    if(!_v312ErrShown && typeof toast==='function'){ _v312ErrShown=true; toast('Something went wrong — a step may not have saved. Try again.','red'); setTimeout(function(){_v312ErrShown=false;},8000); }
+  });
+  window.addEventListener('unhandledrejection', function(ev){
+    _v312LogError({ts:Date.now(),msg:'Unhandled promise: '+(ev.reason&&ev.reason.message||ev.reason),stack:ev.reason&&ev.reason.stack||''});
+  });
+  // Expose a way to view/export the error log from console: v312ErrorLog()
+  window.v312ErrorLog = function(){ try{ return JSON.parse(localStorage.getItem('inv_error_log')||'[]'); }catch(e){ return []; } };
+  window.v312ClearErrorLog = function(){ localStorage.removeItem('inv_error_log'); };
+
+  // 2) Offline banner
+  function _v312SyncOnlineBanner(){
+    var b = document.getElementById('v312-offline-banner');
+    if(!b) return;
+    b.style.display = navigator.onLine ? 'none' : 'block';
+  }
+  window.addEventListener('online', _v312SyncOnlineBanner);
+  window.addEventListener('offline', _v312SyncOnlineBanner);
+  document.addEventListener('DOMContentLoaded', _v312SyncOnlineBanner);
+  setTimeout(_v312SyncOnlineBanner, 500);
+
+  // 3) Backup reminder — nudges if never backed up or >24h since last backup, unless snoozed today
+  // NOTE: _bkLastTs lives in the in-memory _memStore (resets on reload), so we track our
+  // own persistent flag in real localStorage and treat a same-session backup as "just done".
+  function _v312CheckBackupReminder(){
+    try{
+      var sessionBk = parseInt((_memStore.getItem('_bkLastTs'))||'0'); // backup done this session
+      var lastBkLS = parseInt(localStorage.getItem('v312_last_backup_ts')||'0');
+      if(sessionBk){ localStorage.setItem('v312_last_backup_ts', String(sessionBk)); lastBkLS = sessionBk; }
+      var snooze = parseInt(localStorage.getItem('v312_bk_snooze_ts')||'0');
+      var now = Date.now();
+      var DAY = 24*60*60*1000;
+      if(now-snooze < DAY) return; // snoozed today
+      if(lastBkLS && now-lastBkLS < DAY) return; // backed up recently
+      var msgEl = document.getElementById('v312-backup-msg');
+      if(msgEl) msgEl.textContent = lastBkLS ? 'Last backup was over a day ago. Keep your data safe.' : "You have never backed up this app's data. Keep your data safe.";
+      var el = document.getElementById('v312-backup-banner');
+      if(el) el.style.display = 'block';
+    }catch(e){}
+  }
+  setTimeout(_v312CheckBackupReminder, 4000); // let app finish loading first
+
+  // 4) Startup stock reconciliation sweep — recomputes each product's stock from the
+  // ledger (purchases + homeStock + making - sales) and self-heals drift, once per day.
+  function _v312ReconcileStock(){
+    try{
+      var lastRun = parseInt(localStorage.getItem('v312_reconcile_ts')||'0');
+      if(Date.now()-lastRun < 24*60*60*1000) return; // once/day
+      if(typeof rebuildProductStock!=='function' || typeof products==='undefined') return;
+      var fixed = 0;
+      (products||[]).forEach(function(p){
+        var before = p.stock;
+        rebuildProductStock(p.id);
+        if(p.stock !== before) fixed++;
+      });
+      localStorage.setItem('v312_reconcile_ts', Date.now().toString());
+      if(fixed>0){
+        if(typeof toast==='function') toast('Auto-fixed stock mismatch on '+fixed+' item'+(fixed>1?'s':''),'blue');
+        if(typeof renderProducts==='function') renderProducts();
+        else if(typeof renderProductsForce==='function') renderProductsForce();
+      }
+    }catch(e){ _v312LogError({ts:Date.now(),msg:'Reconcile sweep failed: '+e.message}); }
+  }
+  setTimeout(_v312ReconcileStock, 6000); // after initial data load settles
+
+  // 5) V315 Avg Cost fix migration — recalculateProductCost() was rewritten to properly
+  // account for sales depleting stock (see V315 fix note above the function itself).
+  // That fix only affects FUTURE recalculations, so every product's already-saved
+  // p.cost value (computed by the old, buggy lifetime-purchase-average formula) needs
+  // to be recalculated once against the corrected logic. This runs once ever (not
+  // daily) — after this migration, the normal per-transaction hooks keep it correct.
+  function _v315MigrateCost(){
+    try{
+      if(localStorage.getItem('v315_cost_migrated')==='1') return; // once ever
+      if(typeof window.recalculateProductCost!=='function' || typeof products==='undefined') return;
+      if(!products || !products.length) return; // data not loaded yet — retry later
+      var changed = 0;
+      products.forEach(function(p){
+        var before = Math.round((parseFloat(p.cost)||0)*100)/100;
+        window.recalculateProductCost(p);
+        var after = Math.round((parseFloat(p.cost)||0)*100)/100;
+        if(after !== before) changed++;
+      });
+      localStorage.setItem('v315_cost_migrated','1');
+      if(changed>0){
+        if(typeof toast==='function') toast('Corrected Avg Cost on '+changed+' item'+(changed>1?'s':''),'blue');
+        if(typeof renderProducts==='function') renderProducts();
+        else if(typeof renderProductsForce==='function') renderProductsForce();
+        if(typeof save==='function') save();
+      }
+    }catch(e){ if(typeof _v312LogError==='function') _v312LogError({ts:Date.now(),msg:'Cost migration failed: '+e.message}); }
+  }
+  // Retry a few times in case Supabase data (purchases/sales/products) is still loading
+  setTimeout(_v315MigrateCost, 6500);
+  setTimeout(_v315MigrateCost, 9000);
+  setTimeout(_v315MigrateCost, 13000);
+})();
+</script>
+</body></html>
