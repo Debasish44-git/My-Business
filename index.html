@@ -2806,9 +2806,24 @@ var _memStore = (function(){
 <!-- BIN -->
 <div id="tab-bin" class="panel">
   <div class="sec-head"><span class="sec-title">🗑 Recycle Bin</span><button class="sec-action" onclick="emptyBin()">Empty All</button></div>
+  <div style="padding:0 16px 10px">
+    <input type="text" class="fi" id="bin-search" placeholder="🔍 Search deleted items…" oninput="renderBin()" style="margin-bottom:10px">
+    <div id="bin-filters" style="display:flex;gap:6px;overflow-x:auto;padding-bottom:2px">
+      <button class="bin-chip active" data-type="all" onclick="binSetFilter('all')">All</button>
+      <button class="bin-chip" data-type="sale" onclick="binSetFilter('sale')">💰 Sale</button>
+      <button class="bin-chip" data-type="purchase" onclick="binSetFilter('purchase')">🛒 Purchase</button>
+      <button class="bin-chip" data-type="product" onclick="binSetFilter('product')">📦 Product</button>
+      <button class="bin-chip" data-type="batch" onclick="binSetFilter('batch')">📦 Batch</button>
+      <button class="bin-chip" data-type="expense" onclick="binSetFilter('expense')">💸 Expense</button>
+    </div>
+  </div>
   <div class="card"><div id="bin-list"></div></div>
   <p style="font-size:11px;color:var(--muted);text-align:center;padding:4px 20px 12px">Restoring a sale deducts stock again.</p>
 </div>
+<style>
+.bin-chip{flex-shrink:0;font-family:'Noto Sans',sans-serif;font-size:11px;font-weight:800;background:#fff;color:var(--primary);border:1.5px solid #c7d4ff;border-radius:20px;padding:6px 12px;cursor:pointer;white-space:nowrap}
+.bin-chip.active{background:var(--primary);color:#fff;border-color:var(--primary)}
+</style>
 
 <!-- LABOUR DATABASE -->
 <div id="tab-labourdb" class="panel">
@@ -6277,6 +6292,27 @@ window._flashSaving = function(){
 };
 
 function save(){
+  // V319 FIX — "delete purchase, reopen app, product's quantity is back; refresh
+  // and it's gone again" (also affects any stock-changing edit, not just purchase
+  // delete): save() pushed the updated products[] to Supabase but NEVER wrote the
+  // local cache (_invCache_products) synchronously — that only happened inside
+  // delProd()'s own bin flow and inside _doGetDocs's merge step for the 'products'
+  // table. Since 'products' is a LAZY-loaded table (V195), that merge/correction
+  // only runs once you open the Products tab or a ~1.2s post-boot background
+  // refresh fires — NOT the instant the app opens. Sequence that caused the bug:
+  //   1. Delete a purchase → rebuildProductStock()/recalculateProductCost() lower
+  //      p.stock in memory → save() pushes the corrected stock to Supabase, but
+  //      _invCache_products on disk still holds the OLD (higher, pre-delete) stock.
+  //   2. App closes before Products ever re-syncs this session.
+  //   3. Reopen: dashboard/home-stock hydrate instantly from that stale cache —
+  //      showing the deleted purchase's quantity as if it still counts.
+  //   4. Opening Products (or pulling to refresh) triggers the real Supabase fetch,
+  //      which is already correct — merge fixes window.products and re-renders,
+  //      so the extra stock "disappears" without you touching anything.
+  // FIX: write _invCache_products synchronously here, every save(), mirroring the
+  // pattern savePur() already used for _invCache_purchases — so the stale-cache
+  // window this bug depends on never exists.
+  try{ if(Array.isArray(products)) _memStore.setItem('_invCache_products', JSON.stringify(products)); }catch(e){}
   // Firebase is the only storage — push to cloud
   syncToSheet();
   if(!window._firebaseReady){
@@ -11491,6 +11527,13 @@ function addProduct(){
 }
 
 // BIN
+var _binFilterType = 'all';
+function binSetFilter(t){
+  _binFilterType = t;
+  var chips = document.querySelectorAll('.bin-chip');
+  for(var i=0;i<chips.length;i++){chips[i].classList.toggle('active', chips[i].getAttribute('data-type')===t);}
+  renderBin();
+}
 function renderBin(){
   var el=document.getElementById('bin-list');
   var allEmpty = !bin.length && !makingBin.length && !(productBin&&productBin.length) && !(purchaseBin&&purchaseBin.length) && !(expenseBin&&expenseBin.length);
@@ -11498,30 +11541,45 @@ function renderBin(){
   // v1-11: merge all bin types, sort newest-deleted first
   function _dts(x){return x.deletedAt?new Date(x.deletedAt).getTime():(x.ts||0);}
   var allItems=[];
+  function _binTag(label,bg,fg){return '<span style="display:inline-block;font-size:9px;font-weight:800;letter-spacing:0.3px;text-transform:uppercase;background:'+bg+';color:'+fg+';padding:2px 7px;border-radius:20px;margin-left:6px;vertical-align:middle">'+label+'</span>';}
   (productBin||[]).forEach(function(p){
     var d=new Date(p.deletedAt||p.ts||0);
-    allItems.push({ts:_dts(p),html:'<div class="brow"><div class="binfo"><div class="bname">📦 '+e(p.name||'Product')+'</div><div class="bsub">'+(p.stock||0)+' '+(p.unit||'pcs')+' · ₹'+f(p.price||0)+'</div><div class="bdate">Deleted '+d.toLocaleDateString('en-IN',{day:'numeric',month:'short'})+'</div></div><div class="bright"><div class="bamt" style="font-size:11px;color:var(--muted)">Product</div><div class="bbtns"><button class="btn-res" onclick="restProduct('+p.id+')">Restore</button><button class="btn-prm" onclick="prmDelProduct('+p.id+')">Delete</button></div></div></div>'});
+    allItems.push({ts:_dts(p),type:'product',search:(p.name||'Product'),html:'<div class="brow"><div class="binfo"><div class="bname">📦 '+e(p.name||'Product')+_binTag('Product','#e0e7ff','#4338ca')+'</div><div class="bsub">'+(p.stock||0)+' '+(p.unit||'pcs')+' · ₹'+f(p.price||0)+'</div><div class="bdate">Deleted '+d.toLocaleDateString('en-IN',{day:'numeric',month:'short'})+'</div></div><div class="bright"><div class="bamt" style="font-size:11px;color:var(--muted)">Product</div><div class="bbtns"><button class="btn-res" onclick="restProduct('+p.id+')">Restore</button><button class="btn-prm" onclick="prmDelProduct('+p.id+')">Delete</button></div></div></div>'});
   });
   bin.forEach(function(s){
     var d=new Date(s.deletedAt||s.ts||0);
     var subLine=s.billedItems&&s.billedItems.length>1?s.billedItems.length+' items \u00b7 \u20b9'+f(s.total):s.qty+' \u00d7 \u20b9'+f(s.price||s.total);
-    allItems.push({ts:_dts(s),html:'<div class="brow"><div class="binfo"><div class="bname">'+e(s.customer||s.name||'Sale')+'</div><div class="bsub">'+subLine+'</div><div class="bdate">Deleted '+d.toLocaleDateString('en-IN',{day:'numeric',month:'short'})+'</div></div><div class="bright"><div class="bamt">\u20b9'+f(s.total)+'</div><div class="bbtns"><button class="btn-res" onclick="restSale('+s.id+')">Restore</button><button class="btn-prm" onclick="prmDel('+s.id+')">Delete</button></div></div></div>'});
+    allItems.push({ts:_dts(s),type:'sale',search:(s.customer||s.name||'Sale'),html:'<div class="brow"><div class="binfo"><div class="bname">'+e(s.customer||s.name||'Sale')+_binTag('Sale','#dcfce7','#15803d')+'</div><div class="bsub">'+subLine+'</div><div class="bdate">Deleted '+d.toLocaleDateString('en-IN',{day:'numeric',month:'short'})+'</div></div><div class="bright"><div class="bamt">\u20b9'+f(s.total)+'</div><div class="bbtns"><button class="btn-res" onclick="restSale('+s.id+')">Restore</button><button class="btn-prm" onclick="prmDel('+s.id+')">Delete</button></div></div></div>'});
   });
   makingBin.forEach(function(mk){
     var d=new Date(mk.deletedAt||mk.ts||0);
-    allItems.push({ts:_dts(mk),html:'<div class="brow"><div class="binfo"><div class="bname">\ud83d\udce6 '+e(mk.productName||'Batch')+'</div><div class="bsub">'+e(mk.batchId||'')+' \u00b7 '+(mk.qty||0)+' '+(mk.unit||'pcs')+'</div><div class="bdate">Deleted '+d.toLocaleDateString('en-IN',{day:'numeric',month:'short'})+'</div></div><div class="bright"><div class="bamt" style="font-size:11px;color:var(--muted)">Batch</div><div class="bbtns"><button class="btn-res" onclick="restBatch(\''+mk.id+'\')">Restore</button><button class="btn-prm" onclick="prmDelBatch(\''+mk.id+'\')">Delete</button></div></div></div>'});
+    allItems.push({ts:_dts(mk),type:'batch',search:(mk.productName||'Batch')+' '+(mk.batchId||''),html:'<div class="brow"><div class="binfo"><div class="bname">\ud83d\udce6 '+e(mk.productName||'Batch')+_binTag('Batch','#fef3c7','#b45309')+'</div><div class="bsub">'+e(mk.batchId||'')+' \u00b7 '+(mk.qty||0)+' '+(mk.unit||'pcs')+'</div><div class="bdate">Deleted '+d.toLocaleDateString('en-IN',{day:'numeric',month:'short'})+'</div></div><div class="bright"><div class="bamt" style="font-size:11px;color:var(--muted)">Batch</div><div class="bbtns"><button class="btn-res" onclick="restBatch(\''+mk.id+'\')">Restore</button><button class="btn-prm" onclick="prmDelBatch(\''+mk.id+'\')">Delete</button></div></div></div>'});
   });
   (purchaseBin||[]).forEach(function(pur){
     var d=new Date(pur.deletedAt||pur.ts||0);
     var label=pur.item||pur.party||'Purchase';
-    allItems.push({ts:_dts(pur),html:'<div class="brow"><div class="binfo"><div class="bname">🛒 '+e(label)+'</div><div class="bsub">Qty '+f(pur.qty||0)+' · ₹'+f(pur.total||0)+'</div><div class="bdate">Deleted '+d.toLocaleDateString('en-IN',{day:'numeric',month:'short'})+'</div></div><div class="bright"><div class="bamt">₹'+f(pur.total||0)+'</div><div class="bbtns"><button class="btn-res" onclick="restPurchase('+pur.id+')">Restore</button><button class="btn-prm" onclick="prmDelPurchase('+pur.id+')">Delete</button></div></div></div>'});
+    allItems.push({ts:_dts(pur),type:'purchase',search:label,html:'<div class="brow"><div class="binfo"><div class="bname">🛒 '+e(label)+_binTag('Purchase','#ede9fe','#7c3aed')+'</div><div class="bsub">Qty '+f(pur.qty||0)+' · ₹'+f(pur.total||0)+'</div><div class="bdate">Deleted '+d.toLocaleDateString('en-IN',{day:'numeric',month:'short'})+'</div></div><div class="bright"><div class="bamt">₹'+f(pur.total||0)+'</div><div class="bbtns"><button class="btn-res" onclick="restPurchase('+pur.id+')">Restore</button><button class="btn-prm" onclick="prmDelPurchase('+pur.id+')">Delete</button></div></div></div>'});
   });
   (expenseBin||[]).forEach(function(ex){
     var d=new Date(ex.deletedAt||ex.ts||0);
     var sub=(ex._batch?ex._batch+' · ':'')+(ex._prodName||ex.category||'');
-    allItems.push({ts:_dts(ex),html:'<div class="brow"><div class="binfo"><div class="bname">💸 '+e(ex.name||'Expense')+'</div><div class="bsub">'+e(sub)+'</div><div class="bdate">Deleted '+d.toLocaleDateString('en-IN',{day:'numeric',month:'short'})+'</div></div><div class="bright"><div class="bamt">₹'+f(ex.amount||0)+'</div><div class="bbtns"><button class="btn-res" onclick="restExpense('+ex.id+')">Restore</button><button class="btn-prm" onclick="prmDelExpense('+ex.id+')">Delete</button></div></div></div>'});
+    allItems.push({ts:_dts(ex),type:'expense',search:(ex.name||'Expense')+' '+sub,html:'<div class="brow"><div class="binfo"><div class="bname">💸 '+e(ex.name||'Expense')+_binTag('Expense','#fee2e2','#b91c1c')+'</div><div class="bsub">'+e(sub)+'</div><div class="bdate">Deleted '+d.toLocaleDateString('en-IN',{day:'numeric',month:'short'})+'</div></div><div class="bright"><div class="bamt">₹'+f(ex.amount||0)+'</div><div class="bbtns"><button class="btn-res" onclick="restExpense('+ex.id+')">Restore</button><button class="btn-prm" onclick="prmDelExpense('+ex.id+')">Delete</button></div></div></div>'});
   });
+  // Apply type filter
+  if(_binFilterType && _binFilterType!=='all'){
+    allItems = allItems.filter(function(x){return x.type===_binFilterType;});
+  }
+  // Apply search filter
+  var searchEl = document.getElementById('bin-search');
+  var q = searchEl ? searchEl.value.trim().toLowerCase() : '';
+  if(q){
+    allItems = allItems.filter(function(x){return (x.search||'').toLowerCase().indexOf(q)>=0;});
+  }
   allItems.sort(function(a,b){return b.ts-a.ts;});
+  if(!allItems.length){
+    el.innerHTML='<div class="empty"><div class="empty-icon">🔍</div><div class="empty-text">No matching items</div></div>';
+    return;
+  }
   el.innerHTML=allItems.map(function(x){return x.html;}).join('');
 }
 // restSale — superseded by FIX 2 override below (uses _crDeductStockForSale)
@@ -15101,7 +15159,10 @@ function safeNextPurId() {
 // purchases loaded from Firebase
 function savePur(){
   console.log('[v241-DIAG] savePur called: purchases.length=' + (typeof purchases!=='undefined'?purchases.length:'UNDEF') + ' _suppressWrite=' + window._suppressWrite);
-  try{ if(Array.isArray(purchases)&&purchases.length) _memStore.setItem('_invCache_purchases', JSON.stringify(purchases)); }catch(e){}
+  // V319 FIX: removed "&&purchases.length" guard — it meant deleting your very LAST
+  // purchase never rewrote the cache to an empty array, so that final deleted purchase
+  // would resurrect forever (the stale non-empty cache was always merged back in).
+  try{ if(Array.isArray(purchases)) _memStore.setItem('_invCache_purchases', JSON.stringify(purchases)); }catch(e){}
   if(!window._firebaseReady||!window._fbSyncPurchases){ console.warn('[PUR] savePur: Supabase not ready — LS backup only'); return Promise.resolve(); }
   window._markLocalWrite(3000,'purchases');
   var p=window._fbSyncPurchases(purchases);
@@ -16384,9 +16445,35 @@ function saveMkLog(){
     /* V285: auto-refresh removed */
   }
 }
-function saveBin(){if(window._firebaseReady&&window._fbSyncBin){window._markLocalWrite(3000,'bin');window._fbSyncBin(bin);/* V285: auto-refresh removed */}}
-function saveMakingBin(){if(window._firebaseReady&&window._fbSyncMakingBin){window._markLocalWrite(3000,'makingbin');window._fbSyncMakingBin(makingBin);/* V285: auto-refresh removed */}}
+// V319 FIX — recycle-bin resurrection (bin/productbin/purchasebin/expensebin/makingbin):
+// ROOT CAUSE: unlike savePur() (which writes _invCache_purchases to localStorage the
+// instant purchases[] changes), these bin save functions only pushed to Supabase and
+// NEVER updated their own local cache (_invCache_bin/_invCache_productbin/etc). Those
+// caches are only rewritten once per session, inside _doGetDocs's merge step for that
+// table. Sequence that caused "delete from bin, reopen app, it's back":
+//   1. User permanently deletes item X from productBin. In-memory array updated,
+//      Supabase row deleted — but _invCache_productbin on disk still has X (stale).
+//   2. App closes before any later _doGetDocs re-fetch of 'productbin' happens this
+//      session (there is no auto-refresh-after-save any more — see V285 note above).
+//   3. Next app open: fresh getDocs correctly returns productbin WITHOUT X from
+//      Supabase, but _mergeById merges that against the stale local cache which still
+//      has X. Records present only in the stale local copy are treated as "unsynced"
+//      (nothing stops this for bin tables — unlike purchases/products/sales/gdpurchases/
+//      makinglog/godowns, which all got a ghost-id guard) and get automatically
+//      RE-PUSHED to Supabase, recreating the very row you just deleted forever.
+// FIX: write each bin's local cache synchronously the moment the in-memory array
+// changes (mirrors savePur's pattern), so the stale-cache window this bug depends on
+// never exists. Applied to all 5 bin collections.
+function saveBin(){
+  try{ if(Array.isArray(bin)) _memStore.setItem('_invCache_bin', JSON.stringify(bin)); }catch(e){}
+  if(window._firebaseReady&&window._fbSyncBin){window._markLocalWrite(3000,'bin');window._fbSyncBin(bin);/* V285: auto-refresh removed */}
+}
+function saveMakingBin(){
+  try{ if(Array.isArray(makingBin)) _memStore.setItem('_invCache_makingbin', JSON.stringify(makingBin)); }catch(e){}
+  if(window._firebaseReady&&window._fbSyncMakingBin){window._markLocalWrite(3000,'makingbin');window._fbSyncMakingBin(makingBin);/* V285: auto-refresh removed */}
+}
 function savePurchaseBin(){ // v1-7
+  try{ if(Array.isArray(purchaseBin)) _memStore.setItem('_invCache_purchasebin', JSON.stringify(purchaseBin)); }catch(e){} // V319 FIX
   if(window._firebaseReady&&window._fbSyncPurchaseBin){window._markLocalWrite(3000,'purchasebin');window._fbSyncPurchaseBin(purchaseBin);}
   else if(window._firebaseReady&&window._firestoreDB&&window._firestoreDoc&&window._firestoreSetDoc){
     purchaseBin.forEach(function(p){
@@ -16395,6 +16482,7 @@ function savePurchaseBin(){ // v1-7
   }
 }
 function saveExpenseBin(){ // v1-36-0-0-10
+  try{ if(Array.isArray(expenseBin)) _memStore.setItem('_invCache_expensebin', JSON.stringify(expenseBin)); }catch(e){} // V319 FIX
   if(window._firebaseReady&&window._fbSyncExpenseBin){window._markLocalWrite(3000,'expensebin');window._fbSyncExpenseBin(expenseBin);}
   else if(window._firebaseReady&&window._firestoreDB&&window._firestoreDoc&&window._firestoreSetDoc){
     expenseBin.forEach(function(p){
@@ -16402,7 +16490,10 @@ function saveExpenseBin(){ // v1-36-0-0-10
     });
   }
 }
-function saveProductBin(){if(window._firebaseReady&&window._fbSyncProductBin){window._markLocalWrite(3000,'productbin');window._fbSyncProductBin(productBin);}}
+function saveProductBin(){
+  try{ if(Array.isArray(productBin)) _memStore.setItem('_invCache_productbin', JSON.stringify(productBin)); }catch(e){} // V319 FIX
+  if(window._firebaseReady&&window._fbSyncProductBin){window._markLocalWrite(3000,'productbin');window._fbSyncProductBin(productBin);}
+}
 
 var _labPayTarget=null;
 var _labEditTarget=null;
