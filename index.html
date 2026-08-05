@@ -101,7 +101,7 @@ function showInstallGuide() {
 (function(){
   if (!('serviceWorker' in navigator)) return;
   var SW_CODE = `
-const CACHE = 'mybiz-v135-14';
+const CACHE = 'mybiz-v135-19'; // V334: bumped — force-refresh stale cached copy
 const SHELL = self.location.href; // the SW script url (blob) — we cache the page instead
 
 self.addEventListener('install', function(e){
@@ -1299,22 +1299,22 @@ var _memStore = (function(){
 
   <!-- Reports -->
   <div class="drawer-section">REPORTS</div>
-  <div class="drawer-item" onclick="goTabMenuClose('goodold')"><span>📒</span><div><div>Good Old Management</div><div style="font-size:11px;color:var(--muted);font-weight:500">All activity — sales, purchase, damage &amp; more</div></div></div>
-  <div class="drawer-item" onclick="drReport('profit')"><span>📈</span><div><div>Profit & Loss</div><div style="font-size:11px;color:var(--muted);font-weight:500">Summary of earnings</div></div></div>
-  <div class="drawer-item" onclick="drReport('stock')"><span>🏭</span><div><div>Stock Report</div><div style="font-size:11px;color:var(--muted);font-weight:500">Inventory value & levels</div></div></div>
-  <div class="drawer-item" onclick="drReport('sales')"><span>🧾</span><div><div>Sales Report</div><div style="font-size:11px;color:var(--muted);font-weight:500">All transactions summary</div></div></div>
+  <div class="drawer-item" data-module="reports" onclick="goTabMenuClose('goodold')"><span>📒</span><div><div>Good Old Management</div><div style="font-size:11px;color:var(--muted);font-weight:500">All activity — sales, purchase, damage &amp; more</div></div></div>
+  <div class="drawer-item" data-module="reports" onclick="drReport('profit')"><span>📈</span><div><div>Profit & Loss</div><div style="font-size:11px;color:var(--muted);font-weight:500">Summary of earnings</div></div></div>
+  <div class="drawer-item" data-module="reports" onclick="drReport('stock')"><span>🏭</span><div><div>Stock Report</div><div style="font-size:11px;color:var(--muted);font-weight:500">Inventory value & levels</div></div></div>
+  <div class="drawer-item" data-module="reports" onclick="drReport('sales')"><span>🧾</span><div><div>Sales Report</div><div style="font-size:11px;color:var(--muted);font-weight:500">All transactions summary</div></div></div>
   <!-- Analytics Center -->
   <div class="drawer-section">ANALYTICS CENTER</div>
-  <div class="drawer-item" onclick="goTabMenuClose('analytics')"><span>📊</span><div><div>Analytics Dashboard</div><div style="font-size:11px;color:var(--muted);font-weight:500">Full analytics & reports hub</div></div></div>
-  <div class="drawer-item" onclick="closeMenu();anOpenReport('movement')"><span>🔄</span><div><div>Product Movement</div><div style="font-size:11px;color:var(--muted);font-weight:500">Inward & outward history</div></div></div>
-  <div class="drawer-item" onclick="closeMenu();anOpenReport('expiry')"><span>🗓️</span><div><div>Expiry Report</div><div style="font-size:11px;color:var(--muted);font-weight:500">Batch & product expiry dates</div></div></div>
-  <div class="drawer-item" onclick="closeMenu();anOpenReport('deadstock')"><span>💀</span><div><div>Dead Stock Report</div><div style="font-size:11px;color:var(--muted);font-weight:500">Items with no movement</div></div></div>
-  <div class="drawer-item" onclick="closeMenu();anOpenReport('godownwise')"><span>🏭</span><div><div>Godown-wise Report</div><div style="font-size:11px;color:var(--muted);font-weight:500">Stock by warehouse</div></div></div>
-  <div class="drawer-item" onclick="closeMenu();anOpenReport('batch')"><span>🏷️</span><div><div>Batch Report</div><div style="font-size:11px;color:var(--muted);font-weight:500">All batch details</div></div></div>
+  <div class="drawer-item" data-module="reports" onclick="goTabMenuClose('analytics')"><span>📊</span><div><div>Analytics Dashboard</div><div style="font-size:11px;color:var(--muted);font-weight:500">Full analytics & reports hub</div></div></div>
+  <div class="drawer-item" data-module="reports" onclick="closeMenu();anOpenReport('movement')"><span>🔄</span><div><div>Product Movement</div><div style="font-size:11px;color:var(--muted);font-weight:500">Inward & outward history</div></div></div>
+  <div class="drawer-item" data-module="reports" onclick="closeMenu();anOpenReport('expiry')"><span>🗓️</span><div><div>Expiry Report</div><div style="font-size:11px;color:var(--muted);font-weight:500">Batch & product expiry dates</div></div></div>
+  <div class="drawer-item" data-module="reports" onclick="closeMenu();anOpenReport('deadstock')"><span>💀</span><div><div>Dead Stock Report</div><div style="font-size:11px;color:var(--muted);font-weight:500">Items with no movement</div></div></div>
+  <div class="drawer-item" data-module="reports" onclick="closeMenu();anOpenReport('godownwise')"><span>🏭</span><div><div>Godown-wise Report</div><div style="font-size:11px;color:var(--muted);font-weight:500">Stock by warehouse</div></div></div>
+  <div class="drawer-item" data-module="reports" onclick="closeMenu();anOpenReport('batch')"><span>🏷️</span><div><div>Batch Report</div><div style="font-size:11px;color:var(--muted);font-weight:500">All batch details</div></div></div>
 
   <!-- Settings -->
-  <div class="drawer-section">☁️ GOOGLE SHEETS SYNC</div>
-  <div style="margin:0 12px 10px;background:var(--bg);border-radius:12px;padding:14px">
+  <div class="drawer-section" data-owner-only="1">☁️ GOOGLE SHEETS SYNC</div>
+  <div data-owner-only="1" style="margin:0 12px 10px;background:var(--bg);border-radius:12px;padding:14px">
     <div style="font-size:12px;font-weight:700;color:var(--text2);margin-bottom:6px">Web App URL</div>
     <input id="sheet-url-input" type="text" placeholder="Paste your Apps Script URL here…"
       style="width:100%;font-family:'Noto Sans',sans-serif;font-size:12px;padding:10px 12px;border-radius:9px;border:1.5px solid var(--border);background:#fff;color:var(--text);outline:none;margin-bottom:8px;box-sizing:border-box"
@@ -1331,13 +1331,13 @@ var _memStore = (function(){
     <div style="display:flex;align-items:center;gap:12px"><span>🔔</span><div><div>Low Stock Alerts</div><div style="font-size:11px;color:var(--muted);font-weight:500">Notify when stock is low</div></div></div>
     <div id="dr-toggle-alert" style="width:40px;height:22px;border-radius:11px;background:var(--green);position:relative;flex-shrink:0;transition:background 0.2s"><div style="position:absolute;top:3px;right:3px;width:16px;height:16px;border-radius:50%;background:#fff;transition:right 0.2s"></div></div>
   </div>
-  <div class="drawer-item" onclick="drExportCSV()"><span>📤</span><div><div>Export Data (CSV)</div><div style="font-size:11px;color:var(--muted);font-weight:500">Download sales as CSV</div></div></div>
+  <div class="drawer-item" data-module="reports" onclick="drExportCSV()"><span>📤</span><div><div>Export Data (CSV)</div><div style="font-size:11px;color:var(--muted);font-weight:500">Download sales as CSV</div></div></div>
   <div class="drawer-item" onclick="downloadLogo()"><span>🖼</span><div><div>Download App Logo (PNG)</div><div style="font-size:11px;color:var(--muted);font-weight:500">Save the business logo to your device</div></div></div>
   <!-- PWA Install Button (shown when browser fires beforeinstallprompt) -->
   <div class="drawer-item" id="pwa-install-btn" onclick="installApp()" style="display:none;background:linear-gradient(135deg,#1b4fff,#3b6bff);border-radius:12px;color:#fff"><span>📲</span><div><div style="color:#fff;font-weight:800">Install App on Device</div><div style="font-size:11px;color:rgba(255,255,255,0.8);font-weight:500">Tap to add to your Home Screen</div></div></div>
   <!-- Always-visible manual install hint -->
   <div class="drawer-item" onclick="showInstallGuide()" style="background:#f0fdf4;border:1.5px solid var(--green);border-radius:12px"><span>📲</span><div><div style="color:var(--green);font-weight:800">Add to Home Screen</div><div style="font-size:11px;color:var(--text2);font-weight:500">Step-by-step install guide</div></div></div>
-  <div class="drawer-item" onclick="drBackup()"><span>💾</span><div><div>Backup Data</div><div style="font-size:11px;color:var(--muted);font-weight:500">Save data as JSON file</div></div></div>
+  <div class="drawer-item" data-owner-only="1" onclick="drBackup()"><span>💾</span><div><div>Backup Data</div><div style="font-size:11px;color:var(--muted);font-weight:500">Save data as JSON file</div></div></div>
 
   <!-- Danger -->
   <div class="drawer-section">DATA</div>
@@ -2927,37 +2927,37 @@ var _memStore = (function(){
   <!-- My Business -->
   <div class="menu-section">My Business</div>
   <div class="menu-card">
-    <div class="menu-row" onclick="goTabMenu('add')">
+    <div class="menu-row" data-module="stock" onclick="goTabMenu('add')">
       <div class="menu-row-icon" style="background:#e8eeff">➕</div>
       <div class="menu-row-info"><div class="menu-row-title">Add New Product</div><div class="menu-row-sub">Add item to inventory</div></div>
       <span class="menu-row-arrow">›</span>
     </div>
-    <div class="menu-row" onclick="goTabMenu('sell')">
+    <div class="menu-row" data-module="sale" onclick="goTabMenu('sell')">
       <div class="menu-row-icon" style="background:#e6f7ef"><span>₹</span></div>
       <div class="menu-row-info"><div class="menu-row-title">Sale</div></div>
       <span class="menu-row-arrow">›</span>
     </div>
-    <div class="menu-row" onclick="goTabMenu('purchase')">
+    <div class="menu-row" data-module="purchase" onclick="goTabMenu('purchase')">
       <div class="menu-row-icon" style="background:#ede9ff">🛒</div>
       <div class="menu-row-info"><div class="menu-row-title">Purchase</div></div>
       <span class="menu-row-arrow">›</span>
     </div>
-    <div class="menu-row" onclick="goTabMenu('party')">
+    <div class="menu-row" data-module="party" onclick="goTabMenu('party')">
       <div class="menu-row-icon" style="background:#fef3c7">🤝</div>
       <div class="menu-row-info"><div class="menu-row-title">Party / Ledger</div><div class="menu-row-sub">Customers, suppliers & balances</div></div>
       <span class="menu-row-arrow">›</span>
     </div>
-    <div class="menu-row" onclick="goTabMenu('expenses')">
+    <div class="menu-row" data-module="expenses" onclick="goTabMenu('expenses')">
       <div class="menu-row-icon" style="background:#fff3e0">📂</div>
       <div class="menu-row-info"><div class="menu-row-title">Expenses</div></div>
       <span class="menu-row-right">›</span>
     </div>
-    <div class="menu-row" onclick="goTabMenu('labourdb')">
+    <div class="menu-row" data-module="labour" onclick="goTabMenu('labourdb')">
       <div class="menu-row-icon" style="background:#e8eeff">👷</div>
       <div class="menu-row-info"><div class="menu-row-title">Labour Database</div><div class="menu-row-sub">Manage workers & accounts</div></div>
       <span class="menu-row-arrow">›</span>
     </div>
-    <div class="menu-row" onclick="goTabMenuClose('labourcost');lcInit()">
+    <div class="menu-row" data-module="labour" onclick="goTabMenuClose('labourcost');lcInit()">
       <div class="menu-row-icon" style="background:#fef3c7">🧵</div>
       <div class="menu-row-info">
         <div class="menu-row-title">Labour Cost Tracker</div>
@@ -2965,7 +2965,7 @@ var _memStore = (function(){
       </div>
       <span class="menu-row-arrow">›</span>
     </div>
-    <div class="menu-row" onclick="goTabMenu('godown')">
+    <div class="menu-row" data-module="godown" onclick="goTabMenu('godown')">
       <div class="menu-row-icon" style="background:#f3e8ff">🏭</div>
       <div class="menu-row-info">
         <div class="menu-row-title">Godown Management <span class="menu-badge">New</span></div>
@@ -2973,7 +2973,7 @@ var _memStore = (function(){
       </div>
       <span class="menu-row-arrow">›</span>
     </div>
-    <div class="menu-row" onclick="gdOpenAddGodown()">
+    <div class="menu-row" data-module="godown" onclick="gdOpenAddGodown()">
       <div class="menu-row-icon" style="background:#f3e8ff">➕</div>
       <div class="menu-row-info">
         <div class="menu-row-title">Add Godown</div>
@@ -2981,7 +2981,7 @@ var _memStore = (function(){
       </div>
       <span class="menu-row-arrow">›</span>
     </div>
-    <div class="menu-row" onclick="gdOpenTransfer()">
+    <div class="menu-row" data-module="godown" onclick="gdOpenTransfer()">
       <div class="menu-row-icon" style="background:#f3e8ff">🔄</div>
       <div class="menu-row-info">
         <div class="menu-row-title">Transfer Product</div>
@@ -2989,22 +2989,22 @@ var _memStore = (function(){
       </div>
       <span class="menu-row-arrow">›</span>
     </div>
-    <div class="menu-row" onclick="drReport('profit')">
+    <div class="menu-row" data-module="reports" onclick="drReport('profit')">
       <div class="menu-row-icon" style="background:#e6f7ef">📊</div>
       <div class="menu-row-info"><div class="menu-row-title">Reports</div></div>
       <span class="menu-row-right">›</span>
     </div>
-    <div class="menu-row" onclick="goTabMenu('calc')">
+    <div class="menu-row" data-module="stock" onclick="goTabMenu('calc')">
       <div class="menu-row-icon" style="background:#e8eeff">🧮</div>
       <div class="menu-row-info"><div class="menu-row-title">Price Calculator</div></div>
       <span class="menu-row-right">›</span>
     </div>
-    <div class="menu-row" onclick="goTabMenu('detail')">
+    <div class="menu-row" data-module="stock" onclick="goTabMenu('detail')">
       <div class="menu-row-icon" style="background:#f3e8ff">🔎</div>
       <div class="menu-row-info"><div class="menu-row-title">Stock Detail</div></div>
       <span class="menu-row-right">›</span>
     </div>
-    <div class="menu-row" onclick="goTabMenuClose('batchmaster')">
+    <div class="menu-row" data-module="stock" onclick="goTabMenuClose('batchmaster')">
       <div class="menu-row-icon" style="background:#fef3c7">🏷️</div>
       <div class="menu-row-info">
         <div class="menu-row-title">Batch Tracker</div>
@@ -3012,7 +3012,7 @@ var _memStore = (function(){
       </div>
       <span class="menu-row-arrow">›</span>
     </div>
-    <div class="menu-row" onclick="goTabMenuClose('bin')">
+    <div class="menu-row" data-module="bin" onclick="goTabMenuClose('bin')">
       <div class="menu-row-icon" style="background:#fdeaea">🗑</div>
       <div class="menu-row-info">
         <div class="menu-row-title">Recycle Bin</div>
@@ -3050,7 +3050,7 @@ var _memStore = (function(){
   <!-- Important Utilities -->
   <div class="menu-section">Important Utilities</div>
   <div class="menu-card" style="margin-bottom:80px">
-    <div class="menu-row" onclick="openBackupModal()">
+    <div class="menu-row" data-owner-only="1" onclick="openBackupModal()">
       <div class="menu-row-icon" style="background:#e6f7ef">💾</div>
       <div class="menu-row-info"><div class="menu-row-title">Backup / Restore</div><div class="menu-row-sub" style="font-size:11px;color:var(--muted)">Full data backup — all collections</div></div>
       <span class="menu-row-right">›</span>
@@ -3063,7 +3063,7 @@ var _memStore = (function(){
       </div>
       <span class="menu-row-right">›</span>
     </div>
-    <div class="menu-row" onclick="teamOpenModal()">
+    <div class="menu-row" data-owner-only="1" onclick="teamOpenModal()">
       <div class="menu-row-icon" style="background:#eef2ff">👥</div>
       <div class="menu-row-info">
         <div class="menu-row-title">Team / Manager Access</div>
@@ -3217,6 +3217,39 @@ var _memStore = (function(){
     <div class="mtitle">Team / Manager Access</div>
     <div id="team-modal-body">Loading…</div>
     <button class="btn-mc" onclick="document.getElementById('team-modal').classList.remove('open')" style="width:100%;margin-top:12px">Close</button>
+  </div>
+</div>
+
+<!-- TEAM ASSIGN WORKERS MODAL -->
+<div class="modal-overlay" id="team-assign-modal" onclick="if(event.target===this)this.classList.remove('open')">
+  <div class="modal" style="max-height:85vh;overflow-y:auto">
+    <div class="mpill"></div>
+    <div class="mtitle">Assign Workers</div>
+    <div style="font-size:12px;color:var(--muted);margin:-8px 0 12px">Pick which workers this person can manage. Leave nothing checked to give them access to all workers.</div>
+    <div id="team-assign-modal-body"></div>
+    <button class="btn-mc" onclick="teamSaveWorkerAssignment()" style="width:100%;background:var(--primary);color:#fff;font-weight:800;margin-top:12px">Save Assignment</button>
+    <button class="btn-mc" onclick="document.getElementById('team-assign-modal').classList.remove('open')" style="width:100%;margin-top:8px">Cancel</button>
+  </div>
+</div>
+
+<!-- V335: ROLES & ACCESS MODAL -->
+<div class="modal-overlay" id="roles-modal" onclick="if(event.target===this)this.classList.remove('open')">
+  <div class="modal" style="max-height:85vh;overflow-y:auto">
+    <div class="mpill"></div>
+    <div class="mtitle">Roles &amp; Access</div>
+    <div id="roles-modal-body">Loading…</div>
+    <button class="btn-mc" onclick="document.getElementById('roles-modal').classList.remove('open')" style="width:100%;margin-top:12px">Close</button>
+  </div>
+</div>
+
+<!-- V335: ROLE EDITOR MODAL -->
+<div class="modal-overlay" id="role-editor-modal" onclick="if(event.target===this)this.classList.remove('open')">
+  <div class="modal" style="max-height:85vh;overflow-y:auto">
+    <div class="mpill"></div>
+    <div class="mtitle" id="role-editor-title">Create New Role</div>
+    <div id="role-editor-body"></div>
+    <button class="btn-mc" onclick="roleSave()" style="width:100%;background:var(--primary);color:#fff;font-weight:800;margin-top:14px">Save Role</button>
+    <button class="btn-mc" onclick="document.getElementById('role-editor-modal').classList.remove('open')" style="width:100%;margin-top:8px">Cancel</button>
   </div>
 </div>
 
@@ -4061,9 +4094,9 @@ var _memStore = (function(){
 
 <!-- NAV -->
 <nav>
-  <button class="active" onclick="goTabMenu('home')" id="nav-home"><div class="nav-iw"><svg viewBox="0 0 24 24"><path class="fillshape" d="M3 9.8 L12 3 L21 9.8 L21 20 A1.3 1.3 0 0 1 19.7 21.3 L14.7 21.3 L14.7 14.5 L9.3 14.5 L9.3 21.3 L4.3 21.3 A1.3 1.3 0 0 1 3 20 Z" stroke-width="1.7" stroke-linejoin="round" stroke-linecap="round"/></svg></div><span>Home</span></button>
-  <button onclick="goTabMenu('products')" id="nav-products"><div class="nav-iw"><svg viewBox="0 0 24 24"><path class="fillshape" d="M12 2.3 L20.6 6.9 L20.6 17.1 L12 21.7 L3.4 17.1 L3.4 6.9 Z" stroke-width="1.6" stroke-linejoin="round"/><path class="navline" d="M3.4 6.9 L12 11.5 L20.6 6.9 M12 11.5 L12 21.7" stroke="currentColor" stroke-width="1.5" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg></div><span>Stock</span></button>
-  <button onclick="goTabMenu('sell')" id="nav-sell"><div class="nav-iw"><svg viewBox="0 0 24 24"><rect class="fillshape" x="2.3" y="5.8" width="19.4" height="13.4" rx="2.2" stroke-width="1.7"/><path class="navline" d="M2.3 10.2 L21.7 10.2" stroke="currentColor" stroke-width="2" fill="none"/></svg></div><span>Sale</span></button>
+  <button class="active" onclick="goTabMenu('home')" id="nav-home" data-module="home"><div class="nav-iw"><svg viewBox="0 0 24 24"><path class="fillshape" d="M3 9.8 L12 3 L21 9.8 L21 20 A1.3 1.3 0 0 1 19.7 21.3 L14.7 21.3 L14.7 14.5 L9.3 14.5 L9.3 21.3 L4.3 21.3 A1.3 1.3 0 0 1 3 20 Z" stroke-width="1.7" stroke-linejoin="round" stroke-linecap="round"/></svg></div><span>Home</span></button>
+  <button onclick="goTabMenu('products')" id="nav-products" data-module="stock"><div class="nav-iw"><svg viewBox="0 0 24 24"><path class="fillshape" d="M12 2.3 L20.6 6.9 L20.6 17.1 L12 21.7 L3.4 17.1 L3.4 6.9 Z" stroke-width="1.6" stroke-linejoin="round"/><path class="navline" d="M3.4 6.9 L12 11.5 L20.6 6.9 M12 11.5 L12 21.7" stroke="currentColor" stroke-width="1.5" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg></div><span>Stock</span></button>
+  <button onclick="goTabMenu('sell')" id="nav-sell" data-module="sale"><div class="nav-iw"><svg viewBox="0 0 24 24"><rect class="fillshape" x="2.3" y="5.8" width="19.4" height="13.4" rx="2.2" stroke-width="1.7"/><path class="navline" d="M2.3 10.2 L21.7 10.2" stroke="currentColor" stroke-width="2" fill="none"/></svg></div><span>Sale</span></button>
   <button onclick="goTabMenu('menu')" id="nav-menu"><div class="nav-iw"><svg viewBox="0 0 24 24" fill="none"><path d="M4 6.5 L20 6.5" stroke="currentColor" stroke-width="1.9" stroke-linecap="round"/><path d="M4 12 L20 12" stroke="currentColor" stroke-width="1.9" stroke-linecap="round"/><path d="M4 17.5 L20 17.5" stroke="currentColor" stroke-width="1.9" stroke-linecap="round"/></svg></div><span>Menu</span></button>
 </nav>
 
@@ -4666,6 +4699,10 @@ alter table team_members add column if not exists member_email text;
 alter table team_members add column if not exists role         text default 'manager';
 alter table team_members add column if not exists status       text default 'active';
 alter table team_members add column if not exists created_at   bigint;
+-- V-TEAM-WORKERS (V332): which specific workers (from the Labour DB) this
+-- Manager is assigned to. Empty array = no restriction (they can see/manage
+-- every worker, same as before this feature existed).
+alter table team_members add column if not exists assigned_worker_ids jsonb default '[]'::jsonb;
 -- A person can only be a Manager on ONE business at a time — redeeming a new
 -- code replaces their old membership rather than adding a second one.
 do $$ begin
@@ -4767,6 +4804,31 @@ do $$ declare t text; begin
       ' )';
   end loop;
 end $$;
+
+-- ══════════════════════════════════════════════════════════════════
+-- V335 — V-TEAM-ROLES: custom roles + per-role feature access
+-- Run this ONCE in the Supabase SQL editor (same place you ran V-TEAM
+-- above) to enable the Roles & Access feature — assigning a team member
+-- (e.g. "Sales Man", "Stock Manager") a role that restricts which app
+-- sections they can open on their own phone.
+-- ══════════════════════════════════════════════════════════════════
+create table if not exists custom_roles (
+  id          text primary key,
+  owner_id    uuid references auth.users(id),
+  name        text not null,
+  permissions jsonb default '[]'::jsonb, -- array of module keys, e.g. ["home","stock","sale"]
+  created_at  bigint
+);
+alter table custom_roles enable row level security;
+drop policy if exists roles_owner_all  on custom_roles;
+drop policy if exists roles_member_read on custom_roles;
+-- Owner: full control over their own roles.
+create policy roles_owner_all on custom_roles for all to authenticated
+  using (owner_id = auth.uid()) with check (owner_id = auth.uid());
+-- Team members: read-only access to their owner's roles (needed so their own
+-- device can look up what permissions its own assigned role grants).
+create policy roles_member_read on custom_roles for select to authenticated
+  using (owner_id in (select owner_id from team_members where member_id = auth.uid() and status = 'active'));
 */
 // ────────────────────────────────────────────────────────────────
 
@@ -5002,6 +5064,24 @@ async function _authEnsureFreshToken() {
 // separate WorkPay/Labour Activity apps (different Supabase project)
 // and are untouched by this upgrade. 'labour' IS this app's own table
 // (not shared — see V378 note) so it is tenant-scoped like everything else.
+// V330: recycle-bin tables that get the ghost-id resurrection guard (see _doGetDocs).
+var _BIN_TABLES = ['bin','productbin','purchasebin','expensebin','makingbin','homestockbin'];
+// V330 round 3 FIX: normalize to String() on write. Root cause of "restore works
+// for a moment, then comes back within ~60s": onclick="restPurchase(123)" (no
+// quotes) passes id as a Number, but Supabase's id column returns it as a String
+// on every fetch. Set.has() is strict-equality, so Set{123} vs x.id="123" NEVER
+// matched — the ghost-guard was silently writing correctly but never blocking
+// anything, so the next getDocs (fired by the "LIVE"/save sync you saw as
+// "SAVI...") pulled the row straight back in undetected. Storing + comparing as
+// String everywhere fixes this for good.
+function _addBinGhost(table, id){
+  try{
+    var k='_binghost_'+table;
+    var sid=String(id);
+    var arr=JSON.parse(_memStore.getItem(k)||'[]');
+    if(arr.indexOf(sid)===-1){ arr.push(sid); _memStore.setItem(k, JSON.stringify(arr)); }
+  }catch(e){}
+}
 var _TENANT_SCOPED_COLLECTIONS = {
   godowns:1, gdtransfers:1, gdpurchases:1, gdmovements:1, gdlocations:1, gdbatches:1,
   gdtransfersreq:1, gdcyclecounts:1, products:1, sales:1, purchases:1, expenses:1,
@@ -5033,13 +5113,20 @@ async function _resolveEffectiveOwner() {
   var uid = _authCurrentUserId();
   if (!uid) { window._effectiveOwnerId = null; window._isTeamManager = false; return null; }
   try {
+    // V335: also select 'role' so we know which custom role (if any) this
+    // team member has, and immediately kick off resolving+applying their
+    // permission set once we know it.
     var rows = await _sbFetch(
-      '/rest/v1/team_members?select=owner_id&member_id=eq.' + encodeURIComponent(uid) + '&status=eq.active&limit=1',
+      '/rest/v1/team_members?select=owner_id,role&member_id=eq.' + encodeURIComponent(uid) + '&status=eq.active&limit=1',
       { method: 'GET' }
     );
     var isManager = !!(rows && rows.length);
     window._effectiveOwnerId = isManager ? rows[0].owner_id : uid;
     window._isTeamManager    = isManager;
+    window._myRole           = isManager ? (rows[0].role || '') : '';
+    if (isManager && typeof window._resolveMyRolePermissions === 'function') {
+      window._resolveMyRolePermissions(); // fire-and-forget; applies UI gating when done
+    }
     return window._effectiveOwnerId;
   } catch (e) {
     // Table may not exist yet if V-TEAM SQL hasn't been run — fall back to
@@ -5096,10 +5183,30 @@ async function teamRenderModal() {
     // V-TEAM SQL hasn't been run yet, team_invites/team_members won't exist
     // and every request below will fail. Catch that specifically and show
     // an unmissable setup message instead of a misleading empty list.
-    var members, invites, setupMissing = false, lastErr = null;
+    // V332 FIX: 42703 ("column ... does not exist") wasn't matched here, so
+    // opening this screen before running the V-TEAM-WORKERS migration showed
+    // a raw Supabase error instead of the friendly setup message below.
+    var members, invites, setupMissing = false, workersColMissing = false, lastErr = null;
     try {
-      members = await _sbFetch('/rest/v1/team_members?select=id,member_email,role,status,created_at&owner_id=eq.' + encodeURIComponent(_ownerUid()) + '&order=created_at.desc', { method: 'GET' });
-    } catch(e) { lastErr = e; if (/relation .* does not exist|PGRST20[45]|42P01/i.test(e.message||'')) setupMissing = true; members = []; }
+      members = await _sbFetch('/rest/v1/team_members?select=id,member_email,role,status,created_at,assigned_worker_ids&owner_id=eq.' + encodeURIComponent(_ownerUid()) + '&order=created_at.desc', { method: 'GET' });
+    } catch(e) {
+      lastErr = e;
+      if (/relation .* does not exist|PGRST20[45]|42P01/i.test(e.message||'')) setupMissing = true;
+      else if (/assigned_worker_ids|42703/i.test(e.message||'')) workersColMissing = true;
+      members = [];
+    }
+    // V332: if only the newer assigned_worker_ids column is missing, retry
+    // without it so the base Team feature keeps working either way.
+    if (workersColMissing) {
+      try {
+        members = await _sbFetch('/rest/v1/team_members?select=id,member_email,role,status,created_at&owner_id=eq.' + encodeURIComponent(_ownerUid()) + '&order=created_at.desc', { method: 'GET' });
+        lastErr = null;
+      } catch(e) {
+        lastErr = e;
+        if (/relation .* does not exist|PGRST20[45]|42P01/i.test(e.message||'')) setupMissing = true;
+        members = [];
+      }
+    }
     try {
       invites = await _sbFetch('/rest/v1/team_invites?select=id,status,created_at&owner_id=eq.' + encodeURIComponent(_ownerUid()) + '&status=eq.pending&order=created_at.desc', { method: 'GET' });
     } catch(e) { lastErr = e; if (/relation .* does not exist|PGRST20[45]|42P01/i.test(e.message||'')) setupMissing = true; invites = []; }
@@ -5119,6 +5226,20 @@ async function teamRenderModal() {
     }
 
     var html = '';
+    if (workersColMissing) {
+      html +=
+        '<div style="background:#fffbeb;border:1.5px solid #fde68a;border-radius:12px;padding:14px;margin-bottom:12px">'
+        + '<div style="font-size:13px;font-weight:800;color:#b45309;margin-bottom:6px">⚠️ Worker-assignment setup needed</div>'
+        + '<div style="font-size:12px;color:var(--text2);line-height:1.5">Team invites/members still work below, but assigning specific workers needs a one-time database update. Open the app file, search for <b>V-TEAM-WORKERS</b>, copy that one line of SQL, and run it once in your Supabase SQL editor. Then reopen this screen.</div>'
+        + '</div>';
+      console.warn('[team] assigned_worker_ids column missing — run the V-TEAM-WORKERS SQL migration');
+    }
+    html += '<button class="btn-mc" onclick="rolesOpenModal()" style="width:100%;background:var(--primary-l);color:var(--primary);font-weight:800;margin-bottom:10px">🔑 Manage Roles</button>';
+    await _seedDefaultRolesIfNeeded();
+    var _myRolesList = await _fetchRolesList(true);
+    var _rolesOptionsHtml = _myRolesList.map(function(r){ return '<option value="' + e(r.id) + '">' + e(r.name) + '</option>'; }).join('');
+    html += '<div class="ff" style="margin-bottom:8px"><label class="fl">Invite as</label><select class="fi" id="team-invite-role"><option value="manager">Full Access (Manager)</option>'
+      + _rolesOptionsHtml + '</select></div>';
     html += '<button class="btn-mc" onclick="teamGenerateInvite()" style="width:100%;background:var(--primary);color:#fff;font-weight:800;margin-bottom:14px">➕ Invite a Manager</button>';
 
     if (invites.length) {
@@ -5138,10 +5259,28 @@ async function teamRenderModal() {
       html += '<div style="font-size:12px;color:var(--muted);padding:8px 2px">No managers added yet. Generate an invite code above and share it with them.</div>';
     } else {
       members.forEach(function(m) {
-        html += '<div style="display:flex;align-items:center;justify-content:space-between;background:var(--bg);border-radius:10px;padding:10px 12px;margin-bottom:6px">'
+        var wIds = Array.isArray(m.assigned_worker_ids) ? m.assigned_worker_ids : [];
+        var wLabel = wIds.length ? (wIds.length + ' worker' + (wIds.length===1?'':'s') + ' assigned') : 'All workers (no restriction)';
+        // V335: resolve role id -> friendly name; 'manager'/empty/unknown role = Full Access
+        var _mRole = _myRolesList.filter(function(r){ return r.id === m.role; })[0];
+        var roleLabel = _mRole ? _mRole.name : 'Full Access (Manager)';
+        var roleOptsHtml = '<option value="manager"' + (!m.role || m.role==='manager' ? ' selected' : '') + '>Full Access (Manager)</option>'
+          + _myRolesList.map(function(r){ return '<option value="' + e(r.id) + '"' + (m.role===r.id ? ' selected' : '') + '>' + e(r.name) + '</option>'; }).join('');
+        html += '<div style="background:var(--bg);border-radius:10px;padding:10px 12px;margin-bottom:6px">'
+          + '<div style="display:flex;align-items:center;justify-content:space-between">'
           + '<div><div style="font-size:13px;font-weight:700;color:var(--text)">' + e(m.member_email || 'Unknown') + '</div>'
-          + '<div style="font-size:11px;color:var(--muted);text-transform:capitalize">' + e(m.role || 'manager') + '</div></div>'
+          + '<div style="font-size:11px;color:var(--muted)">' + e(roleLabel) + '</div></div>'
           + '<button onclick="teamRemoveMember(\'' + m.id + '\')" style="font-family:\'Noto Sans\',sans-serif;font-size:11px;font-weight:700;background:#fef2f2;color:#dc2626;border:none;border-radius:8px;padding:6px 10px;cursor:pointer">Remove</button>'
+          + '</div>'
+          + '<div style="margin-top:8px;padding-top:8px;border-top:1px solid var(--border)">'
+          + '<select class="fi" style="font-size:11px;padding:6px 8px" onchange=\'teamChangeRole(' + JSON.stringify(m.id) + ',this)\'>' + roleOptsHtml + '</select>'
+          + '</div>'
+          + '<div style="display:flex;align-items:center;justify-content:space-between;margin-top:8px;padding-top:8px;border-top:1px solid var(--border)">'
+          + '<div style="font-size:11px;color:var(--text2);font-weight:600">👷 ' + e(wLabel) + '</div>'
+          + (workersColMissing
+              ? '<button disabled title="Run the V-TEAM-WORKERS SQL migration first" style="font-family:\'Noto Sans\',sans-serif;font-size:11px;font-weight:700;background:var(--bg);color:var(--muted);border:none;border-radius:8px;padding:6px 10px;cursor:not-allowed">Assign Workers</button>'
+              : '<button onclick=\'teamOpenAssignWorkers(' + JSON.stringify(m.id) + ',' + JSON.stringify(wIds) + ')\' style="font-family:\'Noto Sans\',sans-serif;font-size:11px;font-weight:700;background:var(--primary-l);color:var(--primary);border:none;border-radius:8px;padding:6px 10px;cursor:pointer">Assign Workers</button>')
+          + '</div>'
           + '</div>';
       });
     }
@@ -5161,11 +5300,13 @@ async function teamRenderModal() {
 }
 async function teamGenerateInvite() {
   var code = _teamGenCode();
+  var roleSel = document.getElementById('team-invite-role');
+  var roleId = roleSel ? roleSel.value : 'manager'; // 'manager' = built-in full access
   try {
     await _sbFetch('/rest/v1/team_invites', {
       method: 'POST',
       headers: { Prefer: 'return=minimal' },
-      body: JSON.stringify({ id: code, owner_id: _ownerUid(), role: 'manager', status: 'pending', created_at: Date.now() })
+      body: JSON.stringify({ id: code, owner_id: _ownerUid(), role: roleId, status: 'pending', created_at: Date.now() })
     });
     if (typeof toast === 'function') toast('✅ Invite code created: ' + code, 'green');
     teamRenderModal();
@@ -5208,6 +5349,60 @@ async function teamRemoveMember(id) {
     toast('⚠️ Could not remove manager', 'red');
   }
 }
+// ── V332: Assign specific workers to a specific team member ────────────────
+var _teamAssignMemberId = null;
+async function teamOpenAssignWorkers(memberId, currentIds) {
+  _teamAssignMemberId = memberId;
+  currentIds = (currentIds || []).map(function(x){ return +x; });
+  var body = document.getElementById('team-assign-modal-body');
+  var modal = document.getElementById('team-assign-modal');
+  // V333 FIX: labourDB is a LAZY table (see _LAZY in fb-collections) — it only
+  // has data once the Labour DB tab has actually been opened this session.
+  // Opening this modal straight from Team/Manager Access (without ever
+  // visiting Labour DB) used to always show "No workers" even when the
+  // business has plenty. Force the real load first, show a spinner while it
+  // fetches, then render from window.labourDB once it resolves.
+  body.innerHTML = '<div style="font-size:12px;color:var(--muted);padding:16px 2px;text-align:center">⏳ Loading workers…</div>';
+  modal.classList.add('open');
+  try {
+    if (typeof window._lazyLoad === 'function') await window._lazyLoad('labour');
+  } catch(e) { console.warn('[team] labour lazy-load failed', e); }
+  var workers = (typeof labourDB !== 'undefined' && labourDB.length) ? labourDB
+    : (typeof window.labourDB !== 'undefined' ? window.labourDB : []);
+  if (!workers.length) {
+    body.innerHTML = '<div style="font-size:12px;color:var(--muted);padding:8px 2px">No workers in your Labour Database yet. Add workers first, then come back here to assign them.</div>';
+  } else {
+    var html = '<div style="display:flex;flex-direction:column;gap:6px;max-height:50vh;overflow-y:auto">';
+    workers.forEach(function(w) {
+      var checked = currentIds.indexOf(+w.id) !== -1 ? 'checked' : '';
+      html += '<label style="display:flex;align-items:center;gap:10px;background:var(--bg);border-radius:10px;padding:10px 12px;cursor:pointer">'
+        + '<input type="checkbox" class="team-assign-worker-cb" value="' + w.id + '" ' + checked + ' style="width:18px;height:18px;flex-shrink:0">'
+        + '<div><div style="font-size:13px;font-weight:700;color:var(--text)">' + e(w.name) + '</div>'
+        + '<div style="font-size:11px;color:var(--muted)">' + e(w.type || '') + (w.skill ? ' · ' + e(w.skill) : '') + '</div></div>'
+        + '</label>';
+    });
+    html += '</div>';
+    body.innerHTML = html;
+  }
+}
+async function teamSaveWorkerAssignment() {
+  if (!_teamAssignMemberId) return;
+  var boxes = document.querySelectorAll('.team-assign-worker-cb:checked');
+  var ids = Array.prototype.map.call(boxes, function(b) { return +b.value; });
+  try {
+    await _sbFetch('/rest/v1/team_members?id=eq.' + encodeURIComponent(_teamAssignMemberId), {
+      method: 'PATCH',
+      headers: { Prefer: 'return=minimal' },
+      body: JSON.stringify({ assigned_worker_ids: ids })
+    });
+    toast('✅ Worker assignment saved', 'green');
+    document.getElementById('team-assign-modal').classList.remove('open');
+    teamRenderModal();
+  } catch(e) {
+    console.error('[team] saveWorkerAssignment failed', e);
+    toast('⚠️ Could not save assignment — try again', 'red');
+  }
+}
 async function teamRedeemInvite() {
   var input = document.getElementById('team-redeem-code');
   var code = (input && input.value || '').trim().toUpperCase();
@@ -5238,6 +5433,288 @@ async function teamLeaveBusiness() {
     setTimeout(function(){ location.reload(); }, 800);
   } catch(e) {
     toast('⚠️ Could not leave business', 'red');
+  }
+}
+
+// ── V335 — ROLES & ACCESS ────────────────────────────────────────────────
+// Lets the Owner create custom roles (e.g. "Sales Man", "Stock Manager")
+// that each grant access to only a subset of app sections, then assign a
+// role to each team member so what they can do on their own phone is
+// limited to their job — not full Owner access like every Manager got
+// before this. Requires the V-TEAM-ROLES SQL migration (see comment block
+// near the V-TEAM SQL above) to have been run once.
+
+// Every gate-able section, in the order they should appear in the role editor.
+var _ROLE_MODULES = [
+  { key:'home',     label:'🏠 Home / Dashboard' },
+  { key:'stock',    label:'📦 Stock (Products, Price Calc, Batch Tracker, Stock Detail)' },
+  { key:'sale',     label:'💰 Sale' },
+  { key:'purchase', label:'🛒 Purchase' },
+  { key:'godown',   label:'🏭 Godown Management' },
+  { key:'labour',   label:'👷 Labour Database & Cost Tracker' },
+  { key:'party',    label:'🤝 Party / Ledger' },
+  { key:'expenses', label:'📂 Expenses' },
+  { key:'reports',  label:'📊 Reports' },
+  { key:'bin',      label:'🗑 Recycle Bin' }
+];
+// A role missing entirely, or a member with no role/role='manager' and no
+// matching custom_roles row, keeps today's behavior — full access. This
+// keeps every existing invite/member working exactly as before.
+window._myAllowedModules = null; // null = full access (unrestricted)
+var _rolesCache = null; // list of {id,name,permissions} for the current owner, cached per session
+
+async function _fetchRolesList(force){
+  if (_rolesCache && !force) return _rolesCache;
+  try {
+    _rolesCache = await _sbFetch('/rest/v1/custom_roles?select=id,name,permissions&owner_id=eq.' + encodeURIComponent(_ownerUid()) + '&order=created_at.asc', { method: 'GET' });
+  } catch(e) {
+    console.warn('[roles] fetch failed — run the V-TEAM-ROLES SQL migration if this persists', e);
+    _rolesCache = [];
+  }
+  return _rolesCache;
+}
+
+// V336: ship with 2 ready-made roles (Sales Man, Stock Manager) so the Owner
+// isn't stuck with only "Full Access (Manager)" until they build one from
+// scratch — matches asking for "manager, salesman and stock manager" out of
+// the box. Only ever runs once per owner (a localStorage flag stops it from
+// re-creating them if you later delete all your roles on purpose), and only
+// for the Owner — a team member's device is read-only on this table and
+// should never attempt to write here.
+var _DEFAULT_ROLE_PRESETS = [
+  { name:'Sales Man',     permissions:['home','sale'] },
+  { name:'Stock Manager', permissions:['home','stock','purchase','godown'] }
+];
+async function _seedDefaultRolesIfNeeded(){
+  if (window._isTeamManager) return; // team members never write custom_roles
+  var ownerId = _ownerUid();
+  var flagKey = '_rolesSeededFor_' + ownerId;
+  try { if (_memStore.getItem(flagKey)) return; } catch(e){}
+  try {
+    var existing = await _fetchRolesList(true);
+    if (existing.length) { try{ _memStore.setItem(flagKey, '1'); }catch(e){} return; } // already has roles — don't touch
+    for (var i = 0; i < _DEFAULT_ROLE_PRESETS.length; i++) {
+      var p = _DEFAULT_ROLE_PRESETS[i];
+      var id = 'role_' + Date.now() + '_' + Math.floor(Math.random()*1e6) + '_' + i;
+      await _sbFetch('/rest/v1/custom_roles', {
+        method: 'POST', headers: { Prefer: 'return=minimal' },
+        body: JSON.stringify({ id: id, owner_id: ownerId, name: p.name, permissions: p.permissions, created_at: Date.now() + i })
+      });
+    }
+    try { _memStore.setItem(flagKey, '1'); } catch(e){}
+    _rolesCache = null;
+    console.log('[roles] seeded default roles: Sales Man, Stock Manager');
+  } catch(e) {
+    console.warn('[roles] default role seeding failed — table may not exist yet (run V-TEAM-ROLES SQL)', e);
+  }
+}
+
+// Called (fire-and-forget) right after we learn this device belongs to a
+// team member with a role. Resolves what they're allowed to see, then
+// immediately applies it to the UI.
+window._resolveMyRolePermissions = async function(){
+  try {
+    if (!window._isTeamManager || !window._myRole || window._myRole === 'manager') {
+      window._myAllowedModules = null; // unrestricted — matches pre-V335 behavior
+    } else {
+      var roles = await _fetchRolesList(true);
+      var mine = roles.filter(function(r){ return r.id === window._myRole; })[0];
+      window._myAllowedModules = (mine && Array.isArray(mine.permissions)) ? mine.permissions : null;
+    }
+  } catch(e) {
+    console.warn('[roles] resolve failed — defaulting to full access', e);
+    window._myAllowedModules = null;
+  }
+  _applyRoleUIGating();
+};
+
+// Hides bottom-nav buttons and menu rows for modules this device isn't
+// allowed to open, and hides Owner-only rows (Team/Manager Access, Backup)
+// for every team member regardless of role.
+function _applyRoleUIGating(){
+  try {
+    if (window._isTeamManager) {
+      document.querySelectorAll('[data-owner-only]').forEach(function(el){ el.style.display = 'none'; });
+    }
+    var allowed = window._myAllowedModules;
+    if (!allowed) return; // full access — nothing else to hide
+    document.querySelectorAll('[data-module]').forEach(function(el){
+      var mod = el.getAttribute('data-module');
+      el.style.display = (allowed.indexOf(mod) === -1) ? 'none' : '';
+    });
+    // If the tab currently open isn't allowed, bounce to Home.
+    var curMod = _ROLE_TAB_MODULE[_navCurrent];
+    if (curMod && allowed.indexOf(curMod) === -1) {
+      toast('🔒 You don\'t have access to this section', 'red');
+      goTabMenu('home');
+    }
+  } catch(e) { console.warn('[roles] UI gating error', e); }
+}
+// Safety net: gating may resolve before nav/menu DOM is fully parsed (or the
+// _isTeamManager fetch is still slow); reapply once the DOM is definitely ready.
+document.addEventListener('DOMContentLoaded', function(){ _applyRoleUIGating(); });
+// Maps every goTab()/goTabMenu() destination name to the module key that
+// gates it, for the navigation guard below.
+var _ROLE_TAB_MODULE = {
+  home:'home', products:'stock', add:'stock', calc:'stock', detail:'stock', batchmaster:'stock',
+  sell:'sale', purchase:'purchase', godown:'godown', labourdb:'labour', labourcost:'labour',
+  party:'party', expenses:'expenses', bin:'bin'
+};
+// Defense-in-depth: block direct navigation to a disallowed tab (e.g. via a
+// stale button reference or deep link), not just hiding the entry point.
+// goTabMenu is defined in a later <script> block, so wait for it to exist
+// (same defensive polling pattern used elsewhere in this file for late-defined
+// functions) instead of referencing it directly here, which would throw.
+(function(){
+  var _attempts = 0;
+  var _wrapTimer = setInterval(function(){
+    _attempts++;
+    if (typeof goTabMenu === 'function' && !goTabMenu._v335Wrapped) {
+      clearInterval(_wrapTimer);
+      var _origGoTabMenu = goTabMenu;
+      goTabMenu = function(name){
+        var allowed = window._myAllowedModules;
+        var mod = _ROLE_TAB_MODULE[name];
+        if (allowed && mod && allowed.indexOf(mod) === -1) {
+          toast('🔒 You don\'t have access to this section', 'red');
+          return;
+        }
+        return _origGoTabMenu(name);
+      };
+      goTabMenu._v335Wrapped = true;
+    } else if (_attempts >= 50) {
+      clearInterval(_wrapTimer); // give up after 5s
+      console.warn('[roles] goTabMenu never appeared — navigation guard not installed (UI hiding still works)');
+    }
+  }, 100);
+})();
+
+function rolesOpenModal(){
+  closeMoreOptions();
+  document.getElementById('roles-modal').classList.add('open');
+  rolesRenderModal();
+}
+async function rolesRenderModal(){
+  var body = document.getElementById('roles-modal-body');
+  body.innerHTML = 'Loading…';
+  var roles;
+  try {
+    await _seedDefaultRolesIfNeeded();
+    roles = await _fetchRolesList(true);
+  } catch(e) {
+    body.innerHTML = '<div style="font-size:12px;color:#dc2626">Could not load roles — run the V-TEAM-ROLES SQL migration (search the app file for that heading) if this is the first time opening this screen.</div>';
+    return;
+  }
+  var html = '<div style="font-size:11px;color:var(--muted);margin-bottom:12px;line-height:1.5">Create a role (e.g. "Sales Man", "Stock Manager"), tick which sections it can open, then pick that role when inviting a team member. Roles left unassigned (default "Full Access") keep seeing everything, same as before.</div>';
+  html += '<button class="btn-mc" onclick="roleOpenEditor(null)" style="width:100%;background:var(--primary);color:#fff;font-weight:800;margin-bottom:14px">➕ Create New Role</button>';
+  if (!roles.length) {
+    html += '<div style="font-size:12px;color:var(--muted);padding:8px 2px">No custom roles yet.</div>';
+  } else {
+    roles.forEach(function(r){
+      var n = (r.permissions||[]).length;
+      html += '<div style="display:flex;align-items:center;justify-content:space-between;background:var(--bg);border-radius:10px;padding:10px 12px;margin-bottom:6px">'
+        + '<div><div style="font-size:13px;font-weight:700;color:var(--text)">' + e(r.name) + '</div>'
+        + '<div style="font-size:11px;color:var(--muted)">' + n + ' section' + (n===1?'':'s') + ' allowed</div></div>'
+        + '<div style="display:flex;gap:6px">'
+        + '<button onclick=\'roleOpenEditor(' + JSON.stringify(r.id) + ')\' style="font-family:\'Noto Sans\',sans-serif;font-size:11px;font-weight:700;background:var(--primary-l);color:var(--primary);border:none;border-radius:8px;padding:6px 10px;cursor:pointer">Edit</button>'
+        + '<button onclick="roleDelete(\'' + r.id + '\')" style="font-family:\'Noto Sans\',sans-serif;font-size:11px;font-weight:700;background:#fef2f2;color:#dc2626;border:none;border-radius:8px;padding:6px 10px;cursor:pointer">Delete</button>'
+        + '</div></div>';
+    });
+  }
+  body.innerHTML = html;
+}
+var _roleEditId = null;
+async function roleOpenEditor(id){
+  _roleEditId = id;
+  var existing = null;
+  if (id) {
+    var roles = await _fetchRolesList();
+    existing = roles.filter(function(r){ return r.id === id; })[0] || null;
+  }
+  var perms = existing ? (existing.permissions||[]) : [];
+  var html = '<div class="ff"><label class="fl">Role Name</label><input type="text" class="fi" id="role-name-input" placeholder="e.g. Sales Man, Stock Manager" value="' + (existing ? e(existing.name) : '') + '"></div>'
+    + '<div style="display:flex;align-items:center;justify-content:space-between;margin-top:10px">'
+    + '<label class="fl" style="margin:0">Allowed Sections</label>'
+    + '<button type="button" onclick="roleToggleAll()" style="font-family:\'Noto Sans\',sans-serif;font-size:11px;font-weight:700;background:var(--primary-l);color:var(--primary);border:none;border-radius:8px;padding:6px 10px;cursor:pointer">☑️ Select All (Full Access)</button>'
+    + '</div>'
+    + '<div style="display:flex;flex-direction:column;gap:6px;margin-top:6px">';
+  _ROLE_MODULES.forEach(function(m){
+    var checked = perms.indexOf(m.key) !== -1 ? 'checked' : '';
+    html += '<label style="display:flex;align-items:center;gap:10px;background:var(--bg);border-radius:10px;padding:10px 12px;cursor:pointer">'
+      + '<input type="checkbox" class="role-perm-cb" value="' + m.key + '" ' + checked + ' style="width:18px;height:18px;flex-shrink:0">'
+      + '<div style="font-size:13px;color:var(--text)">' + m.label + '</div></label>';
+  });
+  html += '</div>';
+  document.getElementById('role-editor-body').innerHTML = html;
+  document.getElementById('role-editor-title').textContent = existing ? 'Edit Role' : 'Create New Role';
+  document.getElementById('role-editor-modal').classList.add('open');
+}
+// Toggles all permission checkboxes on/off together — a quick way to give a
+// role every current feature (and any new ones added to _ROLE_MODULES later)
+// without ticking each box by hand.
+function roleToggleAll(){
+  var boxes = document.querySelectorAll('.role-perm-cb');
+  var allChecked = Array.prototype.every.call(boxes, function(b){ return b.checked; });
+  Array.prototype.forEach.call(boxes, function(b){ b.checked = !allChecked; });
+}
+async function roleSave(){
+  var nameEl = document.getElementById('role-name-input');
+  var name = (nameEl.value || '').trim();
+  if (!name) { toast('Enter a role name', 'red'); return; }
+  var boxes = document.querySelectorAll('.role-perm-cb:checked');
+  var perms = Array.prototype.map.call(boxes, function(b){ return b.value; });
+  if (!perms.length) { toast('Pick at least one allowed section', 'red'); return; }
+  try {
+    if (_roleEditId) {
+      await _sbFetch('/rest/v1/custom_roles?id=eq.' + encodeURIComponent(_roleEditId), {
+        method: 'PATCH', headers: { Prefer: 'return=minimal' },
+        body: JSON.stringify({ name: name, permissions: perms })
+      });
+    } else {
+      var id = 'role_' + Date.now() + '_' + Math.floor(Math.random()*1e6);
+      await _sbFetch('/rest/v1/custom_roles', {
+        method: 'POST', headers: { Prefer: 'return=minimal' },
+        body: JSON.stringify({ id: id, owner_id: _ownerUid(), name: name, permissions: perms, created_at: Date.now() })
+      });
+    }
+    toast('✅ Role saved', 'green');
+    document.getElementById('role-editor-modal').classList.remove('open');
+    _rolesCache = null;
+    rolesRenderModal();
+  } catch(e) {
+    console.error('[roles] save failed', e);
+    var msg = (e && e.message) || '';
+    if (/relation .* does not exist|PGRST20[45]|42P01/i.test(msg)) {
+      alert('Setup needed: Roles & Access needs a one-time database update.\n\nOpen the app file, search for "V-TEAM-ROLES", copy that SQL block, and run it once in your Supabase SQL editor. Then try again.');
+    } else {
+      toast('⚠️ Could not save role', 'red');
+    }
+  }
+}
+async function roleDelete(id){
+  if (!confirm('Delete this role? Any team member currently assigned to it will fall back to full access until given a new role.')) return;
+  try {
+    await _sbFetch('/rest/v1/custom_roles?id=eq.' + encodeURIComponent(id), { method: 'DELETE', headers: { Prefer: 'return=minimal' } });
+    toast('Role deleted', 'green');
+    _rolesCache = null;
+    rolesRenderModal();
+  } catch(e) {
+    toast('⚠️ Could not delete role', 'red');
+  }
+}
+// Lets the Owner change an existing member's role after the fact, without
+// having to remove and re-invite them.
+async function teamChangeRole(memberId, selectEl){
+  var newRole = selectEl.value;
+  try {
+    await _sbFetch('/rest/v1/team_members?id=eq.' + encodeURIComponent(memberId), {
+      method: 'PATCH', headers: { Prefer: 'return=minimal' },
+      body: JSON.stringify({ role: newRole })
+    });
+    toast('✅ Role updated', 'green');
+  } catch(e) {
+    toast('⚠️ Could not update role', 'red');
+    console.error('[team] changeRole failed', e);
   }
 }
 
@@ -7128,6 +7605,12 @@ function hsRestoreEntry(id){
   hsBin=hsBin.filter(function(x){return x.id!==id;});
   hsSaveData();
   hsSaveBin();
+  // V330 FIX: hsSaveBin() is upsert-only, never deletes the Supabase row —
+  // explicit delete + permanent ghost-guard so this entry can't resurface in the bin.
+  _addBinGhost('homestockbin', id);
+  if(window._firebaseReady&&window._firestoreDeleteDoc&&window._firestoreDoc&&window._firestoreDB){
+    window._firestoreDeleteDoc(window._firestoreDoc(window._firestoreDB,'homestockbin',String(id))).catch(function(e){console.warn('[V330] direct deleteDoc homestockbin/'+id+' failed:',e&&e.message);});
+  }
   renderHomeStock();
   renderHsBin();
   toast('♻ Entry restored — stock added back','green');
@@ -7136,6 +7619,13 @@ function hsRestoreEntry(id){
 function hsPermDelete(id){
   hsBin=hsBin.filter(function(x){return x.id!==id;});
   hsSaveBin();
+  // V330 FIX: same gap as every other permanent-delete — hsSaveBin() is
+  // upsert-only, never deletes the Supabase row. Ghost-guard + retry-on-load
+  // in _doGetDocs finishes the job even if this single call fails.
+  _addBinGhost('homestockbin', id);
+  if(window._firebaseReady&&window._firestoreDeleteDoc&&window._firestoreDoc&&window._firestoreDB){
+    window._firestoreDeleteDoc(window._firestoreDoc(window._firestoreDB,'homestockbin',String(id))).catch(function(e){console.warn('[V330] direct deleteDoc homestockbin/'+id+' failed:',e&&e.message);});
+  }
   renderHsBin();
   toast('🗑 Deleted forever','red');
 }
@@ -11609,6 +12099,24 @@ function restPurchase(id){
     purchases.unshift(restored);
   }
   purchaseBin=purchaseBin.filter(function(x){return x.id!==id});
+  // V330 FIX — restored purchase reappears in bin after refresh/reopen: restore
+  // only removed the item from purchaseBin[] in-memory and called savePurchaseBin(),
+  // which is UPSERT-ONLY — it pushes whatever's still in purchaseBin but never
+  // deletes the Supabase row for an id that's no longer in the array. So the
+  // Supabase 'purchasebin' row for this id was never actually deleted.
+  // purchasebin is a _BACKGROUND table (re-fetched via getDocs every app open) —
+  // that leftover row gets pulled straight back in and merged into purchaseBin[]
+  // on the next reopen/refresh, making the "restored" item resurface in the bin.
+  // Every permanent-delete function (prmDelPurchase etc.) already does this
+  // explicit deleteDoc — restore just never had the matching call. Mirrors that
+  // same fix, applied on restore instead of permanent delete.
+  // V330 round 2: also add a permanent ghost-guard, so even if THIS deleteDoc call
+  // fails (closed app mid-flight, flaky mobile network) it can't resurface — every
+  // future load strips it and force-retries the delete until it truly succeeds.
+  _addBinGhost('purchasebin', id);
+  if(window._firebaseReady&&window._firestoreDeleteDoc&&window._firestoreDoc&&window._firestoreDB){
+    window._firestoreDeleteDoc(window._firestoreDoc(window._firestoreDB,'purchasebin',String(id))).catch(function(e){console.warn('[V330] direct deleteDoc purchasebin/'+id+' failed:',e&&e.message);});
+  }
   // Rebuild stock from source-of-truth instead of manual increment
   affectedProds.forEach(function(p){
     if(typeof window.rebuildProductStock==='function') window.rebuildProductStock(p.id);
@@ -11626,6 +12134,8 @@ function prmDelPurchase(id){
     savePurchaseBin();renderBin();toast('Deleted forever');
     // v1-37-21 FIX: immediate Firestore delete to prevent resurrection via
     // the one-time purchasebin getDocs load on next app start.
+    // V330: permanent ghost-guard backs this up if the delete call itself fails.
+    _addBinGhost('purchasebin', id);
     if(window._firebaseReady&&window._firestoreDeleteDoc&&window._firestoreDoc&&window._firestoreDB){
       window._firestoreDeleteDoc(window._firestoreDoc(window._firestoreDB,'purchasebin',String(id))).catch(function(e){console.warn('[v1-37-21] direct deleteDoc purchasebin/'+id+' failed:',e&&e.message);});
     }
@@ -11665,6 +12175,13 @@ function restExpense(id){
   if(typeof rebuildAllBatchLabourExpenses==='function')rebuildAllBatchLabourExpenses();
   if(typeof rebuildWorkerTotalsFromExpenses==='function')rebuildWorkerTotalsFromExpenses();
   saveExp();saveExpenseBin();saveLDB();renderBin();renderExpenses();renderLabourDB();
+  // V330 FIX: same restore-resurrection bug as purchases — saveExpenseBin() is
+  // upsert-only, never deletes the Supabase row. Explicit delete + ghost-guard
+  // so it can't resurface in the bin on next reopen/refresh.
+  _addBinGhost('expensebin', id);
+  if(window._firebaseReady&&window._firestoreDeleteDoc&&window._firestoreDoc&&window._firestoreDB){
+    window._firestoreDeleteDoc(window._firestoreDoc(window._firestoreDB,'expensebin',String(id))).catch(function(e){console.warn('[V330] direct deleteDoc expensebin/'+id+' failed:',e&&e.message);});
+  }
   if(_wdTarget)openWorkerDetail(_wdTarget);
   toast('♻ Payment restored','green');
 }
@@ -11676,6 +12193,8 @@ function prmDelExpense(id){
     saveExpenseBin();renderBin();toast('Deleted forever');
     // v1-37-21 FIX: immediate Firestore delete to prevent resurrection via
     // the one-time expensebin getDocs load on next app start.
+    // V330: permanent ghost-guard backs this up if the delete call itself fails.
+    _addBinGhost('expensebin', id);
     if(window._firebaseReady&&window._firestoreDeleteDoc&&window._firestoreDoc&&window._firestoreDB){
       window._firestoreDeleteDoc(window._firestoreDoc(window._firestoreDB,'expensebin',String(id))).catch(function(e){console.warn('[v1-37-21] direct deleteDoc expensebin/'+id+' failed:',e&&e.message);});
     }
@@ -11735,6 +12254,13 @@ function restBatch(id){
   saveExp();saveLDB();renderExpenses();renderLabourDB();
   // ─────────────────────────────────────────────────────────────────────────
   saveMkLog();save();saveMakingBin();renderBin();renderCalcMakingHistory();renderProductsForce();renderDashboard();
+  // V330 FIX: same restore-resurrection bug as purchases — saveMakingBin() is
+  // upsert-only, never deletes the Supabase row. Explicit delete + ghost-guard
+  // so the batch can't resurface in the bin on next reopen/refresh.
+  _addBinGhost('makingbin', id);
+  if(window._firebaseReady&&window._firestoreDeleteDoc&&window._firestoreDoc&&window._firestoreDB){
+    window._firestoreDeleteDoc(window._firestoreDoc(window._firestoreDB,'makingbin',String(id))).catch(function(e){console.warn('[V330] direct deleteDoc makingbin/'+id+' failed:',e&&e.message);});
+  }
   // v1-24 FIX: rebuild stock from source of truth — makingLog now contains restored batch
   if(finProd && typeof window.rebuildProductStock==='function') window.rebuildProductStock(finProd.id);
   rawEntries.forEach(function(r){
@@ -11751,6 +12277,8 @@ function prmDelBatch(id){
     // v1-37-21 FIX: also delete the Firestore doc immediately so a one-time
     // _refreshMakingBin() getDocs load on next app start doesn't resurrect
     // this item before the debounced syncCollection write completes.
+    // V330: permanent ghost-guard backs this up if the delete call itself fails.
+    _addBinGhost('makingbin', id);
     if(window._firebaseReady&&window._firestoreDeleteDoc&&window._firestoreDoc&&window._firestoreDB){
       window._firestoreDeleteDoc(window._firestoreDoc(window._firestoreDB,'makingbin',String(id))).catch(function(e){console.warn('[v1-37-21] direct deleteDoc makingbin/'+id+' failed:',e&&e.message);});
     }
@@ -11772,6 +12300,13 @@ function restProduct(id){
     var r=Object.assign({},s);delete r.deletedAt;delete r._note;sales.unshift(r);
   });
   if(restoredSales.length) bin=bin.filter(function(s){return !restoredSales.some(function(rs){return rs.id===s.id;});});
+  // V330 FIX: explicit delete so each restored sale's old bin row can't resurrect it.
+  if(restoredSales.length&&window._firebaseReady&&window._firestoreDeleteDoc&&window._firestoreDoc&&window._firestoreDB){
+    restoredSales.forEach(function(rs){
+      _addBinGhost('bin', rs.id);
+      window._firestoreDeleteDoc(window._firestoreDoc(window._firestoreDB,'bin',String(rs.id))).catch(function(e){console.warn('[V330] direct deleteDoc bin/'+rs.id+' failed:',e&&e.message);});
+    });
+  }
   // v1-8: Restore related purchases from purchaseBin back to purchases[]
   var restoredPurs=(purchaseBin||[]).filter(function(pur){
     if(pur._note!=='Product deleted') return false;
@@ -11786,6 +12321,13 @@ function restProduct(id){
     }
   });
   if(restoredPurs.length) purchaseBin=purchaseBin.filter(function(pur){return !restoredPurs.some(function(rp){return rp.id===pur.id;});});
+  // V330 FIX: explicit delete so each restored purchase's old bin row can't resurrect it.
+  if(restoredPurs.length&&window._firebaseReady&&window._firestoreDeleteDoc&&window._firestoreDoc&&window._firestoreDB){
+    restoredPurs.forEach(function(rp){
+      _addBinGhost('purchasebin', rp.id);
+      window._firestoreDeleteDoc(window._firestoreDoc(window._firestoreDB,'purchasebin',String(rp.id))).catch(function(e){console.warn('[V330] direct deleteDoc purchasebin/'+rp.id+' failed:',e&&e.message);});
+    });
+  }
   // Restore related batches from makingBin back to makingLog
   var restoredBatches=makingBin.filter(function(mk){return mk.productId===id;});
   restoredBatches.forEach(function(mk){
@@ -11795,6 +12337,13 @@ function restProduct(id){
     raw.forEach(function(r){makingLog.push(r);});
   });
   makingBin=makingBin.filter(function(mk){return mk.productId!==id;});
+  // V330 FIX: explicit delete so each restored batch's old bin row can't resurrect it.
+  if(restoredBatches.length&&window._firebaseReady&&window._firestoreDeleteDoc&&window._firestoreDoc&&window._firestoreDB){
+    restoredBatches.forEach(function(rb){
+      _addBinGhost('makingbin', rb.id);
+      window._firestoreDeleteDoc(window._firestoreDoc(window._firestoreDB,'makingbin',String(rb.id))).catch(function(e){console.warn('[V330] direct deleteDoc makingbin/'+rb.id+' failed:',e&&e.message);});
+    });
+  }
   // v1-8: Restore related homeStock entries from hsBin back to homeStock[]
   var restoredHS=(hsBin||[]).filter(function(h){return h._note==='Product deleted'&&h.prodId===id;});
   restoredHS.forEach(function(h){
@@ -11803,6 +12352,14 @@ function restProduct(id){
   if(restoredHS.length){
     hsBin=hsBin.filter(function(h){return !restoredHS.some(function(rh){return rh.id===h.id;});});
     hsSaveBin();
+    // V330 FIX: explicit delete + ghost-guard so each restored homestock entry's
+    // old bin row can't resurrect it.
+    if(window._firebaseReady&&window._firestoreDeleteDoc&&window._firestoreDoc&&window._firestoreDB){
+      restoredHS.forEach(function(rh){
+        _addBinGhost('homestockbin', rh.id);
+        window._firestoreDeleteDoc(window._firestoreDoc(window._firestoreDB,'homestockbin',String(rh.id))).catch(function(e){console.warn('[V330] direct deleteDoc homestockbin/'+rh.id+' failed:',e&&e.message);});
+      });
+    }
     if(window._firebaseReady&&window._fbSyncHomeStock){window._markLocalWrite(5000,'homestock');window._fbSyncHomeStock(homeStock);}
   }
   // Restore godown transfers for this product
@@ -11816,6 +12373,12 @@ function restProduct(id){
   // Rebuild stock from scratch after full restore
   products.unshift(restored);
   productBin=productBin.filter(function(x){return x.id!==id});
+  // V330 FIX: explicit delete + ghost-guard so this product's own old productbin
+  // row can't resurrect it back into the recycle bin on next reopen/refresh.
+  _addBinGhost('productbin', id);
+  if(window._firebaseReady&&window._firestoreDeleteDoc&&window._firestoreDoc&&window._firestoreDB){
+    window._firestoreDeleteDoc(window._firestoreDoc(window._firestoreDB,'productbin',String(id))).catch(function(e){console.warn('[V330] direct deleteDoc productbin/'+id+' failed:',e&&e.message);});
+  }
   if(typeof window.recalculateInventory==='function') window.recalculateInventory(id);
   var finalProd=products.find(function(x){return x.id===id;});
   if(finalProd&&typeof window.recalculateProductCost==='function') window.recalculateProductCost(finalProd);
@@ -11839,6 +12402,8 @@ function prmDelProduct(id){
     saveProductBin();renderBin();toast('Deleted forever');
     // v1-37-21 FIX: immediate Firestore delete to prevent resurrection via
     // _refreshProductBin()'s one-time getDocs load on next app start.
+    // V330: permanent ghost-guard backs this up if the delete call itself fails.
+    _addBinGhost('productbin', id);
     if(window._firebaseReady&&window._firestoreDeleteDoc&&window._firestoreDoc&&window._firestoreDB){
       window._firestoreDeleteDoc(window._firestoreDoc(window._firestoreDB,'productbin',String(id))).catch(function(e){console.warn('[v1-37-21] direct deleteDoc productbin/'+id+' failed:',e&&e.message);});
     }
@@ -19463,10 +20028,10 @@ function _appLogout() {
                'products','sales','purchases','makinglog']; // V195: moved here, see note above
   var _lazyLoaded = {}; // tracks which lazy tables have been fetched at least once
   window._lazyLoad = function(tableName){
-    if(_lazyLoaded[tableName]) return; // already loaded
+    if(_lazyLoaded[tableName]) return Promise.resolve(); // V333 FIX: already loaded — return a resolvable promise, not undefined, so callers can safely await this
     _lazyLoaded[tableName] = true;
     var cfg = _arrayCollections.find(function(c){ return c.table === tableName; });
-    if(cfg) _doGetDocs(cfg);
+    return cfg ? _doGetDocs(cfg) : Promise.resolve(); // V333 FIX: return the fetch promise so callers (e.g. teamOpenAssignWorkers) can await real data instead of racing an empty in-memory array
   };
   // V285: manual refresh — since automatic re-fetching after every save was
   // removed to cut Supabase read/egress usage, this is now the one way to pull
@@ -19784,6 +20349,46 @@ function _appLogout() {
           }
         }catch(e){}
       }
+      // V330 FIX — bin-of-a-bin resurrection: restoring OR permanently deleting an item
+      // FROM a recycle bin (purchasebin/productbin/bin/makingbin/expensebin/homestockbin)
+      // only removed it from that bin's array + fired an explicit Supabase deleteDoc. If
+      // that single deleteDoc call is ever lost (closed app mid-flight, flaky mobile network,
+      // a transient RLS/auth race) there is nothing else backing it up — the very next
+      // getDocs fetch for that bin table pulls the still-there Supabase row straight back in,
+      // and it resurfaces in the bin again ("Darchini" kept coming back after Restore).
+      // Same class of bug as V210 (gdpurchases)/V246 (godowns), applied to all 6 bin tables:
+      // every restore/permanent-delete now ALSO records the id in a permanent local
+      // "ghost" blocklist. That id can never be shown again from this device, and — crucially —
+      // this block force-retries the deleteDoc every time the table loads, so even a Supabase
+      // row that failed to delete once eventually gets cleaned up for good.
+      if(_BIN_TABLES.indexOf(cfg.table) !== -1){
+        try{
+          var _ghKey = '_binghost_'+cfg.table;
+          // V330 round 3: ghost ids are stored as Strings now — compare via String(x.id)
+          // too, since Supabase always returns id as a string regardless of how the
+          // onclick handler originally passed it (Number, in restPurchase's case).
+          var _ghIds = new Set(JSON.parse(_memStore.getItem(_ghKey)||'[]'));
+          if(_ghIds.size > 0){
+            var _cleanBin = _merged.filter(function(x){ return !x || !_ghIds.has(String(x.id)); });
+            if(_cleanBin.length !== _merged.length){
+              console.log('[V330] '+cfg.table+': stripped '+(_merged.length-_cleanBin.length)+' ghost record(s) that crept back via local cache merge');
+              _merged = _cleanBin;
+              window[cfg.varName] = _merged;
+              _saveLocalCache(cfg.table, _merged);
+            }
+            // Retry the Supabase delete for every ghost id still present in the RAW remote
+            // result — this is what finally cleans up a delete that failed the first time.
+            if(window._firebaseReady&&window._firestoreDeleteDoc&&window._firestoreDoc&&window._firestoreDB){
+              loaded.forEach(function(x){
+                if(x && _ghIds.has(String(x.id))){
+                  console.log('[V330] '+cfg.table+': retrying deleteDoc for ghost id='+x.id);
+                  window._firestoreDeleteDoc(window._firestoreDoc(window._firestoreDB,cfg.table,String(x.id))).catch(function(e){console.warn('[V330] retry deleteDoc '+cfg.table+'/'+x.id+' failed:',e&&e.message);});
+                }
+              });
+            }
+          }
+        }catch(e){ console.warn('[V330] '+cfg.table+' ghost strip error', e); }
+      }
       if(_priorLocal && _priorLocal.length){
         var _remoteIds = {}; loaded.forEach(function(x){ if(x&&x.id!=null) _remoteIds[x.id]=true; });
         var _binSet = cfg.table === 'purchases'
@@ -19815,8 +20420,21 @@ function _appLogout() {
         if(cfg.table === 'products'){
           try{ _prodBinRepushSet = new Set((typeof productBin !== 'undefined' ? productBin : []).map(function(x){ return x && x.id; })); }catch(e){}
         }
+        // V330 FIX: block re-push of any id in this bin table's own ghost list
+        // (restored or permanently deleted from the bin itself).
+        var _binGhostSet = null;
+        if(_BIN_TABLES.indexOf(cfg.table) !== -1){
+          try{ _binGhostSet = new Set(JSON.parse(_memStore.getItem('_binghost_'+cfg.table)||'[]')); }catch(e){}
+        }
         var _unsynced = _priorLocal.filter(function(x){
           if(!x || x.id==null || _remoteIds[x.id]) return false;
+          // V330 FIX: never re-push an id that was restored/permanently deleted from this
+          // bin (compare via String — Supabase ids are strings even when a caller passed
+          // a Number, see restPurchase's onclick).
+          if(_binGhostSet && _binGhostSet.has(String(x.id))){
+            console.log('[V330] '+cfg.table+': skipping re-push of ghost id='+x.id);
+            return false;
+          }
           // V90-4 FIX: never re-push a purchase that is in purchaseBin — it was deliberately deleted
           if(_binSet && _binSet.has(x.id)){
             console.log('[V90-4] purchases: skipping re-push of id='+x.id+' — found in purchaseBin (legitimately deleted)');
@@ -22288,6 +22906,14 @@ restSale = function(id) {
   delete r.deletedAt;
   sales.unshift(r);
   bin = bin.filter(function(x){ return x.id !== id; });
+  // V330 FIX: same restore-resurrection bug as purchases — _crSaveAll()'s bin sync
+  // is upsert-only, never deletes the Supabase row. Explicit delete + ghost-guard
+  // so the sale can't resurface in the bin on next reopen/refresh.
+  _addBinGhost('bin', id);
+  if (window._firebaseReady && window._firestoreDeleteDoc && window._firestoreDoc && window._firestoreDB) {
+    window._firestoreDeleteDoc(window._firestoreDoc(window._firestoreDB, 'bin', String(id)))
+      .catch(function(e){ console.warn('[V330] direct deleteDoc bin/'+id+' failed:', e && e.message); });
+  }
   _crSaveAll();
   _crRefreshAll();
   toast('♻ Sale restored — stock updated', 'green');
@@ -22304,6 +22930,8 @@ prmDel = function(id) {
     // FIX: immediately deleteDoc from Firestore bin collection.
     // _fbSyncBin is upsert-only — it never deletes existing docs, so
     // without this the item reappears on the next 500ms onSnapshot poll.
+    // V330: permanent ghost-guard backs this up if the delete call itself fails.
+    _addBinGhost('bin', id);
     if (window._firebaseReady && window._firestoreDeleteDoc && window._firestoreDoc && window._firestoreDB) {
       window._firestoreDeleteDoc(window._firestoreDoc(window._firestoreDB, 'bin', String(id)))
         .catch(function(e){ console.warn('[prmDel-fix] direct deleteDoc bin/'+id+' failed:', e && e.message); });
@@ -22328,6 +22956,7 @@ emptyBin = function() {
     // back on the next 500ms onSnapshot poll.
     if (window._firebaseReady && window._firestoreDeleteDoc && window._firestoreDoc && window._firestoreDB) {
       idsToDelete.forEach(function(id) {
+        _addBinGhost('bin', id);
         window._firestoreDeleteDoc(window._firestoreDoc(window._firestoreDB, 'bin', String(id)))
           .catch(function(e){ console.warn('[emptyBin-fix] deleteDoc bin/'+id+' failed:', e && e.message); });
       });
