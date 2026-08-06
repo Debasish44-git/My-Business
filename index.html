@@ -2999,11 +2999,6 @@ var _memStore = (function(){
       <div class="menu-row-info"><div class="menu-row-title">Price Calculator</div></div>
       <span class="menu-row-right">›</span>
     </div>
-    <div class="menu-row" data-module="stock" onclick="goTabMenu('detail')">
-      <div class="menu-row-icon" style="background:#f3e8ff">🔎</div>
-      <div class="menu-row-info"><div class="menu-row-title">Stock Detail</div></div>
-      <span class="menu-row-right">›</span>
-    </div>
     <div class="menu-row" data-module="stock" onclick="goTabMenuClose('batchmaster')">
       <div class="menu-row-icon" style="background:#fef3c7">🏷️</div>
       <div class="menu-row-info">
@@ -3025,22 +3020,22 @@ var _memStore = (function(){
   <!-- Cash & Bank -->
   <div class="menu-section">Cash &amp; Bank</div>
   <div class="menu-card">
-    <div class="menu-row" onclick="toast('Bank Accounts coming soon')">
+    <div class="menu-row" onclick="goTabMenuClose('bankaccounts')">
       <div class="menu-row-icon" style="background:#e8eeff">🏦</div>
       <div class="menu-row-info"><div class="menu-row-title">Bank Accounts</div></div>
       <span class="menu-row-right">›</span>
     </div>
-    <div class="menu-row" onclick="toast('Cash In-Hand coming soon')">
+    <div class="menu-row" onclick="goTabMenuClose('cashinhand')">
       <div class="menu-row-icon" style="background:#e6f7ef">💵</div>
       <div class="menu-row-info"><div class="menu-row-title">Cash In-Hand</div></div>
       <span class="menu-row-right">›</span>
     </div>
-    <div class="menu-row" onclick="toast('Cheques coming soon')">
+    <div class="menu-row" onclick="goTabMenuClose('cheques')">
       <div class="menu-row-icon" style="background:#fff3e0">🪙</div>
       <div class="menu-row-info"><div class="menu-row-title">Cheques</div></div>
       <span class="menu-row-right">›</span>
     </div>
-    <div class="menu-row" onclick="toast('Loan Accounts coming soon')">
+    <div class="menu-row" onclick="goTabMenuClose('loanaccounts')">
       <div class="menu-row-icon" style="background:#fdeaea">💳</div>
       <div class="menu-row-info"><div class="menu-row-title">Loan Accounts</div></div>
       <span class="menu-row-right">›</span>
@@ -3081,6 +3076,176 @@ var _memStore = (function(){
     </div>
   </div>
 
+</div>
+
+<!-- ═══════════════ CASH & BANK MODULE (V336) ═══════════════ -->
+
+<!-- BANK ACCOUNTS -->
+<div id="tab-bankaccounts" class="panel" style="background:#f2f4f8;overflow-y:auto;-webkit-overflow-scrolling:touch">
+  <div style="background:linear-gradient(135deg,#1b4fff,#0f2fa8);padding:14px 16px 16px;display:flex;align-items:center;gap:10px">
+    <button onclick="goTabBack()" style="background:rgba(255,255,255,0.18);border:none;border-radius:10px;width:34px;height:34px;display:flex;align-items:center;justify-content:center;font-size:18px;cursor:pointer;color:#fff;font-weight:800;flex-shrink:0">‹</button>
+    <div style="flex:1">
+      <div style="font-size:17px;font-weight:900;color:#fff">🏦 Bank Accounts</div>
+      <div style="font-size:11px;color:rgba(255,255,255,0.75);margin-top:1px">All accounts & balances in one place</div>
+    </div>
+  </div>
+
+  <div style="margin:12px;background:#fff;border-radius:16px;padding:16px;box-shadow:0 2px 10px rgba(27,79,255,0.12)">
+    <div style="font-size:11px;font-weight:700;color:var(--muted);margin-bottom:3px">Total Balance — All Accounts</div>
+    <div style="font-size:28px;font-weight:900;color:#1b4fff" id="ba-total-hero">₹0</div>
+  </div>
+
+  <div class="card" style="margin:0 12px 10px"><div class="card-body">
+    <div style="font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:0.8px;color:#1b4fff;margin-bottom:12px">🏦 Add Bank Account</div>
+    <div class="frow">
+      <div class="ff"><label class="fl">Account Name</label><input type="text" class="fi" id="ba-name" placeholder="e.g. Main Business A/C"></div>
+      <div class="ff"><label class="fl">Bank Name</label><input type="text" class="fi" id="ba-bank" placeholder="e.g. SBI"></div>
+    </div>
+    <div class="frow">
+      <div class="ff"><label class="fl">Account No.</label><input type="text" class="fi" id="ba-accno" placeholder="XXXXXXXXXXXX"></div>
+      <div class="ff"><label class="fl">IFSC</label><input type="text" class="fi" id="ba-ifsc" placeholder="e.g. SBIN0001234"></div>
+    </div>
+    <div class="ff"><label class="fl">Opening Balance (₹)</label><input type="number" class="fi" id="ba-opening" placeholder="0.00" min="0" step="0.01"></div>
+    <div class="ff"><label class="fl">Note (optional)</label><input type="text" class="fi" id="ba-note" placeholder="Details…"></div>
+    <button style="width:100%;font-family:'Noto Sans',sans-serif;font-size:15px;font-weight:800;background:linear-gradient(135deg,#1b4fff,#0f2fa8);color:#fff;border:none;border-radius:12px;padding:15px;cursor:pointer;box-shadow:0 4px 14px rgba(27,79,255,0.3)" onclick="recordBankAccount()">🏦 Add Account</button>
+  </div></div>
+
+  <div class="sec-head"><span class="sec-title">📋 Accounts</span></div>
+  <div id="ba-list" style="margin:0 12px 90px"></div>
+</div>
+
+<!-- CASH IN-HAND -->
+<div id="tab-cashinhand" class="panel" style="background:#f2f4f8;overflow-y:auto;-webkit-overflow-scrolling:touch">
+  <div style="background:linear-gradient(135deg,#0f9b58,#0a6b3c);padding:14px 16px 16px;display:flex;align-items:center;gap:10px">
+    <button onclick="goTabBack()" style="background:rgba(255,255,255,0.18);border:none;border-radius:10px;width:34px;height:34px;display:flex;align-items:center;justify-content:center;font-size:18px;cursor:pointer;color:#fff;font-weight:800;flex-shrink:0">‹</button>
+    <div style="flex:1">
+      <div style="font-size:17px;font-weight:900;color:#fff">💵 Cash In-Hand</div>
+      <div style="font-size:11px;color:rgba(255,255,255,0.75);margin-top:1px">Track physical cash — in & out</div>
+    </div>
+  </div>
+
+  <div style="margin:12px;background:#fff;border-radius:16px;padding:16px;box-shadow:0 2px 10px rgba(15,155,88,0.12)">
+    <div style="font-size:11px;font-weight:700;color:var(--muted);margin-bottom:3px">Current Cash Balance</div>
+    <div style="font-size:28px;font-weight:900;color:#0f9b58" id="ci-balance-hero">₹0</div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:12px">
+      <div style="background:#e6f7ef;border-radius:10px;padding:10px">
+        <div style="font-size:10px;color:#0a6b3c;font-weight:700">Total In</div>
+        <div style="font-size:16px;font-weight:800;color:#0f9b58" id="ci-in-hero">₹0</div>
+      </div>
+      <div style="background:#fdeaea;border-radius:10px;padding:10px">
+        <div style="font-size:10px;color:#991b1b;font-weight:700">Total Out</div>
+        <div style="font-size:16px;font-weight:800;color:var(--red)" id="ci-out-hero">₹0</div>
+      </div>
+    </div>
+  </div>
+
+  <div style="padding:0 12px;margin-bottom:8px;display:flex;gap:6px;flex-wrap:wrap">
+    <button class="preset-btn on" id="ci-filter-all" onclick="filterCashTxn('all')">All</button>
+    <button class="preset-btn" id="ci-filter-in" onclick="filterCashTxn('in')">📥 Cash In</button>
+    <button class="preset-btn" id="ci-filter-out" onclick="filterCashTxn('out')">📤 Cash Out</button>
+  </div>
+
+  <div class="card" style="margin:0 12px 10px"><div class="card-body">
+    <div style="display:flex;gap:8px;margin-bottom:12px">
+      <button id="ci-type-in" onclick="setCashType('in')" style="flex:1;font-family:'Noto Sans',sans-serif;font-size:13px;font-weight:800;background:#0f9b58;color:#fff;border:none;border-radius:10px;padding:11px;cursor:pointer">📥 Cash In</button>
+      <button id="ci-type-out" onclick="setCashType('out')" style="flex:1;font-family:'Noto Sans',sans-serif;font-size:13px;font-weight:800;background:#f2f4f8;color:var(--muted);border:none;border-radius:10px;padding:11px;cursor:pointer">📤 Cash Out</button>
+    </div>
+    <div class="frow">
+      <div class="ff"><label class="fl">Amount (₹)</label><input type="number" class="fi" id="ci-amount" placeholder="0.00" min="0" step="0.01"></div>
+      <div class="ff"><label class="fl">Date</label><input type="date" class="fi" id="ci-date"></div>
+    </div>
+    <div class="ff"><label class="fl">Note (optional)</label><input type="text" class="fi" id="ci-note" placeholder="e.g. Opening balance, cash sale, drawn for expenses…"></div>
+    <button style="width:100%;font-family:'Noto Sans',sans-serif;font-size:15px;font-weight:800;background:linear-gradient(135deg,#0f9b58,#0a6b3c);color:#fff;border:none;border-radius:12px;padding:15px;cursor:pointer;box-shadow:0 4px 14px rgba(15,155,88,0.3)" onclick="recordCashTxn()">✅ Record Entry</button>
+  </div></div>
+
+  <div class="sec-head"><span class="sec-title">📋 Cash Log</span><button class="sec-action" onclick="clearCashTxns()">Clear All</button></div>
+  <div class="card" style="margin:0 12px 90px"><div id="ci-list"><div class="empty"><div class="empty-icon">💵</div><div class="empty-text">No cash entries yet</div></div></div></div>
+</div>
+
+<!-- CHEQUES -->
+<div id="tab-cheques" class="panel" style="background:#f2f4f8;overflow-y:auto;-webkit-overflow-scrolling:touch">
+  <div style="background:linear-gradient(135deg,#f57c00,#c25e00);padding:14px 16px 16px;display:flex;align-items:center;gap:10px">
+    <button onclick="goTabBack()" style="background:rgba(255,255,255,0.18);border:none;border-radius:10px;width:34px;height:34px;display:flex;align-items:center;justify-content:center;font-size:18px;cursor:pointer;color:#fff;font-weight:800;flex-shrink:0">‹</button>
+    <div style="flex:1">
+      <div style="font-size:17px;font-weight:900;color:#fff">🪙 Cheques</div>
+      <div style="font-size:11px;color:rgba(255,255,255,0.75);margin-top:1px">Received & issued — track till cleared</div>
+    </div>
+  </div>
+
+  <div style="margin:12px;display:grid;grid-template-columns:1fr 1fr;gap:10px">
+    <div style="background:#fff;border-radius:14px;padding:12px;box-shadow:0 2px 8px rgba(245,124,0,0.1)">
+      <div style="font-size:10px;font-weight:700;color:var(--muted)">Pending Amount</div>
+      <div style="font-size:18px;font-weight:900;color:#f57c00" id="chq-pending-hero">₹0</div>
+    </div>
+    <div style="background:#fff;border-radius:14px;padding:12px;box-shadow:0 2px 8px rgba(15,155,88,0.1)">
+      <div style="font-size:10px;font-weight:700;color:var(--muted)">Cleared Amount</div>
+      <div style="font-size:18px;font-weight:900;color:#0f9b58" id="chq-cleared-hero">₹0</div>
+    </div>
+  </div>
+
+  <div style="padding:0 12px;margin-bottom:8px;display:flex;gap:6px;flex-wrap:wrap">
+    <button class="preset-btn on" id="chq-filter-all" onclick="filterCheque('all')">All</button>
+    <button class="preset-btn" id="chq-filter-received" onclick="filterCheque('received')">📥 Received</button>
+    <button class="preset-btn" id="chq-filter-issued" onclick="filterCheque('issued')">📤 Issued</button>
+    <button class="preset-btn" id="chq-filter-pending" onclick="filterCheque('pending')">⏳ Pending</button>
+    <button class="preset-btn" id="chq-filter-cleared" onclick="filterCheque('cleared')">✅ Cleared</button>
+    <button class="preset-btn" id="chq-filter-bounced" onclick="filterCheque('bounced')">❌ Bounced</button>
+  </div>
+
+  <div class="card" style="margin:0 12px 10px"><div class="card-body">
+    <div style="display:flex;gap:8px;margin-bottom:12px">
+      <button id="chq-kind-received" onclick="setChequeKind('received')" style="flex:1;font-family:'Noto Sans',sans-serif;font-size:13px;font-weight:800;background:#f57c00;color:#fff;border:none;border-radius:10px;padding:11px;cursor:pointer">📥 Received</button>
+      <button id="chq-kind-issued" onclick="setChequeKind('issued')" style="flex:1;font-family:'Noto Sans',sans-serif;font-size:13px;font-weight:800;background:#f2f4f8;color:var(--muted);border:none;border-radius:10px;padding:11px;cursor:pointer">📤 Issued</button>
+    </div>
+    <div class="frow">
+      <div class="ff"><label class="fl">Party Name</label><input type="text" class="fi" id="chq-party" placeholder="e.g. Ramesh Traders"></div>
+      <div class="ff"><label class="fl">Cheque No.</label><input type="text" class="fi" id="chq-no" placeholder="e.g. 000123"></div>
+    </div>
+    <div class="frow">
+      <div class="ff"><label class="fl">Bank</label><input type="text" class="fi" id="chq-bank" placeholder="e.g. HDFC Bank"></div>
+      <div class="ff"><label class="fl">Amount (₹)</label><input type="number" class="fi" id="chq-amount" placeholder="0.00" min="0" step="0.01"></div>
+    </div>
+    <div class="ff"><label class="fl">Cheque Date</label><input type="date" class="fi" id="chq-date"></div>
+    <div class="ff"><label class="fl">Note (optional)</label><input type="text" class="fi" id="chq-note" placeholder="Details…"></div>
+    <button style="width:100%;font-family:'Noto Sans',sans-serif;font-size:15px;font-weight:800;background:linear-gradient(135deg,#f57c00,#c25e00);color:#fff;border:none;border-radius:12px;padding:15px;cursor:pointer;box-shadow:0 4px 14px rgba(245,124,0,0.3)" onclick="recordCheque()">🪙 Add Cheque</button>
+  </div></div>
+
+  <div class="sec-head"><span class="sec-title">📋 Cheque Log</span></div>
+  <div class="card" style="margin:0 12px 90px"><div id="chq-list"><div class="empty"><div class="empty-icon">🪙</div><div class="empty-text">No cheques recorded</div></div></div></div>
+</div>
+
+<!-- LOAN ACCOUNTS -->
+<div id="tab-loanaccounts" class="panel" style="background:#f2f4f8;overflow-y:auto;-webkit-overflow-scrolling:touch">
+  <div style="background:linear-gradient(135deg,#e53935,#a01c17);padding:14px 16px 16px;display:flex;align-items:center;gap:10px">
+    <button onclick="goTabBack()" style="background:rgba(255,255,255,0.18);border:none;border-radius:10px;width:34px;height:34px;display:flex;align-items:center;justify-content:center;font-size:18px;cursor:pointer;color:#fff;font-weight:800;flex-shrink:0">‹</button>
+    <div style="flex:1">
+      <div style="font-size:17px;font-weight:900;color:#fff">💳 Loan Accounts</div>
+      <div style="font-size:11px;color:rgba(255,255,255,0.75);margin-top:1px">Borrowed money & repayment tracking</div>
+    </div>
+  </div>
+
+  <div style="margin:12px;background:#fff;border-radius:16px;padding:16px;box-shadow:0 2px 10px rgba(229,57,53,0.12)">
+    <div style="font-size:11px;font-weight:700;color:var(--muted);margin-bottom:3px">Total Outstanding — All Loans</div>
+    <div style="font-size:28px;font-weight:900;color:var(--red)" id="loan-total-hero">₹0</div>
+  </div>
+
+  <div class="card" style="margin:0 12px 10px"><div class="card-body">
+    <div style="font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:0.8px;color:var(--red);margin-bottom:12px">💳 Add Loan Account</div>
+    <div class="frow">
+      <div class="ff"><label class="fl">Lender Name</label><input type="text" class="fi" id="loan-lender" placeholder="e.g. HDFC Bank / Ramesh"></div>
+      <div class="ff"><label class="fl">Principal (₹)</label><input type="number" class="fi" id="loan-principal" placeholder="0.00" min="0" step="0.01"></div>
+    </div>
+    <div class="frow">
+      <div class="ff"><label class="fl">Interest Rate % (optional)</label><input type="number" class="fi" id="loan-rate" placeholder="e.g. 12" min="0" step="0.01"></div>
+      <div class="ff"><label class="fl">EMI Amount (optional)</label><input type="number" class="fi" id="loan-emi" placeholder="0.00" min="0" step="0.01"></div>
+    </div>
+    <div class="ff"><label class="fl">Start Date</label><input type="date" class="fi" id="loan-date"></div>
+    <div class="ff"><label class="fl">Note (optional)</label><input type="text" class="fi" id="loan-note" placeholder="Details…"></div>
+    <button style="width:100%;font-family:'Noto Sans',sans-serif;font-size:15px;font-weight:800;background:linear-gradient(135deg,#e53935,#a01c17);color:#fff;border:none;border-radius:12px;padding:15px;cursor:pointer;box-shadow:0 4px 14px rgba(229,57,53,0.3)" onclick="recordLoanAccount()">💳 Add Loan</button>
+  </div></div>
+
+  <div class="sec-head"><span class="sec-title">📋 Loans</span></div>
+  <div id="loan-list" style="margin:0 12px 90px"></div>
 </div>
 
 <!-- PARTY PANEL -->
@@ -4545,6 +4710,7 @@ var _memStore = (function(){
 
 </div><!-- end tab-goodold -->
 
+  <div class="modal-overlay" id="report-modal" onclick="oc(event,'report-modal')">
   <div class="modal"><div class="mpill"></div>
     <div class="mtitle" id="report-title"></div>
     <div id="report-body" style="max-height:60vh;overflow-y:auto"></div>
@@ -4829,6 +4995,30 @@ create policy roles_owner_all on custom_roles for all to authenticated
 -- device can look up what permissions its own assigned role grants).
 create policy roles_member_read on custom_roles for select to authenticated
   using (owner_id in (select owner_id from team_members where member_id = auth.uid() and status = 'active'));
+
+-- ══════════════════════════════════════════════════════════════════
+-- V336 — V-CASHBANK: Bank Accounts, Cash In-Hand, Cheques, Loan Accounts
+-- Run this ONCE in the Supabase SQL editor to enable the Cash & Bank
+-- section (previously "coming soon" placeholders).
+-- ══════════════════════════════════════════════════════════════════
+create table if not exists bankaccounts (id text primary key, data jsonb, updated_at bigint, owner_id uuid references auth.users(id));
+create table if not exists cashtxns     (id text primary key, data jsonb, updated_at bigint, owner_id uuid references auth.users(id));
+create table if not exists cheques      (id text primary key, data jsonb, updated_at bigint, owner_id uuid references auth.users(id));
+create table if not exists loanaccounts (id text primary key, data jsonb, updated_at bigint, owner_id uuid references auth.users(id));
+do $$ declare t text; begin
+  foreach t in array array['bankaccounts','cashtxns','cheques','loanaccounts'] loop
+    execute 'alter table '||t||' enable row level security';
+    execute 'drop policy if exists tenant_isolation on '||t;
+    execute 'create policy tenant_isolation on '||t||
+      ' for all to authenticated using (' ||
+      '   owner_id = auth.uid()' ||
+      '   or owner_id in (select owner_id from team_members where member_id = auth.uid() and status = ''active'')' ||
+      ' ) with check (' ||
+      '   owner_id = auth.uid()' ||
+      '   or owner_id in (select owner_id from team_members where member_id = auth.uid() and status = ''active'')' ||
+      ' )';
+  end loop;
+end $$;
 */
 // ────────────────────────────────────────────────────────────────
 
@@ -5086,7 +5276,8 @@ var _TENANT_SCOPED_COLLECTIONS = {
   godowns:1, gdtransfers:1, gdpurchases:1, gdmovements:1, gdlocations:1, gdbatches:1,
   gdtransfersreq:1, gdcyclecounts:1, products:1, sales:1, purchases:1, expenses:1,
   makinglog:1, homestock:1, homestockbin:1, bin:1, productbin:1, purchasebin:1,
-  expensebin:1, makingbin:1, parties:1, bell:1, counters:1, labour:1
+  expensebin:1, makingbin:1, parties:1, bell:1, counters:1, labour:1,
+  bankaccounts:1, cashtxns:1, cheques:1, loanaccounts:1
 };
 // 'settings' is mixed — these 3 doc ids are the public storefront config
 // and must stay unscoped (see SQL migration above for the matching RLS).
@@ -6913,7 +7104,7 @@ function goTab(name,btn){
   if(name==='sell'){fillSellDrop();renderSales();saleInitDate();saleRenderItems();}
   if(name==='bin')renderBin();
   if(name==='calc'){
-    if(!cs.ready)applyPreset('fashion');calcPricing();muPopulateStockPick();window._calcLinkedProdId=null;
+    if(!cs.ready)applyPreset('fashion');calcPricing();window._calcLinkedProdId=null;
     var _chc=document.getElementById('calc-hist-count');
     if(_chc&&typeof makingLog!=='undefined')_chc.textContent=(makingLog||[]).filter(function(mk){return !mk.type;}).length;
     if(typeof _calcHistOpen!=='undefined'&&_calcHistOpen)renderCalcMakingHistory();
@@ -6933,10 +7124,16 @@ function goTab(name,btn){
     setTimeout(bmRender, 600);  // retry in case Supabase data arrives slightly later
     setTimeout(bmRender, 2500); // second retry for slow connections
   }
+  if(name==='bankaccounts'){renderBankAccounts();}
+  if(name==='cashinhand'){renderCashInHand();var d=document.getElementById('ci-date');if(d&&!d.value)d.value=_localDateStr();}
+  if(name==='cheques'){renderCheques();var d2=document.getElementById('chq-date');if(d2&&!d2.value)d2.value=_localDateStr();}
+  if(name==='loanaccounts'){renderLoanAccounts();var d3=document.getElementById('loan-date');if(d3&&!d3.value)d3.value=_localDateStr();}
   // V156 OPT-1: Trigger lazy Supabase load on first tab open
   var _lazyMap = {
     'labourdb':'labour',
-    'godown':'gdmovements', 'batchmaster':'makinglog'
+    'godown':'gdmovements', 'batchmaster':'makinglog',
+    'bankaccounts':'bankaccounts', 'cashinhand':'cashtxns',
+    'cheques':'cheques', 'loanaccounts':'loanaccounts'
   };
   if(_lazyMap[name] && typeof window._lazyLoad==='function') window._lazyLoad(_lazyMap[name]);
   // V195 FIX: products/sales/purchases/makinglog moved off instant-load (see fb-collections
@@ -6963,7 +7160,7 @@ function goTab(name,btn){
 }
 var _navHistory=[];
 var _navCurrent='home';
-var _navMap={purchase:'nav-menu',expenses:'nav-menu',add:'nav-menu',calc:'nav-menu',detail:'nav-menu',bin:'nav-menu',home:'nav-home',products:'nav-products',sell:'nav-sell',labourdb:'nav-menu',workerdetail:'nav-menu',godown:'nav-menu',party:'nav-party',homestock:'nav-menu',menu:'nav-menu',labourcost:'nav-menu',analytics:'nav-menu',batchmaster:'nav-menu'};
+var _navMap={purchase:'nav-menu',expenses:'nav-menu',add:'nav-menu',calc:'nav-menu',detail:'nav-menu',bin:'nav-menu',home:'nav-home',products:'nav-products',sell:'nav-sell',labourdb:'nav-menu',workerdetail:'nav-menu',godown:'nav-menu',party:'nav-party',homestock:'nav-menu',menu:'nav-menu',labourcost:'nav-menu',analytics:'nav-menu',batchmaster:'nav-menu',bankaccounts:'nav-menu',cashinhand:'nav-menu',cheques:'nav-menu',loanaccounts:'nav-menu'};
 
 function goTabMenu(name){
   if(_navCurrent === name) return;
@@ -7640,6 +7837,10 @@ function goTabMenuClose(name){
     else if(name==='goodold'){ if(typeof gomInit==='function')gomInit(); }
     else if(name==='home') renderDashboard();
     else if(name==='products') renderProducts();
+    else if(name==='bankaccounts') renderBankAccounts();
+    else if(name==='cashinhand') renderCashInHand();
+    else if(name==='cheques') renderCheques();
+    else if(name==='loanaccounts') renderLoanAccounts();
   }
   closeMenu();
 }
@@ -12577,180 +12778,6 @@ function renderCSec(key,elId){
     }
   }).join('');
 }
-function muCalc(){
-  var given=parseFloat(document.getElementById('mu-given').value)||0;
-  var ret=parseFloat(document.getElementById('mu-return').value)||0;
-  var used=Math.max(0,given-ret);
-  var price=parseFloat(document.getElementById('mu-price').value)||0;
-  var unit=document.getElementById('mu-unit').value||'pcs';
-  var total=used*price;
-  document.getElementById('mu-used').textContent=used%1===0?used:used.toFixed(3);
-  document.getElementById('mu-used-unit').textContent=unit;
-  document.getElementById('mu-total').textContent='₹'+f(total);
-  // Keep "per unit" label in sync
-  var lbl=document.getElementById('mu-unit-lbl');
-  if(lbl)lbl.textContent=unit;
-}
-
-// Track last unit selected in usage calculator for conversion
-var _muLastUnit='pcs';
-function muUnitChanged(){
-  var unit=document.getElementById('mu-unit').value||'pcs';
-  _muLastUnit=unit;
-  var usedUnitEl=document.getElementById('mu-used-unit');
-  if(usedUnitEl)usedUnitEl.textContent=unit;
-  muCalc();
-  muCheckPrice();
-}
-
-function muConvertPrice(){
-  var fromUnit=document.getElementById('mu-price-unit').value;
-  var toUnit=document.getElementById('mu-unit').value;
-  var priceEl=document.getElementById('mu-price');
-  var price=parseFloat(priceEl.value)||0;
-  var hint=document.getElementById('mu-convert-hint');
-  if(!price){if(hint)hint.style.display='none'; return;}
-  if(fromUnit===toUnit){
-    if(hint){hint.textContent='✅ Already in '+toUnit;hint.style.display='block';clearTimeout(hint._t);hint._t=setTimeout(function(){hint.style.display='none';},2000);}
-    return;
-  }
-  var converted=convertPrice(price,fromUnit,toUnit);
-  var rounded=parseFloat(converted.toPrecision(6));
-  priceEl.value=rounded;
-  // Sync price-unit to match the main unit
-  var pUnitSel=document.getElementById('mu-price-unit');
-  for(var i=0;i<pUnitSel.options.length;i++){if(pUnitSel.options[i].value===toUnit){pUnitSel.selectedIndex=i;break;}}
-  if(hint){
-    hint.textContent='✅ ₹'+f(price)+'/'+fromUnit+' → ₹'+rounded+'/'+toUnit;
-    hint.style.display='block';
-    clearTimeout(hint._t);
-    hint._t=setTimeout(function(){hint.style.display='none';},3000);
-  }
-  muCalc();
-}
-
-var _muPriceHintTimer=null;
-function muCheckPrice(){
-  // Disabled — the muUnitChanged orange hint is sufficient and clearer
-  var hintBox=document.getElementById('mu-price-hint');
-  if(hintBox)hintBox.style.display='none';
-}
-
-function muApplyPriceSuggestion(price, unit){
-  // Switch unit and set price
-  var uSel=document.getElementById('mu-unit');
-  for(var i=0;i<uSel.options.length;i++){if(uSel.options[i].value===unit){uSel.selectedIndex=i;break;}}
-  _muLastUnit=unit;
-  document.getElementById('mu-price').value=price;
-  document.getElementById('mu-unit-lbl').textContent=unit;
-  document.getElementById('mu-price-hint').style.display='none';
-  muCalc();
-}
-function muPickStock(){
-  var sel=document.getElementById('mu-stock-pick');
-  var id=parseInt(sel.value);
-  if(!id)return;
-  var p=products.find(function(x){return x.id===id;});
-  if(!p)return;
-  document.getElementById('mu-price').value=p.cost||p.price||'';
-  document.getElementById('mu-name').value=p.name;
-  var avgEl=document.getElementById('mu-avg-cost-hint');
-  if(avgEl){var ac=parseFloat(p.cost)||0;avgEl.style.display=ac?'block':'none';avgEl.textContent='📊 Avg cost: ₹'+ac+' / '+(p.unit||'pcs');}
-  var uSel=document.getElementById('mu-unit');
-  // Default to kg for weight products if no unit set
-  var unit=p.unit||'pcs';
-  for(var i=0;i<uSel.options.length;i++){
-    if(uSel.options[i].value.toLowerCase()===unit.toLowerCase()){uSel.selectedIndex=i;break;}
-  }
-  _muLastUnit=uSel.value;
-  uSel.setAttribute('data-prev',uSel.value);
-  // Also sync the price-unit selector
-  var pUnitSel=document.getElementById('mu-price-unit');
-  if(pUnitSel){for(var j=0;j<pUnitSel.options.length;j++){if(pUnitSel.options[j].value===uSel.value){pUnitSel.selectedIndex=j;break;}}}
-  var lbl=document.getElementById('mu-unit-lbl');
-  if(lbl)lbl.textContent=uSel.value;
-  var usedUnitEl=document.getElementById('mu-used-unit');
-  if(usedUnitEl)usedUnitEl.textContent=uSel.value;
-  muCalc();
-  muCheckPrice();
-}
-function muPopulateStockPick(){
-  var sel=document.getElementById('mu-stock-pick');
-  if(!sel)return;
-  sel.innerHTML='<option value="">—</option>'
-    +products.map(function(p){return '<option value="'+p.id+'">'+e(p.name)+'</option>';}).join('');
-}
-function muStockFilter(q){
-  var dd=document.getElementById('mu-stock-dd');
-  if(!dd)return;
-  q=(q||'').trim();
-  var matches=q?products.filter(function(p){return p.name.toLowerCase().includes(q.toLowerCase());}):products;
-  var rows='';
-  matches.forEach(function(p){
-    var sb=p.stock<=0
-      ?'<span style="font-size:10px;font-weight:700;color:var(--red);background:var(--red-l);padding:2px 6px;border-radius:8px">Out</span>'
-      :p.stock<=(p.threshold||5)
-        ?'<span style="font-size:10px;font-weight:700;color:var(--orange);background:var(--orange-l);padding:2px 6px;border-radius:8px">'+p.stock+' low</span>'
-        :'<span style="font-size:10px;font-weight:700;color:var(--green);background:var(--green-l);padding:2px 6px;border-radius:8px">'+p.stock+' in stock</span>';
-    rows+='<div style="display:flex;align-items:center;justify-content:space-between;padding:11px 14px;cursor:pointer;border-bottom:1px solid var(--border)" '
-      +'onmousedown="muPickStockById('+p.id+')">'
-      +'<div><div style="font-size:14px;font-weight:700;color:var(--text)">'+e(p.name)+'</div>'
-      +'<div style="font-size:11px;color:var(--muted);margin-top:1px">Cost &#8377;'+f(p.cost||0)+' &middot; '+e(p.unit||'pcs')+'</div></div>'
-      +sb+'</div>';
-  });
-  var addLabel=q?'+ Add "'+q+'" as New Product':'+ Add New Product';
-  rows+='<div style="display:flex;align-items:center;gap:10px;padding:12px 14px;cursor:pointer;background:var(--primary-l);border-top:1.5px solid #c7d4ff" '
-    +'onmousedown="muAddNewProduct()">'
-    +'<div style="width:30px;height:30px;background:var(--primary);border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:18px;font-weight:900;color:#fff;flex-shrink:0">+</div>'
-    +'<div><div style="font-size:13px;font-weight:800;color:var(--primary)">'+addLabel+'</div>'
-    +'<div style="font-size:11px;color:var(--primary);opacity:.75">Creates product in Stock &amp; Store</div></div></div>';
-  dd.innerHTML=rows;
-  dd.style.display='block';
-}
-function muPickStockById(id){
-  var p=products.find(function(x){return x.id===id;});
-  if(!p)return;
-  document.getElementById('mu-stock-search').value=p.name;
-  document.getElementById('mu-stock-dd').style.display='none';
-  var sel=document.getElementById('mu-stock-pick');
-  sel.value=id;
-  muPickStock();
-}
-function muAddNewProduct(){
-  var name=(document.getElementById('mu-stock-search').value||'').trim();
-  if(!name){toast('Type a product name first','red');return;}
-  var existing=products.find(function(p){return p.name.toLowerCase()===name.toLowerCase();});
-  if(existing){toast('"'+name+'" already in Stock','red');muPickStockById(existing.id);return;}
-  var initials=name.split(' ').map(function(w){return w[0]||'';}).join('').toUpperCase().substring(0,3);
-  var sku=initials+'-'+String(Date.now()).slice(-4);
-  var newId=safeNextProdId();
-  var np={id:newId,name:name,sku:sku,category:'',price:0,cost:0,stock:0,threshold:5,unit:'pcs'};
-  products.push(np);
-  save();muPopulateStockPick();renderProductsForce();renderDashboard();
-  document.getElementById('mu-stock-dd').style.display='none';
-  document.getElementById('mu-name').value=name;
-  document.getElementById('mu-stock-search').value=name;
-  toast('Added "'+name+'" to Stock! Set cost in Stock tab.','green');
-}
-function muAddToMaterials(){
-  var given=parseFloat(document.getElementById('mu-given').value)||0;
-  var ret=parseFloat(document.getElementById('mu-return').value)||0;
-  var used=Math.max(0,given-ret);
-  var price=parseFloat(document.getElementById('mu-price').value)||0;
-  var unit=document.getElementById('mu-unit').value||'pcs';
-  var name=document.getElementById('mu-name').value.trim()||'Material';
-  if(!used||!price){toast('Enter Given, Return & Unit Price','red');return;}
-  cs.mat.push({id:calcRowId++,l:name,v:price,given:given,ret:ret,unit:unit,unitName:name,godown:''});
-  renderCSec('mat','c-mat');calcPricing();
-  ['mu-given','mu-return','mu-price','mu-name'].forEach(function(id){document.getElementById(id).value='';});
-  document.getElementById('mu-stock-pick').value='';
-  var mss=document.getElementById('mu-stock-search');if(mss)mss.value='';
-  document.getElementById('mu-used').textContent='0';
-  document.getElementById('mu-used-unit').textContent='';
-  document.getElementById('mu-total').textContent='₹0';
-  toast('Added to Materials! ₹'+f(used*price),'green');
-}
-
 // Called by TOP "Unit" dropdown — syncs the "per" price dropdown, then converts price
 function matRowUnitChange(id, newUnit){
   var r=cs.mat.find(function(x){return x.id===id;});
@@ -17981,6 +18008,411 @@ function delExpense(id){
 }
 function clearExpenses(){if(!expenses.length)return;confirmDelete('all '+expenses.length+' expenses', function(){expenses=[];saveExp();renderExpenses();toast('Cleared');});}
 
+// ══════════════════════════════════════════════════════════════════
+// CASH & BANK MODULE (V336) — Bank Accounts · Cash In-Hand · Cheques · Loan Accounts
+// Follows the same pattern as Expenses: plain array + save<X>() push function
+// wired generically via _arrayCollections/_wireArrayCollection (see fb-collections
+// block). Direct deleteDoc() calls at point of deletion, same as delExpense.
+// ══════════════════════════════════════════════════════════════════
+function _cbDeleteDoc(table,id){
+  if(window._firestoreDB&&window._firestoreDoc&&window._firestoreDeleteDoc){
+    window._firestoreDeleteDoc(window._firestoreDoc(window._firestoreDB,table,String(id))).catch(function(e){console.warn('[cashbank] deleteDoc failed',table,id,e&&e.message);});
+  }
+}
+
+// ── BANK ACCOUNTS ────────────────────────────────────────────────
+var bankAccounts=[]; var bankAccId=1; var baExpandedId=null;
+function saveBankAccounts(){if(window._firebaseReady&&window._fbSyncBankAccounts){window._markLocalWrite(8000,'bankaccounts');window._fbSyncBankAccounts(bankAccounts);}}
+function recordBankAccount(){
+  var name=document.getElementById('ba-name').value.trim();
+  if(!name){toast('Account name required','red');return;}
+  var opening=parseFloat(document.getElementById('ba-opening').value)||0;
+  var acc={id:bankAccId++,name:name,bank:document.getElementById('ba-bank').value.trim(),accNo:document.getElementById('ba-accno').value.trim(),ifsc:document.getElementById('ba-ifsc').value.trim(),balance:opening,note:document.getElementById('ba-note').value.trim(),ts:Date.now(),by:_actorTag(),history:opening?[{id:1,type:'deposit',amount:opening,note:'Opening balance',date:_localDateStr(),ts:Date.now()}]:[]};
+  bankAccounts.unshift(acc);saveBankAccounts();renderBankAccounts();
+  ['ba-name','ba-bank','ba-accno','ba-ifsc','ba-opening','ba-note'].forEach(function(id){document.getElementById(id).value='';});
+  toast('✅ Bank account added!','green');
+}
+function editBankAccount(id){
+  var a=bankAccounts.find(function(x){return x.id===id});if(!a)return;
+  document.getElementById('ba-name').value=a.name||'';
+  document.getElementById('ba-bank').value=a.bank||'';
+  document.getElementById('ba-accno').value=a.accNo||'';
+  document.getElementById('ba-ifsc').value=a.ifsc||'';
+  document.getElementById('ba-opening').value='';
+  document.getElementById('ba-note').value=a.note||'';
+  var btn=document.querySelector('[onclick="recordBankAccount()"]');
+  if(btn){btn.setAttribute('data-edit-id',id);btn.textContent='💾 Update Account';btn.setAttribute('onclick','confirmEditBankAccount()');}
+  document.getElementById('ba-name').scrollIntoView({behavior:'smooth',block:'center'});
+  toast('Editing account — balance unchanged, opening balance field ignored','blue');
+}
+function confirmEditBankAccount(){
+  var btn=document.querySelector('[onclick="confirmEditBankAccount()"]');
+  var id=btn?parseInt(btn.getAttribute('data-edit-id')):0;
+  var a=bankAccounts.find(function(x){return x.id===id});
+  if(!a){recordBankAccount();return;}
+  var name=document.getElementById('ba-name').value.trim();
+  if(!name){toast('Account name required','red');return;}
+  a.name=name;a.bank=document.getElementById('ba-bank').value.trim();a.accNo=document.getElementById('ba-accno').value.trim();
+  a.ifsc=document.getElementById('ba-ifsc').value.trim();a.note=document.getElementById('ba-note').value.trim();
+  saveBankAccounts();renderBankAccounts();
+  btn.removeAttribute('data-edit-id');btn.textContent='🏦 Add Account';btn.setAttribute('onclick','recordBankAccount()');
+  ['ba-name','ba-bank','ba-accno','ba-ifsc','ba-opening','ba-note'].forEach(function(id){document.getElementById(id).value='';});
+  toast('✅ Account updated!','green');
+}
+function delBankAccount(id){
+  var a=bankAccounts.find(function(x){return x.id===id});if(!a)return;
+  confirmDelete('"'+a.name+'" bank account', function(){
+    bankAccounts=bankAccounts.filter(function(x){return x.id!==id;});
+    _cbDeleteDoc('bankaccounts',id);
+    if(window._markLocalWrite)window._markLocalWrite(20000,'bankaccounts');
+    saveBankAccounts();renderBankAccounts();toast('🗑 Account deleted');
+  });
+}
+function baToggleExpand(id){baExpandedId=(baExpandedId===id)?null:id;renderBankAccounts();}
+function baAddTxn(id,type){
+  var amtEl=document.getElementById('ba-txn-amt-'+id),noteEl=document.getElementById('ba-txn-note-'+id);
+  var amt=parseFloat(amtEl&&amtEl.value)||0;
+  if(!amt){toast('Enter an amount','red');return;}
+  var a=bankAccounts.find(function(x){return x.id===id});if(!a)return;
+  if(type==='withdraw'&&amt>a.balance){toast('Amount exceeds balance','red');return;}
+  a.balance=type==='deposit'?(a.balance+amt):(a.balance-amt);
+  if(!a.history)a.history=[];
+  a.history.unshift({id:(a.history.length?Math.max.apply(null,a.history.map(function(h){return h.id;}))+1:1),type:type,amount:amt,note:(noteEl&&noteEl.value.trim())||'',date:_localDateStr(),ts:Date.now(),by:_actorTag()});
+  saveBankAccounts();renderBankAccounts();
+  toast((type==='deposit'?'📥 Deposited':'📤 Withdrawn')+' ₹'+f(amt),'green');
+}
+function renderBankAccounts(){
+  var el=document.getElementById('ba-list');if(!el)return;
+  var total=bankAccounts.reduce(function(a,x){return a+(x.balance||0);},0);
+  var h=document.getElementById('ba-total-hero');if(h)h.textContent='₹'+f(total);
+  if(!bankAccounts.length){el.innerHTML='<div class="card"><div class="empty"><div class="empty-icon">🏦</div><div class="empty-text">No bank accounts added yet</div></div></div>';return;}
+  el.innerHTML=bankAccounts.map(function(a){
+    var isOpen=baExpandedId===a.id;
+    var hist=(a.history||[]).slice(0,8).map(function(h){
+      return '<div style="display:flex;justify-content:space-between;padding:7px 0;border-bottom:1px solid var(--border);font-size:12px">'
+        +'<span>'+(h.type==='deposit'?'📥':'📤')+' '+e(h.note||(h.type==='deposit'?'Deposit':'Withdraw'))+' <span style="color:var(--muted);font-size:10px">· '+h.date+'</span></span>'
+        +'<b style="color:'+(h.type==='deposit'?'#0f9b58':'var(--red)')+'">'+(h.type==='deposit'?'+':'-')+'₹'+f(h.amount)+'</b></div>';
+    }).join('')||'<div style="padding:8px 0;color:var(--muted);font-size:12px">No transactions yet</div>';
+    return '<div class="card" style="margin-bottom:10px"><div class="card-body">'
+      +'<div style="display:flex;justify-content:space-between;align-items:flex-start;cursor:pointer" onclick="baToggleExpand('+a.id+')">'
+        +'<div style="flex:1;min-width:0">'
+          +'<div style="font-size:15px;font-weight:800;color:var(--text)">'+e(a.name)+'</div>'
+          +'<div style="font-size:11px;color:var(--muted);margin-top:2px">'+(a.bank?e(a.bank)+' · ':'')+(a.accNo?'••••'+e(a.accNo.slice(-4)):'')+'</div>'
+        +'</div>'
+        +'<div style="text-align:right"><div style="font-size:18px;font-weight:900;color:#1b4fff">₹'+f(a.balance)+'</div><div style="font-size:10px;color:var(--muted)">'+(isOpen?'▲ Hide':'▼ Details')+'</div></div>'
+      +'</div>'
+      +(isOpen?(
+        '<div style="margin-top:12px;padding-top:12px;border-top:1px solid var(--border)">'
+        +'<div style="display:flex;gap:6px;margin-bottom:8px">'
+          +'<input type="number" id="ba-txn-amt-'+a.id+'" placeholder="Amount" style="flex:1;font-family:\'Noto Sans\',sans-serif;font-size:12px;padding:9px;border:1.5px solid var(--border);border-radius:9px;outline:none">'
+          +'<input type="text" id="ba-txn-note-'+a.id+'" placeholder="Note" style="flex:1;font-family:\'Noto Sans\',sans-serif;font-size:12px;padding:9px;border:1.5px solid var(--border);border-radius:9px;outline:none">'
+        +'</div>'
+        +'<div style="display:flex;gap:8px;margin-bottom:12px">'
+          +'<button onclick="baAddTxn('+a.id+',\'deposit\')" style="flex:1;font-family:\'Noto Sans\',sans-serif;font-size:12px;font-weight:800;background:#0f9b58;color:#fff;border:none;border-radius:9px;padding:10px;cursor:pointer">📥 Deposit</button>'
+          +'<button onclick="baAddTxn('+a.id+',\'withdraw\')" style="flex:1;font-family:\'Noto Sans\',sans-serif;font-size:12px;font-weight:800;background:var(--red);color:#fff;border:none;border-radius:9px;padding:10px;cursor:pointer">📤 Withdraw</button>'
+        +'</div>'
+        +'<div style="font-size:10px;font-weight:800;color:var(--muted);text-transform:uppercase;margin-bottom:4px">Recent Transactions</div>'
+        +hist
+        +'<div style="display:flex;gap:14px;margin-top:10px">'
+          +'<button onclick="editBankAccount('+a.id+')" style="background:none;border:none;font-size:11px;font-weight:700;color:var(--primary);cursor:pointer">✏ Edit Details</button>'
+          +'<button onclick="delBankAccount('+a.id+')" style="background:none;border:none;font-size:11px;font-weight:700;color:var(--red);cursor:pointer">🗑 Delete Account</button>'
+        +'</div>'
+        +'</div>'
+      ):'')
+      +'</div></div>';
+  }).join('');
+}
+
+// ── CASH IN-HAND ─────────────────────────────────────────────────
+var cashTxns=[]; var cashTxnId=1; var cashFilter='all'; var cashCurType='in';
+function saveCashTxns(){if(window._firebaseReady&&window._fbSyncCashTxns){window._markLocalWrite(8000,'cashtxns');window._fbSyncCashTxns(cashTxns);}}
+function setCashType(type){
+  cashCurType=type;
+  var bIn=document.getElementById('ci-type-in'),bOut=document.getElementById('ci-type-out');
+  if(bIn)bIn.style.background=type==='in'?'#0f9b58':'#f2f4f8';if(bIn)bIn.style.color=type==='in'?'#fff':'var(--muted)';
+  if(bOut)bOut.style.background=type==='out'?'var(--red)':'#f2f4f8';if(bOut)bOut.style.color=type==='out'?'#fff':'var(--muted)';
+}
+function recordCashTxn(){
+  var amount=parseFloat(document.getElementById('ci-amount').value)||0;
+  if(!amount){toast('Enter an amount','red');return;}
+  var txn={id:cashTxnId++,type:cashCurType,amount:amount,note:document.getElementById('ci-note').value.trim(),date:document.getElementById('ci-date').value||_localDateStr(),ts:Date.now(),by:_actorTag()};
+  cashTxns.unshift(txn);saveCashTxns();renderCashInHand();
+  ['ci-amount','ci-note'].forEach(function(id){document.getElementById(id).value='';});
+  toast('✅ '+(cashCurType==='in'?'Cash In':'Cash Out')+' recorded!','green');
+}
+function editCashTxn(id){
+  var t=cashTxns.find(function(x){return x.id===id});if(!t)return;
+  setCashType(t.type);
+  document.getElementById('ci-amount').value=t.amount;
+  document.getElementById('ci-note').value=t.note||'';
+  document.getElementById('ci-date').value=t.date||'';
+  var btn=document.querySelector('[onclick="recordCashTxn()"]');
+  if(btn){btn.setAttribute('data-edit-id',id);btn.textContent='💾 Update Entry';btn.setAttribute('onclick','confirmEditCashTxn()');}
+  document.getElementById('ci-amount').scrollIntoView({behavior:'smooth',block:'center'});
+}
+function confirmEditCashTxn(){
+  var btn=document.querySelector('[onclick="confirmEditCashTxn()"]');
+  var id=btn?parseInt(btn.getAttribute('data-edit-id')):0;
+  var t=cashTxns.find(function(x){return x.id===id});
+  if(!t){recordCashTxn();return;}
+  var amount=parseFloat(document.getElementById('ci-amount').value)||0;
+  if(!amount){toast('Enter an amount','red');return;}
+  t.type=cashCurType;t.amount=amount;t.note=document.getElementById('ci-note').value.trim();t.date=document.getElementById('ci-date').value||t.date;
+  saveCashTxns();renderCashInHand();
+  btn.removeAttribute('data-edit-id');btn.textContent='✅ Record Entry';btn.setAttribute('onclick','recordCashTxn()');
+  ['ci-amount','ci-note'].forEach(function(id){document.getElementById(id).value='';});
+  toast('✅ Entry updated!','green');
+}
+function delCashTxn(id){
+  var t=cashTxns.find(function(x){return x.id===id});if(!t)return;
+  confirmDelete('this cash entry', function(){
+    cashTxns=cashTxns.filter(function(x){return x.id!==id;});
+    _cbDeleteDoc('cashtxns',id);
+    if(window._markLocalWrite)window._markLocalWrite(20000,'cashtxns');
+    saveCashTxns();renderCashInHand();toast('🗑 Deleted');
+  });
+}
+function clearCashTxns(){if(!cashTxns.length)return;confirmDelete('all '+cashTxns.length+' cash entries', function(){
+  cashTxns.forEach(function(t){_cbDeleteDoc('cashtxns',t.id);});
+  cashTxns=[];if(window._markLocalWrite)window._markLocalWrite(20000,'cashtxns');saveCashTxns();renderCashInHand();toast('Cleared');
+});}
+function filterCashTxn(f){
+  cashFilter=f;
+  ['all','in','out'].forEach(function(c){var el=document.getElementById('ci-filter-'+c);if(el)el.classList.toggle('on',c===f);});
+  renderCashInHand();
+}
+function renderCashInHand(){
+  var el=document.getElementById('ci-list');if(!el)return;
+  var totIn=cashTxns.filter(function(t){return t.type==='in';}).reduce(function(a,t){return a+t.amount;},0);
+  var totOut=cashTxns.filter(function(t){return t.type==='out';}).reduce(function(a,t){return a+t.amount;},0);
+  var bal=totIn-totOut;
+  var h1=document.getElementById('ci-balance-hero'),h2=document.getElementById('ci-in-hero'),h3=document.getElementById('ci-out-hero');
+  if(h1)h1.textContent='₹'+f(bal);if(h2)h2.textContent='₹'+f(totIn);if(h3)h3.textContent='₹'+f(totOut);
+  var list=cashFilter==='all'?cashTxns:cashTxns.filter(function(t){return t.type===cashFilter;});
+  if(!list.length){el.innerHTML='<div class="empty"><div class="empty-icon">💵</div><div class="empty-text">No cash entries'+(cashFilter==='all'?'':' of this type')+'</div></div>';return;}
+  el.innerHTML=list.map(function(t){
+    var col=t.type==='in'?'#0f9b58':'var(--red)';var bg=t.type==='in'?'#e6f7ef':'#fdeaea';var ico=t.type==='in'?'📥':'📤';
+    return '<div style="padding:13px 14px;border-bottom:1px solid var(--border);display:flex;align-items:flex-start;gap:10px">'
+      +'<div style="width:36px;height:36px;background:'+bg+';border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0">'+ico+'</div>'
+      +'<div style="flex:1;min-width:0">'
+        +'<div style="font-size:14px;font-weight:700;color:var(--text)">'+(t.note?e(t.note):(t.type==='in'?'Cash In':'Cash Out'))+'</div>'
+        +'<div style="font-size:10px;color:var(--muted);margin-top:2px">'+t.date+(t.by?' · '+e(t.by):'')+'</div>'
+      +'</div>'
+      +'<div style="text-align:right;flex-shrink:0">'
+        +'<div style="font-size:15px;font-weight:800;color:'+col+'">'+(t.type==='in'?'+':'-')+'₹'+f(t.amount)+'</div>'
+        +'<div style="display:flex;gap:5px;margin-top:5px"><button onclick="editCashTxn('+t.id+')" style="background:none;border:none;font-size:10px;font-weight:700;color:var(--primary);cursor:pointer">✏ Edit</button><button onclick="delCashTxn('+t.id+')" style="background:none;border:none;font-size:10px;font-weight:700;color:var(--red);cursor:pointer">Delete</button></div>'
+      +'</div></div>';
+  }).join('');
+}
+
+// ── CHEQUES ──────────────────────────────────────────────────────
+var cheques=[]; var chequeId=1; var chqFilter='all'; var chqCurKind='received';
+function saveCheques(){if(window._firebaseReady&&window._fbSyncCheques){window._markLocalWrite(8000,'cheques');window._fbSyncCheques(cheques);}}
+function setChequeKind(kind){
+  chqCurKind=kind;
+  var bR=document.getElementById('chq-kind-received'),bI=document.getElementById('chq-kind-issued');
+  if(bR){bR.style.background=kind==='received'?'#f57c00':'#f2f4f8';bR.style.color=kind==='received'?'#fff':'var(--muted)';}
+  if(bI){bI.style.background=kind==='issued'?'#f57c00':'#f2f4f8';bI.style.color=kind==='issued'?'#fff':'var(--muted)';}
+}
+function recordCheque(){
+  var party=document.getElementById('chq-party').value.trim();
+  var amount=parseFloat(document.getElementById('chq-amount').value)||0;
+  if(!party||!amount){toast('Party & amount required','red');return;}
+  var chq={id:chequeId++,kind:chqCurKind,party:party,chqNo:document.getElementById('chq-no').value.trim(),bank:document.getElementById('chq-bank').value.trim(),amount:amount,date:document.getElementById('chq-date').value||_localDateStr(),status:'pending',note:document.getElementById('chq-note').value.trim(),ts:Date.now(),by:_actorTag()};
+  cheques.unshift(chq);saveCheques();renderCheques();
+  ['chq-party','chq-no','chq-bank','chq-amount','chq-note'].forEach(function(id){document.getElementById(id).value='';});
+  toast('✅ Cheque added!','green');
+}
+function editCheque(id){
+  var c=cheques.find(function(x){return x.id===id});if(!c)return;
+  setChequeKind(c.kind);
+  document.getElementById('chq-party').value=c.party||'';
+  document.getElementById('chq-no').value=c.chqNo||'';
+  document.getElementById('chq-bank').value=c.bank||'';
+  document.getElementById('chq-amount').value=c.amount||'';
+  document.getElementById('chq-date').value=c.date||'';
+  document.getElementById('chq-note').value=c.note||'';
+  var btn=document.querySelector('[onclick="recordCheque()"]');
+  if(btn){btn.setAttribute('data-edit-id',id);btn.textContent='💾 Update Cheque';btn.setAttribute('onclick','confirmEditCheque()');}
+  document.getElementById('chq-party').scrollIntoView({behavior:'smooth',block:'center'});
+}
+function confirmEditCheque(){
+  var btn=document.querySelector('[onclick="confirmEditCheque()"]');
+  var id=btn?parseInt(btn.getAttribute('data-edit-id')):0;
+  var c=cheques.find(function(x){return x.id===id});
+  if(!c){recordCheque();return;}
+  var party=document.getElementById('chq-party').value.trim();
+  var amount=parseFloat(document.getElementById('chq-amount').value)||0;
+  if(!party||!amount){toast('Party & amount required','red');return;}
+  c.kind=chqCurKind;c.party=party;c.chqNo=document.getElementById('chq-no').value.trim();c.bank=document.getElementById('chq-bank').value.trim();
+  c.amount=amount;c.date=document.getElementById('chq-date').value||c.date;c.note=document.getElementById('chq-note').value.trim();
+  saveCheques();renderCheques();
+  btn.removeAttribute('data-edit-id');btn.textContent='🪙 Add Cheque';btn.setAttribute('onclick','recordCheque()');
+  ['chq-party','chq-no','chq-bank','chq-amount','chq-note'].forEach(function(id){document.getElementById(id).value='';});
+  toast('✅ Cheque updated!','green');
+}
+function setChequeStatus(id,status){
+  var c=cheques.find(function(x){return x.id===id});if(!c)return;
+  c.status=status;c._statusBy=_actorTag();c._statusTs=Date.now();
+  saveCheques();renderCheques();
+  toast('Status → '+status,'green');
+}
+function delCheque(id){
+  var c=cheques.find(function(x){return x.id===id});if(!c)return;
+  confirmDelete('cheque #'+(c.chqNo||c.id)+' — '+c.party, function(){
+    cheques=cheques.filter(function(x){return x.id!==id;});
+    _cbDeleteDoc('cheques',id);
+    if(window._markLocalWrite)window._markLocalWrite(20000,'cheques');
+    saveCheques();renderCheques();toast('🗑 Deleted');
+  });
+}
+function filterCheque(f){
+  chqFilter=f;
+  ['all','received','issued','pending','cleared','bounced'].forEach(function(c){var el=document.getElementById('chq-filter-'+c);if(el)el.classList.toggle('on',c===f);});
+  renderCheques();
+}
+function renderCheques(){
+  var el=document.getElementById('chq-list');if(!el)return;
+  var pending=cheques.filter(function(c){return c.status==='pending'||c.status==='deposited';}).reduce(function(a,c){return a+c.amount;},0);
+  var cleared=cheques.filter(function(c){return c.status==='cleared';}).reduce(function(a,c){return a+c.amount;},0);
+  var h1=document.getElementById('chq-pending-hero'),h2=document.getElementById('chq-cleared-hero');
+  if(h1)h1.textContent='₹'+f(pending);if(h2)h2.textContent='₹'+f(cleared);
+  var list=cheques;
+  if(chqFilter==='received'||chqFilter==='issued')list=list.filter(function(c){return c.kind===chqFilter;});
+  else if(chqFilter!=='all')list=list.filter(function(c){return c.status===chqFilter;});
+  if(!list.length){el.innerHTML='<div class="empty"><div class="empty-icon">🪙</div><div class="empty-text">No cheques'+(chqFilter==='all'?'':' in this filter')+'</div></div>';return;}
+  var statusCol={pending:'#f57c00',deposited:'#7c3aed',cleared:'#0f9b58',bounced:'var(--red)',cancelled:'var(--muted)'};
+  var statusBg={pending:'#fff3e0',deposited:'#ede9ff',cleared:'#e6f7ef',bounced:'#fdeaea',cancelled:'#f2f4f8'};
+  el.innerHTML=list.map(function(c){
+    var sc=statusCol[c.status]||'#555',sb=statusBg[c.status]||'#f2f4f8';
+    var actions='';
+    if(c.status==='pending')actions='<button onclick="setChequeStatus('+c.id+',\'deposited\')" style="background:#ede9ff;color:#7c3aed;border:none;border-radius:8px;padding:6px 10px;font-size:10px;font-weight:800;cursor:pointer">Mark Deposited</button><button onclick="setChequeStatus('+c.id+',\'bounced\')" style="background:#fdeaea;color:var(--red);border:none;border-radius:8px;padding:6px 10px;font-size:10px;font-weight:800;cursor:pointer">Bounced</button>';
+    else if(c.status==='deposited')actions='<button onclick="setChequeStatus('+c.id+',\'cleared\')" style="background:#e6f7ef;color:#0f9b58;border:none;border-radius:8px;padding:6px 10px;font-size:10px;font-weight:800;cursor:pointer">Mark Cleared</button><button onclick="setChequeStatus('+c.id+',\'bounced\')" style="background:#fdeaea;color:var(--red);border:none;border-radius:8px;padding:6px 10px;font-size:10px;font-weight:800;cursor:pointer">Bounced</button>';
+    else if(c.status==='bounced')actions='<button onclick="setChequeStatus('+c.id+',\'pending\')" style="background:#fff3e0;color:#f57c00;border:none;border-radius:8px;padding:6px 10px;font-size:10px;font-weight:800;cursor:pointer">Re-open</button>';
+    return '<div style="padding:13px 14px;border-bottom:1px solid var(--border)">'
+      +'<div style="display:flex;justify-content:space-between;align-items:flex-start">'
+        +'<div style="flex:1;min-width:0">'
+          +'<div style="font-size:14px;font-weight:700;color:var(--text);display:flex;align-items:center;gap:6px;flex-wrap:wrap">'+(c.kind==='received'?'📥':'📤')+' '+e(c.party)
+            +'<span style="font-size:9px;font-weight:800;background:'+sb+';color:'+sc+';padding:2px 7px;border-radius:20px">'+c.status.toUpperCase()+'</span></div>'
+          +'<div style="font-size:11px;color:var(--muted);margin-top:2px">'+(c.chqNo?'#'+e(c.chqNo)+' · ':'')+e(c.bank||'')+'</div>'
+          +'<div style="font-size:10px;color:var(--muted);margin-top:2px">'+c.date+(c.note?' · '+e(c.note):'')+'</div>'
+        +'</div>'
+        +'<div style="text-align:right;flex-shrink:0"><div style="font-size:16px;font-weight:900;color:'+(c.kind==='received'?'#0f9b58':'var(--red)')+'">₹'+f(c.amount)+'</div></div>'
+      +'</div>'
+      +'<div style="display:flex;gap:6px;flex-wrap:wrap;margin-top:8px">'+actions
+        +'<button onclick="editCheque('+c.id+')" style="background:none;border:none;font-size:10px;font-weight:700;color:var(--primary);cursor:pointer;padding:6px 4px">✏ Edit</button>'
+        +'<button onclick="delCheque('+c.id+')" style="background:none;border:none;font-size:10px;font-weight:700;color:var(--red);cursor:pointer;padding:6px 4px">Delete</button>'
+      +'</div></div>';
+  }).join('');
+}
+
+// ── LOAN ACCOUNTS ────────────────────────────────────────────────
+var loanAccounts=[]; var loanAccId=1; var loanExpandedId=null;
+function saveLoanAccounts(){if(window._firebaseReady&&window._fbSyncLoanAccounts){window._markLocalWrite(8000,'loanaccounts');window._fbSyncLoanAccounts(loanAccounts);}}
+function recordLoanAccount(){
+  var lender=document.getElementById('loan-lender').value.trim();
+  var principal=parseFloat(document.getElementById('loan-principal').value)||0;
+  if(!lender||!principal){toast('Lender & principal required','red');return;}
+  var loan={id:loanAccId++,lender:lender,principal:principal,outstanding:principal,rate:parseFloat(document.getElementById('loan-rate').value)||0,emi:parseFloat(document.getElementById('loan-emi').value)||0,startDate:document.getElementById('loan-date').value||_localDateStr(),note:document.getElementById('loan-note').value.trim(),ts:Date.now(),by:_actorTag(),payments:[]};
+  loanAccounts.unshift(loan);saveLoanAccounts();renderLoanAccounts();
+  ['loan-lender','loan-principal','loan-rate','loan-emi','loan-note'].forEach(function(id){document.getElementById(id).value='';});
+  toast('✅ Loan account added!','green');
+}
+function editLoanAccount(id){
+  var l=loanAccounts.find(function(x){return x.id===id});if(!l)return;
+  document.getElementById('loan-lender').value=l.lender||'';
+  document.getElementById('loan-principal').value=l.principal||'';
+  document.getElementById('loan-rate').value=l.rate||'';
+  document.getElementById('loan-emi').value=l.emi||'';
+  document.getElementById('loan-date').value=l.startDate||'';
+  document.getElementById('loan-note').value=l.note||'';
+  var btn=document.querySelector('[onclick="recordLoanAccount()"]');
+  if(btn){btn.setAttribute('data-edit-id',id);btn.textContent='💾 Update Loan';btn.setAttribute('onclick','confirmEditLoanAccount()');}
+  document.getElementById('loan-lender').scrollIntoView({behavior:'smooth',block:'center'});
+  toast('Editing loan — principal edit does not change outstanding','blue');
+}
+function confirmEditLoanAccount(){
+  var btn=document.querySelector('[onclick="confirmEditLoanAccount()"]');
+  var id=btn?parseInt(btn.getAttribute('data-edit-id')):0;
+  var l=loanAccounts.find(function(x){return x.id===id});
+  if(!l){recordLoanAccount();return;}
+  var lender=document.getElementById('loan-lender').value.trim();
+  var principal=parseFloat(document.getElementById('loan-principal').value)||0;
+  if(!lender||!principal){toast('Lender & principal required','red');return;}
+  l.lender=lender;l.principal=principal;l.rate=parseFloat(document.getElementById('loan-rate').value)||0;
+  l.emi=parseFloat(document.getElementById('loan-emi').value)||0;l.startDate=document.getElementById('loan-date').value||l.startDate;
+  l.note=document.getElementById('loan-note').value.trim();
+  saveLoanAccounts();renderLoanAccounts();
+  btn.removeAttribute('data-edit-id');btn.textContent='💳 Add Loan';btn.setAttribute('onclick','recordLoanAccount()');
+  ['loan-lender','loan-principal','loan-rate','loan-emi','loan-note'].forEach(function(id){document.getElementById(id).value='';});
+  toast('✅ Loan updated!','green');
+}
+function delLoanAccount(id){
+  var l=loanAccounts.find(function(x){return x.id===id});if(!l)return;
+  confirmDelete('loan account — '+l.lender, function(){
+    loanAccounts=loanAccounts.filter(function(x){return x.id!==id;});
+    _cbDeleteDoc('loanaccounts',id);
+    if(window._markLocalWrite)window._markLocalWrite(20000,'loanaccounts');
+    saveLoanAccounts();renderLoanAccounts();toast('🗑 Deleted');
+  });
+}
+function loanToggleExpand(id){loanExpandedId=(loanExpandedId===id)?null:id;renderLoanAccounts();}
+function loanAddPayment(id){
+  var amtEl=document.getElementById('loan-pay-amt-'+id);
+  var amt=parseFloat(amtEl&&amtEl.value)||0;
+  if(!amt){toast('Enter an amount','red');return;}
+  var l=loanAccounts.find(function(x){return x.id===id});if(!l)return;
+  l.outstanding=Math.max(0,l.outstanding-amt);
+  if(!l.payments)l.payments=[];
+  l.payments.unshift({id:(l.payments.length?Math.max.apply(null,l.payments.map(function(p){return p.id;}))+1:1),amount:amt,date:_localDateStr(),ts:Date.now(),by:_actorTag()});
+  saveLoanAccounts();renderLoanAccounts();
+  toast('✅ Payment of ₹'+f(amt)+' recorded'+(l.outstanding===0?' — loan closed! 🎉':''),'green');
+}
+function renderLoanAccounts(){
+  var el=document.getElementById('loan-list');if(!el)return;
+  var total=loanAccounts.reduce(function(a,x){return a+(x.outstanding||0);},0);
+  var h=document.getElementById('loan-total-hero');if(h)h.textContent='₹'+f(total);
+  if(!loanAccounts.length){el.innerHTML='<div class="card"><div class="empty"><div class="empty-icon">💳</div><div class="empty-text">No loan accounts added yet</div></div></div>';return;}
+  el.innerHTML=loanAccounts.map(function(l){
+    var isOpen=loanExpandedId===l.id;
+    var pct=l.principal?Math.round(((l.principal-l.outstanding)/l.principal)*100):0;
+    var closed=l.outstanding<=0;
+    var pays=(l.payments||[]).slice(0,8).map(function(p){
+      return '<div style="display:flex;justify-content:space-between;padding:7px 0;border-bottom:1px solid var(--border);font-size:12px">'
+        +'<span>💰 Payment <span style="color:var(--muted);font-size:10px">· '+p.date+'</span></span>'
+        +'<b style="color:#0f9b58">-₹'+f(p.amount)+'</b></div>';
+    }).join('')||'<div style="padding:8px 0;color:var(--muted);font-size:12px">No payments yet</div>';
+    return '<div class="card" style="margin-bottom:10px"><div class="card-body">'
+      +'<div style="display:flex;justify-content:space-between;align-items:flex-start;cursor:pointer" onclick="loanToggleExpand('+l.id+')">'
+        +'<div style="flex:1;min-width:0">'
+          +'<div style="font-size:15px;font-weight:800;color:var(--text);display:flex;align-items:center;gap:6px;flex-wrap:wrap">'+e(l.lender)
+            +(closed?'<span style="font-size:9px;font-weight:800;background:#e6f7ef;color:#0f9b58;padding:2px 7px;border-radius:20px">CLOSED</span>':'')+'</div>'
+          +'<div style="font-size:11px;color:var(--muted);margin-top:2px">Principal ₹'+f(l.principal)+(l.rate?' · '+l.rate+'% p.a.':'')+(l.emi?' · EMI ₹'+f(l.emi):'')+'</div>'
+          +'<div style="background:#f2f4f8;border-radius:6px;height:6px;margin-top:8px;overflow:hidden"><div style="background:#0f9b58;height:100%;width:'+pct+'%"></div></div>'
+          +'<div style="font-size:10px;color:var(--muted);margin-top:3px">'+pct+'% repaid</div>'
+        +'</div>'
+        +'<div style="text-align:right;margin-left:8px"><div style="font-size:10px;color:var(--muted)">Outstanding</div><div style="font-size:17px;font-weight:900;color:var(--red)">₹'+f(l.outstanding)+'</div></div>'
+      +'</div>'
+      +(isOpen?(
+        '<div style="margin-top:12px;padding-top:12px;border-top:1px solid var(--border)">'
+        +(closed?'':(
+          '<div style="display:flex;gap:6px;margin-bottom:8px">'
+            +'<input type="number" id="loan-pay-amt-'+l.id+'" placeholder="Payment amount" style="flex:1;font-family:\'Noto Sans\',sans-serif;font-size:12px;padding:9px;border:1.5px solid var(--border);border-radius:9px;outline:none">'
+            +'<button onclick="loanAddPayment('+l.id+')" style="background:#0f9b58;color:#fff;border:none;border-radius:9px;padding:9px 14px;font-size:12px;font-weight:800;cursor:pointer">＋ Pay</button>'
+          +'</div>'
+        ))
+        +'<div style="font-size:10px;font-weight:800;color:var(--muted);text-transform:uppercase;margin-bottom:4px">Payment History</div>'
+        +pays
+        +'<div style="display:flex;gap:14px;margin-top:10px">'
+          +'<button onclick="editLoanAccount('+l.id+')" style="background:none;border:none;font-size:11px;font-weight:700;color:var(--primary);cursor:pointer">✏ Edit Details</button>'
+          +'<button onclick="delLoanAccount('+l.id+')" style="background:none;border:none;font-size:11px;font-weight:700;color:var(--red);cursor:pointer">🗑 Delete Loan</button>'
+        +'</div>'
+        +'</div>'
+      ):'')
+      +'</div></div>';
+  }).join('');
+}
+
 
 // MODAL HELPERS
 function om(id){
@@ -18433,13 +18865,16 @@ function initGodownPanel(){
   gdTab('list');
 }
 function gdOpenAddGodown(){
-  // Just switch to the list tab and focus the name field
-  // Don't call goTabMenuClose — we are already on the godown panel
-  setTimeout(function(){gdTab('list');var el=document.getElementById('gd-new-name');if(el)el.focus();},150);
+  // FIX: previously assumed the Godown panel was already open and just tried
+  // to focus a field inside it — but tapped directly from the Menu drawer,
+  // tab-godown was never navigated to, so nothing visibly happened.
+  goTabMenuClose('godown');
+  setTimeout(function(){gdTab('list');var el=document.getElementById('gd-new-name');if(el)el.focus();},260);
 }
 function gdOpenTransfer(){
-  // Just switch to the transfer tab
-  setTimeout(function(){gdTab('transfer');var el=document.getElementById('gd-tr-prod-search');if(el)el.focus();},150);
+  // FIX: same root cause as gdOpenAddGodown — navigate to the panel first.
+  goTabMenuClose('godown');
+  setTimeout(function(){gdTab('transfer');var el=document.getElementById('gd-tr-prod-search');if(el)el.focus();},260);
 }
 function gdRecalcStock(){
   if(!godowns.length)return;
@@ -20000,7 +20435,11 @@ function _appLogout() {
     {table:'gdmovements',   varName:'gdMovements',    loadedFlag:'_fbGdMovementsLoaded',    syncName:'_fbSyncGdMovements',   renders:['gdRenderMovements','gdRenderDashboard']},
     {table:'gdbatches',     varName:'gdBatches',      loadedFlag:'_fbGdBatchesLoaded',      syncName:'_fbSyncGdBatches',     renders:['gdRenderDashboard']},
     {table:'gdtransfersreq',varName:'gdTransferRequests',loadedFlag:'_fbGdTrReqLoaded',     syncName:'_fbSyncGdTrReq',       renders:['trwRender']},
-    {table:'gdcyclecounts', varName:'gdCycleCounts',  loadedFlag:'_fbGdCcLoaded',           syncName:'_fbSyncCycleCounts',   renders:['ccRenderHistory']}
+    {table:'gdcyclecounts', varName:'gdCycleCounts',  loadedFlag:'_fbGdCcLoaded',           syncName:'_fbSyncCycleCounts',   renders:['ccRenderHistory']},
+    {table:'bankaccounts',  varName:'bankAccounts',   loadedFlag:'_fbBankAccountsLoaded',   syncName:'_fbSyncBankAccounts',  renders:['renderBankAccounts']},
+    {table:'cashtxns',      varName:'cashTxns',       loadedFlag:'_fbCashTxnsLoaded',       syncName:'_fbSyncCashTxns',      renders:['renderCashInHand']},
+    {table:'cheques',       varName:'cheques',        loadedFlag:'_fbChequesLoaded',        syncName:'_fbSyncCheques',       renders:['renderCheques']},
+    {table:'loanaccounts',  varName:'loanAccounts',   loadedFlag:'_fbLoanAccountsLoaded',   syncName:'_fbSyncLoanAccounts',  renders:['renderLoanAccounts']}
   ];
 
   // ── V17-5: ALL collections use getDocs-only (zero continuous polling) ────────
@@ -20025,7 +20464,8 @@ function _appLogout() {
   // On startup they hydrate from localStorage cache only (fast, no network request).
   // Use window._lazyLoad('<table>') to trigger the first real load when the panel opens.
   var _LAZY = ['bell','labour','gdmovements','gdbatches','gdlocations','gdtransfersreq','gdcyclecounts',
-               'products','sales','purchases','makinglog']; // V195: moved here, see note above
+               'products','sales','purchases','makinglog',
+               'bankaccounts','cashtxns','cheques','loanaccounts']; // V195: moved here, see note above; V336: Cash & Bank tables load on first open of each panel
   var _lazyLoaded = {}; // tracks which lazy tables have been fetched at least once
   window._lazyLoad = function(tableName){
     if(_lazyLoaded[tableName]) return Promise.resolve(); // V333 FIX: already loaded — return a resolvable promise, not undefined, so callers can safely await this
@@ -26516,6 +26956,7 @@ window.RecycleBinManager = (function() {
 // ════════════════════════════════════════════════
 
 var _bkPendingData = null; // holds parsed backup file for restore
+var _bkSelected = {}; // key -> true/false, which collections are checked for export
 
 var _bkCollections = [
   { key: 'products',       label: '📦 Products',         icon: '📦', fn: function(){ return typeof products!=='undefined'?products:[]; } },
@@ -26541,25 +26982,63 @@ function openBackupModal(){
   document.getElementById('bk-restore-warning').style.display = 'none';
   document.getElementById('bk-progress-wrap').style.display = 'none';
   document.getElementById('bk-btn-backup').disabled = false;
-  document.getElementById('bk-btn-backup').textContent = '📥 Download Full Backup';
+  // Default: everything selected, so behaviour is unchanged unless user unchecks something
+  _bkCollections.forEach(function(c){ _bkSelected[c.key] = true; });
   _bkRenderCollections();
+  _bkUpdateButtonLabels();
   _bkLoadLastInfo();
   document.getElementById('bk-modal').style.display = 'block';
 }
 
+function bkToggleCollection(key){
+  _bkSelected[key] = !_bkSelected[key];
+  _bkRenderCollections();
+  _bkUpdateButtonLabels();
+}
+
+function bkSelectAll(all){
+  _bkCollections.forEach(function(c){ _bkSelected[c.key] = all; });
+  _bkRenderCollections();
+  _bkUpdateButtonLabels();
+}
+
+function _bkSelectedCount(){
+  return _bkCollections.filter(function(c){ return _bkSelected[c.key]; }).length;
+}
+
+function _bkUpdateButtonLabels(){
+  var n = _bkSelectedCount();
+  var all = n === _bkCollections.length;
+  var jsonBtn = document.getElementById('bk-btn-backup');
+  var xlsBtn  = document.getElementById('bk-btn-excel');
+  if(!jsonBtn.disabled){
+    jsonBtn.innerHTML = all ? '📥 Download Full Backup' : '📥 Download Selected (' + n + ')';
+  }
+  if(!xlsBtn.disabled){
+    xlsBtn.innerHTML = all ? '📊 Excel Backup' : '📊 Excel (' + n + ' selected)';
+  }
+}
+
 function _bkRenderCollections(){
   var list = document.getElementById('bk-collection-list');
-  list.innerHTML = _bkCollections.map(function(c){
+
+  var selectAllRow = '<div style="grid-column:1/-1;display:flex;justify-content:flex-end;gap:14px;margin-bottom:2px">'
+    +'<span onclick="bkSelectAll(true)" style="font-size:10.5px;font-weight:800;color:#1b4fff;cursor:pointer">Select all</span>'
+    +'<span onclick="bkSelectAll(false)" style="font-size:10.5px;font-weight:800;color:#888;cursor:pointer">Select none</span>'
+  +'</div>';
+
+  list.innerHTML = selectAllRow + _bkCollections.map(function(c){
     var data = c.fn();
     var count = Array.isArray(data) ? data.length : (Object.keys(data).length ? '1 doc' : '—');
     var ok = Array.isArray(data) ? data.length > 0 : Object.keys(data).length > 0;
-    return '<div style="display:flex;align-items:center;gap:6px;background:'+(ok?'#f0fdf4':'#f9fafb')+';border-radius:10px;padding:7px 10px">'
+    var checked = !!_bkSelected[c.key];
+    return '<div onclick="bkToggleCollection(\''+c.key+'\')" style="display:flex;align-items:center;gap:6px;background:'+(checked?'#f0fdf4':'#f9fafb')+';border-radius:10px;padding:7px 10px;cursor:pointer;border:1.5px solid '+(checked?'#bbf7d0':'#eee')+'">'
       +'<span style="font-size:14px">'+c.icon+'</span>'
       +'<div style="flex:1;min-width:0">'
         +'<div style="font-size:11px;font-weight:700;color:#374151;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">'+c.label.replace(/^\S+\s/,'')+'</div>'
         +'<div style="font-size:10px;color:'+(ok?'#16a34a':'#9ca3af')+'">'+count+(typeof count==='number'?' items':'')+'</div>'
       +'</div>'
-      +'<span style="font-size:13px">'+(ok?'✅':'⬜')+'</span>'
+      +'<span style="font-size:15px">'+(checked?'✅':'⬜')+'</span>'
     +'</div>';
   }).join('');
 }
@@ -26599,8 +27078,12 @@ function bkDoBackup(){
         exportedBy: (window._bizSettings && window._bizSettings.name) || 'My Business',
       };
 
-      _bkSetProgress(40, 'Collecting all collections…');
-      _bkCollections.forEach(function(c){
+      _bkSetProgress(40, 'Collecting selected collections…');
+      var _bkChosen = _bkCollections.filter(function(c){ return _bkSelected[c.key]; });
+      if(_bkChosen.length === 0){ _bkChosen = _bkCollections; } // safety: never export nothing
+      backup._customExport = _bkChosen.length !== _bkCollections.length;
+      backup._includedCollections = _bkChosen.map(function(c){ return c.key; });
+      _bkChosen.forEach(function(c){
         var d = c.fn();
         backup[c.key] = d;
       });
@@ -26614,8 +27097,9 @@ function bkDoBackup(){
       var a    = document.createElement('a');
       var biz  = ((window._bizSettings && window._bizSettings.name) || 'shop').replace(/\s+/g,'-').replace(/[^a-zA-Z0-9\-]/g,'').toLowerCase();
       var date = new Date().toISOString().slice(0,10);
+      var slug = backup._customExport ? ('custom-' + _bkChosen.map(function(c){return c.key;}).join('-')) : 'full';
       a.href     = url;
-      a.download = 'inv-backup-' + biz + '-' + date + '.json';
+      a.download = 'inv-backup-' + biz + '-' + slug + '-' + date + '.json';
       document.body.appendChild(a);
       a.click();
       document.body.removeChild(a);
@@ -26629,26 +27113,26 @@ function bkDoBackup(){
       btn.style.background = 'linear-gradient(135deg,#16a34a,#15803d)';
 
       // Show summary
-      var total = _bkCollections.reduce(function(acc, c){
+      var total = _bkChosen.reduce(function(acc, c){
         var d = c.fn();
         return acc + (Array.isArray(d) ? d.length : 0);
       }, 0);
-      toast('💾 Backup saved! ' + total + ' records', 'green');
+      toast('💾 ' + (backup._customExport ? _bkChosen.length + '-collection export saved! ' : 'Backup saved! ') + total + ' records', 'green');
 
       setTimeout(function(){
         btn.disabled = false;
-        btn.textContent = '📥 JSON Backup';
         btn.style.background = 'linear-gradient(135deg,#1b4fff,#7c3aed)';
         document.getElementById('bk-progress-wrap').style.display = 'none';
         _bkLoadLastInfo();
+        _bkUpdateButtonLabels();
       }, 3000);
 
     }catch(err){
       console.error('[Backup] Error:', err);
       btn.disabled = false;
-      btn.textContent = '📥 JSON Backup';
       document.getElementById('bk-progress-wrap').style.display = 'none';
       toast('Backup failed: ' + err.message, 'red');
+      _bkUpdateButtonLabels();
     }
   }, 80);
 }
@@ -26948,16 +27432,23 @@ function bkDoExcel(){
       var biz = (window._bizSettings && window._bizSettings.name) || 'My Business';
       var dateStr = new Date().toLocaleDateString('en-IN');
 
+      // Only export the sheets whose collection is checked in the list.
+      // If a selected collection has no matching Excel sheet definition (e.g. Business Settings),
+      // it's simply skipped since Excel is tabular and settings is a single doc.
+      var _bkChosenSheets = _bkExcelSheets.filter(function(s){ return _bkSelected[s.key]; });
+      var _bkIsCustom = _bkChosenSheets.length !== _bkExcelSheets.length;
+      if(_bkChosenSheets.length === 0){ _bkChosenSheets = _bkExcelSheets; _bkIsCustom = false; } // safety
+
       // ── Summary sheet ──────────────────────────────
       _bkSetProgress(20, 'Building Summary sheet…');
       var summaryData = [
-        ['Inventory EX — Full Data Backup'],
+        ['Inventory EX — ' + (_bkIsCustom ? 'Custom Export' : 'Full Data Backup')],
         ['Business: ' + biz],
         ['Exported: ' + new Date().toLocaleString('en-IN')],
         [],
         ['Collection', 'Records'],
       ];
-      _bkExcelSheets.forEach(function(s){
+      _bkChosenSheets.forEach(function(s){
         var d = s.fn();
         summaryData.push([s.name, Array.isArray(d) ? d.length : 0]);
       });
@@ -26968,8 +27459,8 @@ function bkDoExcel(){
 
       // ── Data sheets ────────────────────────────────
       var total = 0;
-      _bkExcelSheets.forEach(function(sheet, si){
-        _bkSetProgress(25 + Math.round(si/_bkExcelSheets.length*65), 'Sheet: '+sheet.name+'…');
+      _bkChosenSheets.forEach(function(sheet, si){
+        _bkSetProgress(25 + Math.round(si/_bkChosenSheets.length*65), 'Sheet: '+sheet.name+'…');
         var data = sheet.fn();
         total += Array.isArray(data) ? data.length : 0;
 
@@ -27007,8 +27498,9 @@ function bkDoExcel(){
       var a     = document.createElement('a');
       var bizSlug = biz.replace(/\s+/g,'-').replace(/[^a-zA-Z0-9\-]/g,'').toLowerCase();
       var date  = new Date().toISOString().slice(0,10);
+      var xlsSlug = _bkIsCustom ? ('custom-' + _bkChosenSheets.map(function(s){return s.key;}).join('-')) : 'full';
       a.href     = url;
-      a.download = 'inv-backup-' + bizSlug + '-' + date + '.xlsx';
+      a.download = 'inv-backup-' + bizSlug + '-' + xlsSlug + '-' + date + '.xlsx';
       document.body.appendChild(a);
       a.click();
       document.body.removeChild(a);
@@ -27019,22 +27511,22 @@ function bkDoExcel(){
       _bkSetProgress(100, '✅ Excel downloaded!');
       btn.textContent = '✅ Excel Saved!';
       btn.style.background = 'linear-gradient(135deg,#0f9b58,#16a34a)';
-      toast('📊 Excel backup saved! ' + total + ' total records', 'green');
+      toast('📊 ' + (_bkIsCustom ? _bkChosenSheets.length + '-sheet Excel saved! ' : 'Excel backup saved! ') + total + ' total records', 'green');
 
       setTimeout(function(){
         btn.disabled = false;
-        btn.textContent = '📊 Excel Backup';
         btn.style.background = 'linear-gradient(135deg,#16a34a,#15803d)';
         document.getElementById('bk-progress-wrap').style.display = 'none';
         _bkLoadLastInfo();
+        _bkUpdateButtonLabels();
       }, 3000);
 
     }catch(err){
       console.error('[ExcelBackup] Error:', err);
       btn.disabled = false;
-      btn.textContent = '📊 Excel Backup';
       document.getElementById('bk-progress-wrap').style.display = 'none';
       toast('Excel export failed: ' + err.message, 'red');
+      _bkUpdateButtonLabels();
     }
   }, 80);
 }
