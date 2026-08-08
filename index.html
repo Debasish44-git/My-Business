@@ -3058,6 +3058,14 @@ var _memStore = (function(){
       </div>
       <span class="menu-row-right">›</span>
     </div>
+    <div class="menu-row" onclick="event.stopPropagation();nameHistoryOpenMine()">
+      <div class="menu-row-icon" style="background:#eef2ff">🕘</div>
+      <div class="menu-row-info">
+        <div class="menu-row-title">My Name History</div>
+        <div class="menu-row-sub" style="font-size:11px;color:var(--muted)">Every name you've used since installing the app</div>
+      </div>
+      <span class="menu-row-right">›</span>
+    </div>
     <div class="menu-row" data-owner-only="1" onclick="teamOpenModal()">
       <div class="menu-row-icon" style="background:#eef2ff">👥</div>
       <div class="menu-row-info">
@@ -3394,6 +3402,16 @@ var _memStore = (function(){
     <div id="team-assign-modal-body"></div>
     <button class="btn-mc" onclick="teamSaveWorkerAssignment()" style="width:100%;background:var(--primary);color:#fff;font-weight:800;margin-top:12px">Save Assignment</button>
     <button class="btn-mc" onclick="document.getElementById('team-assign-modal').classList.remove('open')" style="width:100%;margin-top:8px">Cancel</button>
+  </div>
+</div>
+
+<!-- V348: NAME HISTORY MODAL -->
+<div class="modal-overlay" id="namehist-modal" onclick="if(event.target===this)this.classList.remove('open')">
+  <div class="modal" style="max-height:85vh;overflow-y:auto">
+    <div class="mpill"></div>
+    <div class="mtitle" id="namehist-modal-title">Name History</div>
+    <div id="namehist-modal-body">Loading…</div>
+    <button class="btn-mc" onclick="document.getElementById('namehist-modal').classList.remove('open')" style="width:100%;margin-top:12px">Close</button>
   </div>
 </div>
 
@@ -5019,6 +5037,77 @@ do $$ declare t text; begin
       ' )';
   end loop;
 end $$;
+
+-- ══════════════════════════════════════════════════════════════════════════
+-- V348 — V-NAME-HISTORY. Run this ONCE in the Supabase SQL editor.
+-- What this adds: whenever ANYONE with a login (the Owner, or any invited
+-- Manager) changes their display name via "Edit My Name", the old name is
+-- kept forever in name_history — so the Owner can open Team / Manager
+-- Access and see every name a Manager has ever used since the app was
+-- installed, and each person can see their own name history too.
+-- Safe to run on top of existing data — every statement is idempotent.
+-- ══════════════════════════════════════════════════════════════════════════
+
+-- 1) Current display name per login — lets the Owner see a Manager's name
+--    in the Team list even if that Manager only used the app on their own
+--    device and never had a "member_email"-derived name shown before.
+create table if not exists user_profiles (
+  id         uuid primary key references auth.users(id),
+  owner_id   uuid references auth.users(id),
+  email      text,
+  name       text,
+  updated_at bigint
+);
+alter table user_profiles add column if not exists owner_id   uuid references auth.users(id);
+alter table user_profiles add column if not exists email      text;
+alter table user_profiles add column if not exists name       text;
+alter table user_profiles add column if not exists updated_at bigint;
+
+alter table user_profiles enable row level security;
+drop policy if exists profiles_self_write  on user_profiles;
+drop policy if exists profiles_self_read   on user_profiles;
+drop policy if exists profiles_owner_read  on user_profiles;
+-- A person can only ever write their own profile row.
+create policy profiles_self_write on user_profiles for all to authenticated
+  using (id = auth.uid()) with check (id = auth.uid());
+-- The business Owner can read every profile row linked to their business
+-- (their own + every active Manager's), so the Team screen can show names.
+create policy profiles_owner_read on user_profiles for select to authenticated
+  using (
+    id = auth.uid()
+    or owner_id = auth.uid()
+    or owner_id in (select owner_id from team_members where member_id = auth.uid() and status = 'active')
+  );
+
+-- 2) Full name-change log — one row per change, oldest first.
+create table if not exists name_history (
+  id         text primary key,
+  user_id    uuid references auth.users(id),
+  owner_id   uuid references auth.users(id),
+  old_name   text,
+  new_name   text,
+  changed_at bigint
+);
+alter table name_history add column if not exists owner_id   uuid references auth.users(id);
+alter table name_history add column if not exists old_name   text;
+alter table name_history add column if not exists new_name   text;
+alter table name_history add column if not exists changed_at bigint;
+
+alter table name_history enable row level security;
+drop policy if exists namehist_self_write on name_history;
+drop policy if exists namehist_read       on name_history;
+-- A person can only ever log their own name changes.
+create policy namehist_self_write on name_history for insert to authenticated
+  with check (user_id = auth.uid());
+-- Readable by: the person themselves, or the business Owner they belong to
+-- (works whether the reader IS the Owner, or is a Manager checking their
+-- own trail — owner_id is always the business owner's id either way).
+create policy namehist_read on name_history for select to authenticated
+  using (
+    user_id = auth.uid()
+    or owner_id = auth.uid()
+    or owner_id in (select owner_id from team_members where member_id = auth.uid() and status = 'active')
+  );
 */
 // ────────────────────────────────────────────────────────────────
 
@@ -5128,6 +5217,43 @@ async function authUpdateProfile(name) {
 }
 window.authUpdateProfile = authUpdateProfile;
 
+// ── V348 — NAME HISTORY ───────────────────────────────────────────────────
+// Every time someone (Owner or Manager) changes their display name via
+// "Edit My Name", we: (1) upsert user_profiles with their new current name
+// so the Owner's Team screen can show it, and (2) append a row to
+// name_history so the OLD name is never lost. Best-effort: if the V348 SQL
+// hasn't been run yet, this silently no-ops rather than blocking the name
+// change itself (which already succeeded via Supabase Auth above).
+async function _nameHistoryLog(oldName, newName) {
+  try {
+    if (window._ownerResolvePromise) await window._ownerResolvePromise;
+    var uid = _authCurrentUserId();
+    if (!uid) return;
+    var ownerId = _ownerUid() || uid;
+    var email = (window._authSession && window._authSession.user && window._authSession.user.email) || '';
+    var now = Date.now();
+    await _sbFetch('/rest/v1/user_profiles', {
+      method: 'POST',
+      headers: { Prefer: 'resolution=merge-duplicates,return=minimal' },
+      body: JSON.stringify({ id: uid, owner_id: ownerId, email: email, name: newName, updated_at: now })
+    });
+    await _sbFetch('/rest/v1/name_history', {
+      method: 'POST',
+      headers: { Prefer: 'return=minimal' },
+      body: JSON.stringify({
+        id: 'nh_' + now + '_' + Math.random().toString(36).slice(2, 8),
+        user_id: uid, owner_id: ownerId,
+        old_name: oldName || '', new_name: newName,
+        changed_at: now
+      })
+    });
+  } catch (e) {
+    // V348 SQL not run yet, or offline — name change itself already
+    // succeeded, so just log and move on.
+    console.warn('[name-history] could not log name change', e);
+  }
+}
+
 function editMyName() {
   var cur = (window._authSession && window._authSession.user && window._authSession.user.user_metadata && window._authSession.user.user_metadata.full_name) || '';
   var name = prompt('Your name (shown as "Added by" on transactions):', cur);
@@ -5137,11 +5263,61 @@ function editMyName() {
   toast('Saving…', 'blue');
   authUpdateProfile(name).then(function(){
     toast('✅ Name updated to "' + name + '"', 'green');
+    if (cur !== name) _nameHistoryLog(cur, name);
   }).catch(function(e){
     toast('⚠️ Could not update name: ' + (e.message || 'unknown error'), 'red');
   });
 }
 window.editMyName = editMyName;
+
+// Opens the Name History modal for any user_id — pass your own uid to see
+// your own trail, or a Manager's uid from the Team screen to see theirs.
+async function nameHistoryOpenModal(userId, label) {
+  document.getElementById('namehist-modal-title').textContent = label ? ('Name History — ' + label) : 'Name History';
+  var body = document.getElementById('namehist-modal-body');
+  body.innerHTML = 'Loading…';
+  document.getElementById('namehist-modal').classList.add('open');
+  try {
+    if (window._ownerResolvePromise) await window._ownerResolvePromise;
+    var rows = await _sbFetch('/rest/v1/name_history?select=old_name,new_name,changed_at&user_id=eq.' + encodeURIComponent(userId) + '&order=changed_at.desc', { method: 'GET' });
+    if (!rows || !rows.length) {
+      body.innerHTML = '<div style="font-size:12px;color:var(--muted);padding:8px 2px">No name changes on record yet — this person has kept the same name since installing the app.</div>';
+      return;
+    }
+    var html = '<div style="font-size:11px;color:var(--muted);margin-bottom:10px">Every name change, most recent first.</div>';
+    rows.forEach(function(r, i) {
+      var d = new Date(r.changed_at);
+      var when = d.toLocaleDateString() + ' · ' + d.toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'});
+      html += '<div style="background:var(--bg);border-radius:10px;padding:10px 12px;margin-bottom:6px">'
+        + '<div style="font-size:13px;font-weight:700;color:var(--text)">'
+        + (i === 0 ? '🟢 ' : '↳ ')
+        + e(r.old_name || 'Unnamed') + ' → ' + e(r.new_name || 'Unnamed')
+        + '</div>'
+        + '<div style="font-size:11px;color:var(--muted);margin-top:2px">' + e(when) + '</div>'
+        + '</div>';
+    });
+    body.innerHTML = html;
+  } catch (err) {
+    if (/relation .* does not exist|PGRST20[45]|42P01/i.test(err.message || '')) {
+      body.innerHTML = '<div style="background:#fef2f2;border:1.5px solid #fecaca;border-radius:12px;padding:14px">'
+        + '<div style="font-size:13px;font-weight:800;color:#dc2626;margin-bottom:6px">⚠️ Setup needed</div>'
+        + '<div style="font-size:12px;color:var(--text2);line-height:1.5">Name History needs a one-time database update. Open the app file, search for <b>V-NAME-HISTORY</b>, copy the SQL block, and run it once in your Supabase SQL editor. Then reopen this screen.</div>'
+        + '</div>';
+    } else {
+      body.innerHTML = '<div style="font-size:12px;color:#dc2626">Could not load name history: ' + e(err.message || String(err)) + '</div>';
+    }
+  }
+}
+window.nameHistoryOpenModal = nameHistoryOpenModal;
+
+// Convenience wrapper for "my own" name history from the Edit My Name menu.
+function nameHistoryOpenMine() {
+  var uid = _authCurrentUserId();
+  if (!uid) { toast('⚠ Not logged in', 'red'); return; }
+  var myName = (window._authSession && window._authSession.user && window._authSession.user.user_metadata && window._authSession.user.user_metadata.full_name) || 'Me';
+  nameHistoryOpenModal(uid, myName);
+}
+window.nameHistoryOpenMine = nameHistoryOpenMine;
 
 async function authRecover(email) {
   return _authRawFetch('/auth/v1/recover', { email: email });
@@ -5379,7 +5555,7 @@ async function teamRenderModal() {
     // a raw Supabase error instead of the friendly setup message below.
     var members, invites, setupMissing = false, workersColMissing = false, lastErr = null;
     try {
-      members = await _sbFetch('/rest/v1/team_members?select=id,member_email,role,status,created_at,assigned_worker_ids&owner_id=eq.' + encodeURIComponent(_ownerUid()) + '&order=created_at.desc', { method: 'GET' });
+      members = await _sbFetch('/rest/v1/team_members?select=id,member_id,member_email,role,status,created_at,assigned_worker_ids&owner_id=eq.' + encodeURIComponent(_ownerUid()) + '&order=created_at.desc', { method: 'GET' });
     } catch(e) {
       lastErr = e;
       if (/relation .* does not exist|PGRST20[45]|42P01/i.test(e.message||'')) setupMissing = true;
@@ -5390,7 +5566,7 @@ async function teamRenderModal() {
     // without it so the base Team feature keeps working either way.
     if (workersColMissing) {
       try {
-        members = await _sbFetch('/rest/v1/team_members?select=id,member_email,role,status,created_at&owner_id=eq.' + encodeURIComponent(_ownerUid()) + '&order=created_at.desc', { method: 'GET' });
+        members = await _sbFetch('/rest/v1/team_members?select=id,member_id,member_email,role,status,created_at&owner_id=eq.' + encodeURIComponent(_ownerUid()) + '&order=created_at.desc', { method: 'GET' });
         lastErr = null;
       } catch(e) {
         lastErr = e;
@@ -5449,6 +5625,16 @@ async function teamRenderModal() {
     if (!members.length) {
       html += '<div style="font-size:12px;color:var(--muted);padding:8px 2px">No managers added yet. Generate an invite code above and share it with them.</div>';
     } else {
+      // V348: pull each Manager's current display name (set via "Edit My
+      // Name" on their own device) so the Owner isn't stuck seeing only an
+      // email. Best-effort — if V-NAME-HISTORY SQL hasn't been run yet this
+      // just comes back empty and the email-only view still works fine.
+      var _profileByUid = {};
+      try {
+        var _profiles = await _sbFetch('/rest/v1/user_profiles?select=id,name&owner_id=eq.' + encodeURIComponent(_ownerUid()), { method: 'GET' });
+        (_profiles || []).forEach(function(p){ _profileByUid[p.id] = p.name; });
+      } catch (e) { /* table may not exist yet — fine, fall back to email */ }
+
       members.forEach(function(m) {
         var wIds = Array.isArray(m.assigned_worker_ids) ? m.assigned_worker_ids : [];
         var wLabel = wIds.length ? (wIds.length + ' worker' + (wIds.length===1?'':'s') + ' assigned') : 'All workers (no restriction)';
@@ -5457,9 +5643,14 @@ async function teamRenderModal() {
         var roleLabel = _mRole ? _mRole.name : 'Full Access (Manager)';
         var roleOptsHtml = '<option value="manager"' + (!m.role || m.role==='manager' ? ' selected' : '') + '>Full Access (Manager)</option>'
           + _myRolesList.map(function(r){ return '<option value="' + e(r.id) + '"' + (m.role===r.id ? ' selected' : '') + '>' + e(r.name) + '</option>'; }).join('');
+        var _curName = _profileByUid[m.member_id] || '';
+        var _nameLine = _curName
+          ? ('<div style="font-size:13px;font-weight:700;color:var(--text)">' + e(_curName) + '</div>'
+             + '<div style="font-size:11px;color:var(--muted)">' + e(m.member_email || 'Unknown') + '</div>')
+          : ('<div style="font-size:13px;font-weight:700;color:var(--text)">' + e(m.member_email || 'Unknown') + '</div>');
         html += '<div style="background:var(--bg);border-radius:10px;padding:10px 12px;margin-bottom:6px">'
           + '<div style="display:flex;align-items:center;justify-content:space-between">'
-          + '<div><div style="font-size:13px;font-weight:700;color:var(--text)">' + e(m.member_email || 'Unknown') + '</div>'
+          + '<div>' + _nameLine
           + '<div style="font-size:11px;color:var(--muted)">' + e(roleLabel) + '</div></div>'
           + '<button onclick="teamRemoveMember(\'' + m.id + '\')" style="font-family:\'Noto Sans\',sans-serif;font-size:11px;font-weight:700;background:#fef2f2;color:#dc2626;border:none;border-radius:8px;padding:6px 10px;cursor:pointer">Remove</button>'
           + '</div>'
@@ -5472,6 +5663,11 @@ async function teamRenderModal() {
               ? '<button disabled title="Run the V-TEAM-WORKERS SQL migration first" style="font-family:\'Noto Sans\',sans-serif;font-size:11px;font-weight:700;background:var(--bg);color:var(--muted);border:none;border-radius:8px;padding:6px 10px;cursor:not-allowed">Assign Workers</button>'
               : '<button onclick=\'teamOpenAssignWorkers(' + JSON.stringify(m.id) + ',' + JSON.stringify(wIds) + ')\' style="font-family:\'Noto Sans\',sans-serif;font-size:11px;font-weight:700;background:var(--primary-l);color:var(--primary);border:none;border-radius:8px;padding:6px 10px;cursor:pointer">Assign Workers</button>')
           + '</div>'
+          + (m.member_id
+              ? ('<div style="margin-top:8px;padding-top:8px;border-top:1px solid var(--border);text-align:right">'
+                 + '<button onclick=\'nameHistoryOpenModal(' + JSON.stringify(m.member_id) + ',' + JSON.stringify(_curName || m.member_email || 'this manager') + ')\' style="font-family:\'Noto Sans\',sans-serif;font-size:11px;font-weight:700;background:var(--primary-l);color:var(--primary);border:none;border-radius:8px;padding:6px 10px;cursor:pointer">🕘 Name History</button>'
+                 + '</div>')
+              : '')
           + '</div>';
       });
     }
@@ -6959,54 +7155,28 @@ window._flashSaving = function(){
   },2500);
 };
 
-function save(){
-  // V319 FIX — "delete purchase, reopen app, product's quantity is back; refresh
-  // and it's gone again" (also affects any stock-changing edit, not just purchase
-  // delete): save() pushed the updated products[] to Supabase but NEVER wrote the
-  // local cache (_invCache_products) synchronously — that only happened inside
-  // delProd()'s own bin flow and inside _doGetDocs's merge step for the 'products'
-  // table. Since 'products' is a LAZY-loaded table (V195), that merge/correction
-  // only runs once you open the Products tab or a ~1.2s post-boot background
-  // refresh fires — NOT the instant the app opens. Sequence that caused the bug:
-  //   1. Delete a purchase → rebuildProductStock()/recalculateProductCost() lower
-  //      p.stock in memory → save() pushes the corrected stock to Supabase, but
-  //      _invCache_products on disk still holds the OLD (higher, pre-delete) stock.
-  //   2. App closes before Products ever re-syncs this session.
-  //   3. Reopen: dashboard/home-stock hydrate instantly from that stale cache —
-  //      showing the deleted purchase's quantity as if it still counts.
-  //   4. Opening Products (or pulling to refresh) triggers the real Supabase fetch,
-  //      which is already correct — merge fixes window.products and re-renders,
-  //      so the extra stock "disappears" without you touching anything.
-  // FIX: write _invCache_products synchronously here, every save(), mirroring the
-  // pattern savePur() already used for _invCache_purchases — so the stale-cache
-  // window this bug depends on never exists.
-  try{ if(Array.isArray(products)) _memStore.setItem('_invCache_products', JSON.stringify(products)); }catch(e){}
-  // Firebase is the only storage — push to cloud
-  syncToSheet();
-  if(!window._firebaseReady){
-    // v243 FIX: Firebase module not yet loaded — buffer and replay
-    _saveBuffered = true;
-    console.warn('[v243] save() called before Firebase ready — buffered for replay');
-    // V285 FIX: give honest feedback instead of silently doing nothing —
-    // this used to leave the pill saying whatever it said before (often a
-    // stale "LIVE"), with no sign anything was wrong.
-    var _t=document.getElementById('fb-status-text'), _d=document.getElementById('fb-status-pulse');
-    if(_t) _t.textContent='OFFLINE';
-    if(_d){ _d.style.background='#ef4444'; _d.style.boxShadow='0 0 7px #ef4444'; }
-    return;
-  }
-    // V285 FIX: 1.5s was too brief to reliably notice on a real phone — often
-    // masked by the toast/screen-transition that happens right after tapping
-    // Save. Extracted into a reusable, longer-lasting function (below) and
-    // bumped to 2.5s.
-    if(typeof window._flashSaving==='function') window._flashSaving();
-    window._markLocalWrite(3000,'products');
-    window._markLocalWrite(3000,'sales');
-    // V156 OPT-3: Debounce Supabase writes — rapid saves (e.g. editing price, stock)
-    // collapse into 1 write instead of firing on every keystroke.
-    if(window._saveDebounceTimer) clearTimeout(window._saveDebounceTimer);
-    window._saveDebounceTimer = setTimeout(function(){
-      window._saveDebounceTimer = null;
+// V342 FIX — "add a product, refresh right after, it's gone." ROOT CAUSE: save()
+// below only ever SCHEDULES the real Supabase write — it fires 2.5s later out of
+// window._saveDebounceTimer (V156 OPT-3, to collapse rapid edits into one write).
+// _memStore (the "cache" the code below writes to) is a plain in-memory JS object,
+// NOT real localStorage (see V285 comment above _memStore's definition) — it is
+// wiped the instant the page reloads. So if the user adds a product and refreshes
+// (or the app gets backgrounded/killed) before that 2.5s timer fires, the pending
+// write is simply destroyed with the old page — Supabase never received it, and
+// nothing on disk remembers it either. On the next load, products are re-fetched
+// straight from Supabase, which never had the new product — it's gone.
+// FIX (two layers):
+//   1. _flushSaveDebounce() is the old setTimeout body, pulled out into its own
+//      named function so it can be called either after the debounce OR immediately.
+//   2. saveNow() runs the same push with NO debounce — used for one-off, deliberate
+//      actions (like adding a brand-new product) where "collapse rapid edits" isn't
+//      the goal and the user is likely to navigate away/refresh right after tapping
+//      Save. addProduct() below now calls saveNow() instead of save().
+//   3. As a safety net for any *other* still-pending debounced save() (e.g. you
+//      edited a price then immediately refreshed), beforeunload/pagehide/hidden
+//      now flush any in-flight debounce timer immediately instead of losing it.
+function _flushSaveDebounce(){
+    window._saveDebounceTimer = null;
     // v238 FIX: write each product individually via setDoc (no batch) — fires immediately per doc,
     // faster than writeBatch which groups all docs before committing.
     (function _immediateProductsWrite(){
@@ -7049,8 +7219,74 @@ function save(){
     if(!_allCriticalLoaded) console.warn('[v253] save(): skipped syncCollection — not all collections loaded yet (products='+window._fbProductsLoaded+' sales='+window._fbSalesLoaded+' purchases='+window._fbPurchasesLoaded+')');
     // bin and makingBin are NOT synced here — only synced via saveBin()/saveMakingBin()
     // to prevent empty local arrays from wiping Firestore bin data on startup.
-    }, 2500); // V156 OPT-3: 2.5s debounce end
 }
+// Shared prep: local cache mirror + syncToSheet + the "Firebase not ready yet" buffer path.
+// Returns false if the caller should stop (not ready — buffered for replay), true if ready to push.
+function _saveCommonPrep(){
+  // V319 FIX — "delete purchase, reopen app, product's quantity is back; refresh
+  // and it's gone again" (also affects any stock-changing edit, not just purchase
+  // delete): save() pushed the updated products[] to Supabase but NEVER wrote the
+  // local cache (_invCache_products) synchronously — that only happened inside
+  // delProd()'s own bin flow and inside _doGetDocs's merge step for the 'products'
+  // table. FIX: write _invCache_products synchronously here, every save(), mirroring
+  // the pattern savePur() already used for _invCache_purchases — so the stale-cache
+  // window this bug depends on never exists. NOTE (V342): this _memStore cache is
+  // in-memory only and does not by itself survive a refresh — see saveNow()/
+  // flush-on-hide below for the part that does.
+  try{ if(Array.isArray(products)) _memStore.setItem('_invCache_products', JSON.stringify(products)); }catch(e){}
+  // Firebase is the only storage — push to cloud
+  syncToSheet();
+  if(!window._firebaseReady){
+    // v243 FIX: Firebase module not yet loaded — buffer and replay
+    _saveBuffered = true;
+    console.warn('[v243] save() called before Firebase ready — buffered for replay');
+    // V285 FIX: give honest feedback instead of silently doing nothing —
+    // this used to leave the pill saying whatever it said before (often a
+    // stale "LIVE"), with no sign anything was wrong.
+    var _t=document.getElementById('fb-status-text'), _d=document.getElementById('fb-status-pulse');
+    if(_t) _t.textContent='OFFLINE';
+    if(_d){ _d.style.background='#ef4444'; _d.style.boxShadow='0 0 7px #ef4444'; }
+    return false;
+  }
+  // V285 FIX: 1.5s was too brief to reliably notice on a real phone — often
+  // masked by the toast/screen-transition that happens right after tapping
+  // Save. Extracted into a reusable, longer-lasting function (below) and
+  // bumped to 2.5s.
+  if(typeof window._flashSaving==='function') window._flashSaving();
+  window._markLocalWrite(3000,'products');
+  window._markLocalWrite(3000,'sales');
+  return true;
+}
+function save(){
+  if(!_saveCommonPrep()) return;
+  // V156 OPT-3: Debounce Supabase writes — rapid saves (e.g. editing price, stock)
+  // collapse into 1 write instead of firing on every keystroke.
+  if(window._saveDebounceTimer) clearTimeout(window._saveDebounceTimer);
+  window._saveDebounceTimer = setTimeout(_flushSaveDebounce, 2500); // V156 OPT-3: 2.5s debounce end
+}
+// V342 FIX: bypasses the debounce entirely — pushes to Supabase right now. Use this
+// instead of save() for one-off actions (like adding a brand-new product) where the
+// user is likely to navigate away or refresh moments later, so there's no 2.5s window
+// in which the write can be lost.
+function saveNow(){
+  if(window._saveDebounceTimer){ clearTimeout(window._saveDebounceTimer); window._saveDebounceTimer=null; }
+  if(!_saveCommonPrep()) return;
+  _flushSaveDebounce();
+}
+// V342 FIX: safety net for any *other* pending debounced save() (e.g. a quick price
+// edit) that hasn't hit its 2.5s timer yet when the page is refreshed/closed/backgrounded.
+// Without this, that timer is destroyed with the old page and the edit is silently lost —
+// same root cause as the "add product, refresh, it's gone" bug, just via a different call
+// path. Mirrors the existing _cacheAllLocal beforeunload/pagehide/visibilitychange pattern.
+function _flushPendingSaveNow(){
+  if(window._saveDebounceTimer){
+    clearTimeout(window._saveDebounceTimer);
+    _flushSaveDebounce();
+  }
+}
+window.addEventListener('beforeunload', _flushPendingSaveNow);
+window.addEventListener('pagehide', _flushPendingSaveNow);
+document.addEventListener('visibilitychange', function(){ if(document.visibilityState==='hidden') _flushPendingSaveNow(); });
 function load(){
   // Data loads exclusively from Firebase listeners — nothing to do here
   // Firebase onSnapshot callbacks will populate products, sales, bin, homeStock etc.
@@ -8199,6 +8435,29 @@ function exportGiveDB(){
 }
 
 function renderDashboard(){
+  // V347 FIX: Dashboard showed "0 Products" (and stale sales/purchases counts)
+  // after a real close+reopen of the app. ROOT CAUSE: products/sales/purchases/
+  // makinglog are all `_LAZY` (V195 optimization to cut Supabase egress) — on
+  // startup they hydrate ONLY from the localStorage cache and are never
+  // re-fetched from the server until the user opens that specific tab. But the
+  // Dashboard (the very first screen shown) reads directly from those arrays —
+  // if the cache was empty/stale (e.g. beforeunload never fired because the OS
+  // killed the app, a very common mobile scenario), the Dashboard just shows
+  // whatever the stale/empty cache had, forever, since nothing ever triggers a
+  // real fetch. FIX: kick off a real background fetch for each lazy table the
+  // Dashboard depends on as soon as it renders, then silently re-render once
+  // real data arrives — so the numbers always self-correct within a second or
+  // two of opening the app, without waiting for the user to visit each tab.
+  if(typeof window._lazyLoad === 'function' && !window._dashLazyKicked){
+    window._dashLazyKicked = true;
+    ['products','sales','purchases','makinglog'].forEach(function(t){
+      try{
+        window._lazyLoad(t).then(function(){
+          if(typeof renderDashboard === 'function') renderDashboard();
+        });
+      }catch(e){}
+    });
+  }
   var now=new Date();
   var curMonth=now.getMonth();
   var curYear=now.getFullYear();
@@ -12197,7 +12456,10 @@ function addProduct(){
       }).catch(function(){ toast('⚠️ A photo upload failed','red'); });
     });
   } else if(_pendingPhoto){ setPhoto(newId, _pendingPhoto); _pendingPhoto=null; }
-  save();
+  // V342 FIX: use saveNow() (no 2.5s debounce) instead of save() — this screen auto-
+  // navigates back to Stock ~800ms after adding, and users commonly refresh right after
+  // that, which used to destroy the pending debounced Supabase write before it ever fired.
+  saveNow();
   renderDashboard();
   ['new-name','new-sku','new-cat','new-desc','new-size','new-price','new-cost','new-unit-price','new-serial','new-disc-pct','new-disc-amt','new-mfg','new-expiry'].forEach(function(id){var el=document.getElementById(id);if(el)el.value='';});
   var _nsl=document.getElementById('new-shelflife'); if(_nsl)_nsl.value='';
@@ -21105,8 +21367,16 @@ function _appLogout() {
         }).catch(function(e){
           console.error('[fb-collections] push failed: '+cfg.table, e);
           if(typeof toast==='function') toast('\u26a0\ufe0f Cloud save failed: '+cfg.table, 'red');
+          throw e; // V343 FIX: previously swallowed here, so callers awaiting this
+                    // promise (e.g. Restore-from-backup) always saw "success" even
+                    // when the network write failed. Re-throw so it actually rejects.
         });
-      }catch(e){ console.error('[fb-collections] push exception: '+cfg.table, e); }
+      }catch(e){
+        console.error('[fb-collections] push exception: '+cfg.table, e);
+        return Promise.reject(e); // V343 FIX: was falling through and returning
+                                   // undefined (not even a promise) — callers had
+                                   // no way to detect the failure at all.
+      }
     };
 
     // V17-5: ALL collections use getDocs-only — no continuous polling.
@@ -21124,6 +21394,10 @@ function _appLogout() {
     var refreshFn = _makeRefresh(cfg, 15000);
     window['_refresh_'+cfg.table]    = refreshFn;
     window['_gdRefresh_'+cfg.table]  = refreshFn; // backwards compat for saveGdMov etc
+    // V342: allow callers (Restore-from-backup) to force a full re-push even if
+    // the diff-cache thinks nothing changed — avoids silently skipping items
+    // whose serialized content happens to match a prior session's push.
+    window['_resetPushCache_'+cfg.table] = function(){ _lastPushed = {}; };
   }
   _arrayCollections.forEach(_wireArrayCollection);
 
@@ -27211,6 +27485,7 @@ function bkDoRestore(){
   _bkSetProgress(10, 'Restoring products…');
 
   setTimeout(function(){
+    (async function(){
     try{
       // Restore each collection into the live variables
       if(Array.isArray(data.products))  { products   = data.products;  }
@@ -27228,23 +27503,48 @@ function bkDoRestore(){
         window._bizSettings = Object.assign(window._bizSettings||{}, data.settings);
       }
 
-      _bkSetProgress(50, 'Syncing to Firebase…');
+      _bkSetProgress(50, 'Syncing to cloud…');
 
-      // Push everything back to Firebase/Supabase
-      if(window._firebaseReady){
-        if(window._fbSyncProducts)   window._fbSyncProducts(products);
-        if(window._fbSyncSales)      window._fbSyncSales(sales);
-        if(window._fbSyncBin)        window._fbSyncBin(bin);
-        if(window._fbSyncPurchases)  window._fbSyncPurchases(purchases);
-        if(window._fbSyncExpenses)   window._fbSyncExpenses(expenses);
-        if(window._fbSyncLabour)     window._fbSyncLabour(labourDB);
-        if(window._fbSyncMakingLog)  window._fbSyncMakingLog(makingLog);
-        if(window._fbSyncHomeStock)  window._fbSyncHomeStock(homeStock);
-        if(window._fbSyncHomeStockBin) window._fbSyncHomeStockBin(hsBin);
-        if(window._fbSyncGodowns)    window._fbSyncGodowns(godowns);
-        if(window._fbSyncParties)    window._fbSyncParties(Array.isArray(parties)?parties:Object.values(parties));
-        if(window._fbSyncSettings)   window._fbSyncSettings(window._bizSettings);
+      // FIX (V342): previously fired all _fbSyncX() pushes without awaiting them
+      // or checking success — the UI always showed "Restore complete" even if
+      // the network write failed (bad connection, RLS/auth timing, etc). That
+      // meant Supabase still held the OLD data, so the very next app reload
+      // re-fetched the old data and the restore appeared to "undo itself".
+      // FIX: mark each collection as a local write (blocks any background
+      // refresh from clobbering the restore while it's in flight), await every
+      // push, and only report success once every push has actually confirmed.
+      var _pushErrors = [];
+      var _pushErrDetail = [];
+      var _pushes = [];
+      ['products','sales','bin','purchases','expenses','labour','makinglog','homestock','homestockbin','godowns','parties','settings'].forEach(function(t){
+        if(typeof window['_resetPushCache_'+t]==='function') window['_resetPushCache_'+t]();
+      });
+      function _guardPush(table, list, fn){
+        if(!fn){ console.warn('[Restore] no sync fn for', table); return; }
+        if(!window._firebaseReady){ _pushErrors.push(table); _pushErrDetail.push(table+': cloud not connected'); return; }
+        if(window._markLocalWrite) window._markLocalWrite(20000, table);
+        _pushes.push(
+          Promise.resolve().then(function(){ return fn(list); }).catch(function(e){
+            console.error('[Restore] push failed:', table, e);
+            _pushErrors.push(table);
+            _pushErrDetail.push(table+': '+(e&&e.message?e.message:String(e)));
+          })
+        );
       }
+      _guardPush('products',    products,                                   window._fbSyncProducts);
+      _guardPush('sales',       sales,                                      window._fbSyncSales);
+      _guardPush('bin',         bin,                                        window._fbSyncBin);
+      _guardPush('purchases',   purchases,                                  window._fbSyncPurchases);
+      _guardPush('expenses',    expenses,                                   window._fbSyncExpenses);
+      _guardPush('labour',      labourDB,                                   window._fbSyncLabour);
+      _guardPush('makinglog',   makingLog,                                  window._fbSyncMakingLog);
+      _guardPush('homestock',   homeStock,                                  window._fbSyncHomeStock);
+      _guardPush('homestockbin',hsBin,                                      window._fbSyncHomeStockBin);
+      _guardPush('godowns',     godowns,                                    window._fbSyncGodowns);
+      _guardPush('parties',     Array.isArray(parties)?parties:Object.values(parties), window._fbSyncParties);
+      _guardPush('settings',    window._bizSettings,                        window._fbSyncSettings);
+
+      await Promise.all(_pushes);
 
       // Re-compute IDs so next inserts don't collide
       if(products.length)   { var mx=Math.max.apply(null,products.map(function(x){return x.id||0}));   if(window.prodId!==undefined)   window.prodId=mx+1;   }
@@ -27265,13 +27565,40 @@ function bkDoRestore(){
       if(typeof hsRender==='function')         hsRender();
       if(typeof gdRender==='function')         gdRender();
 
-      _bkSetProgress(100, '✅ Restore complete!');
-      toast('✅ Backup restored! All data loaded.', 'green');
-
-      setTimeout(function(){
-        document.getElementById('bk-modal').style.display = 'none';
-        _bkPendingData = null;
-      }, 2000);
+      if(_pushErrors.length){
+        // V346 FIX: the real error reason (e.g. an RLS policy blocking writes
+        // to the 'products' table specifically) was only shown in a toast that
+        // auto-dismisses — easy to miss on mobile, and the modal itself only
+        // ever showed the generic "cloud save failed for: products" with no
+        // reason. Now the actual error detail is written into the persistent
+        // progress label too, so it stays on screen until the user retries.
+        _bkSetProgress(100, '⚠️ Restored locally — cloud save failed: '+_pushErrDetail.join(' | '));
+        toast('⚠️ Cloud save failed: '+_pushErrDetail.join(' | '), 'red');
+        console.error('[Restore] cloud save failures:', _pushErrDetail);
+        btn.disabled = false;
+        btn.textContent = '🔄 Retry Restore';
+      }else{
+        // V345 FIX: restored data "disappears after refresh" on mobile.
+        // ROOT CAUSE: this function only relied on the beforeunload/pagehide/
+        // visibilitychange handlers (_cacheAllLocal) to persist the restored
+        // arrays into localStorage. On mobile (Android PWA/webview), the app
+        // is very often killed by the OS directly (swipe-close, task switch,
+        // backgrounding) WITHOUT those events firing reliably. Separately,
+        // products/sales/purchases/makinglog are all `_LAZY` (V195) — on the
+        // next app open they hydrate ONLY from that localStorage cache and are
+        // NOT re-fetched from the server until that specific tab is opened. So
+        // if the cache write never happened, the next open shows the stale
+        // PRE-restore data, exactly as if the restore had been undone. FIX:
+        // force the localStorage cache to be written immediately here, right
+        // after cloud sync succeeds, instead of trusting a later unload event.
+        if(typeof window._invCacheAllLocal === 'function') window._invCacheAllLocal();
+        _bkSetProgress(100, '✅ Restore complete!');
+        toast('✅ Backup restored & saved to cloud!', 'green');
+        setTimeout(function(){
+          document.getElementById('bk-modal').style.display = 'none';
+          _bkPendingData = null;
+        }, 2000);
+      }
 
     }catch(err){
       console.error('[Restore] Error:', err);
@@ -27280,6 +27607,7 @@ function bkDoRestore(){
       document.getElementById('bk-progress-wrap').style.display = 'none';
       toast('Restore failed: ' + err.message, 'red');
     }
+    })();
   }, 120);
 }
 
@@ -28605,5 +28933,6 @@ function gomInit(){
   setTimeout(_v315MigrateCost, 9000);
   setTimeout(_v315MigrateCost, 13000);
 })();
+console.log('v348: NAME HISTORY — Every account (Owner or any Manager) now has its name changes permanently logged. New tables user_profiles (current name per login) and name_history (old_name → new_name trail) — search "V-NAME-HISTORY" for the one-time SQL migration. "Edit My Name" now logs the change; new "My Name History" menu row shows your own trail; Team / Manager Access now shows each Manager\'s current name (not just email) plus a "🕘 Name History" button revealing every name they\'ve used since install. Fully best-effort — if the SQL migration hasn\'t been run yet, name changes still work exactly as before and the History screens show a friendly setup prompt instead of erroring.');
 </script>
 </body></html>
